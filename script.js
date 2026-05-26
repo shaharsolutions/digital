@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollArrow = document.querySelector('.scroll-down-arrow');
     if (scrollArrow) {
         scrollArrow.addEventListener('click', () => {
-             // Scroll to the next section (Audience Section)
-             const nextSection = document.getElementById('audience');
+             // Scroll to the next section (Pain Section)
+             const nextSection = document.getElementById('pain');
              if (nextSection) {
                  nextSection.scrollIntoView({ behavior: 'smooth' });
              } else {
