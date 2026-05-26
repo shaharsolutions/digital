@@ -1559,6 +1559,15 @@ img {
 .diag-prev-btn {
     flex-shrink: 0;
     min-width: 100px;
+    background: transparent;
+    color: var(--text-main) !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.diag-prev-btn:hover {
+    background: #f1f5f9 !important;
+    color: var(--text-heading) !important;
+    border-color: #94a3b8 !important;
 }
 
 /* Success Card Styling */
