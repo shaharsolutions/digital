@@ -1637,3 +1637,65 @@ img {
     }
 }
 
+/* --- Clean Dual CTA Section --- */
+.contact-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+.cta-buttons-wrapper {
+    margin-top: 3rem;
+}
+
+.cta-buttons-container {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: var(--white);
+    box-shadow: 0 4px 20px rgba(22, 163, 74, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(22, 163, 74, 0.45);
+    color: var(--white);
+}
+
+.btn-whatsapp i {
+    font-size: 1.4rem;
+}
+
+/* Tablet & Mobile Styles for the Dual CTA */
+@media (max-width: 768px) {
+    .cta-buttons-container {
+        flex-direction: column;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        gap: 1.25rem;
+    }
+    
+    .cta-diag-btn,
+    .cta-wa-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
