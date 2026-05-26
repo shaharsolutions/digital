@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMessage = document.querySelector('#formMessage');
 
     // IMPORTANT: Replace this URL with your deployed Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5X8aXV3TSvZHhEJca59C-Axx4ZMO_eDiPq63T4QYqbI1KDXXO3EGBilgMeZ778QH1/exec'; 
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb5tXc9NbbvUmoAA3THBWhaPX8CugXhgNO20T7SAYJEqfmxx90z4BtLf2A8_rWWKc7/exec'; 
 
     form.addEventListener('submit', e => {
         e.preventDefault();
@@ -119,6 +119,184 @@ document.addEventListener('DOMContentLoaded', () => {
             loader.classList.add('hidden');
         });
     });
+
+    // --- Digital Diagnosis Questionnaire Logic ---
+    const diagForm = document.querySelector('#diagnosisForm');
+    if (diagForm) {
+        const diagSteps = diagForm.querySelectorAll('.diagnosis-step');
+        const progressFill = diagForm.querySelector('.progress-bar-fill');
+        const stepIndicator = diagForm.querySelector('.step-indicator');
+        const prevBtn = diagForm.querySelector('.diag-prev-btn');
+        const nextBtn = diagForm.querySelector('.diag-next-btn');
+        const submitDiagBtn = diagForm.querySelector('.diag-submit-btn');
+        const diagMessage = diagForm.querySelector('#diagMessage');
+        const diagSuccess = document.querySelector('#diagSuccess');
+        
+        let diagCurrentStep = 1;
+        const diagTotalSteps = 6;
+        
+        function updateDiagProgress() {
+            // Update Progress Bar
+            const percent = (diagCurrentStep / diagTotalSteps) * 100;
+            progressFill.style.width = `${percent}%`;
+            
+            // Update Step Text
+            stepIndicator.textContent = `שלב ${diagCurrentStep} מתוך ${diagTotalSteps}`;
+            
+            // Update steps visibility
+            diagSteps.forEach(step => {
+                step.classList.remove('active');
+                if (parseInt(step.dataset.step) === diagCurrentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Update navigation buttons
+            if (diagCurrentStep === 1) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+            
+            if (diagCurrentStep === diagTotalSteps) {
+                nextBtn.classList.add('hidden');
+                submitDiagBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitDiagBtn.classList.add('hidden');
+            }
+            
+            // Clear inline messages on step change
+            diagMessage.textContent = '';
+            diagMessage.className = 'form-message hidden';
+        }
+        
+        // Next & Back controls
+        nextBtn.addEventListener('click', () => {
+            if (diagCurrentStep < diagTotalSteps) {
+                diagCurrentStep++;
+                updateDiagProgress();
+            }
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            if (diagCurrentStep > 1) {
+                diagCurrentStep--;
+                updateDiagProgress();
+            }
+        });
+        
+        // Chips interaction
+        const chips = diagForm.querySelectorAll('.chip-btn');
+        chips.forEach(chip => {
+            chip.addEventListener('click', (e) => {
+                e.preventDefault();
+                const group = chip.closest('.chip-group');
+                const groupType = group.dataset.type;
+                
+                if (groupType === 'single') {
+                    // Single selection: unselect others, select this one
+                    group.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('selected'));
+                    chip.classList.add('selected');
+                    
+                    // Update hidden input
+                    const hiddenInput = group.nextElementSibling;
+                    if (hiddenInput && hiddenInput.type === 'hidden') {
+                        hiddenInput.value = chip.dataset.value;
+                    }
+                } else if (groupType === 'multiple') {
+                    // Multiple selection: toggle this selection
+                    chip.classList.toggle('selected');
+                    
+                    // Update hidden input with comma separated values
+                    const selectedChips = Array.from(group.querySelectorAll('.chip-btn.selected'))
+                        .map(btn => btn.dataset.value);
+                    
+                    const hiddenInput = group.nextElementSibling;
+                    if (hiddenInput && hiddenInput.type === 'hidden') {
+                        hiddenInput.value = selectedChips.join(', ');
+                    }
+                }
+            });
+        });
+        
+        // Submit Handler
+        diagForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Final Step Validation
+            const fullName = diagForm.fullName.value.trim();
+            const phone = diagForm.phone.value.trim();
+            
+            if (!fullName || !phone) {
+                diagMessage.textContent = 'נא למלא שם מלא וטלפון תקינים ליצירת קשר';
+                diagMessage.className = 'form-message error';
+                return;
+            }
+            
+            // Show loading state
+            submitDiagBtn.disabled = true;
+            const diagBtnText = submitDiagBtn.querySelector('.btn-text');
+            const diagLoader = submitDiagBtn.querySelector('.loader');
+            
+            diagBtnText.classList.add('hidden');
+            diagLoader.classList.remove('hidden');
+            diagMessage.className = 'form-message hidden';
+            
+            // Prepare FormData
+            const formData = new FormData(diagForm);
+            formData.append('formType', 'אבחון דיגיטלי');
+            
+            // Build a formatted summary of the Q&A for the 'improvement' field (e.g. to automatically show in the email)
+            const timeWaster = diagForm.timeWaster.value.trim() || "לא צוין";
+            const infoManagement = diagForm.infoManagement.value.trim() || "לא צוין";
+            const painPoints = diagForm.painPoints.value.trim() || "לא צוין";
+            const desiredFeatures = diagForm.desiredFeatures.value.trim() || "לא צוין";
+            const priority = diagForm.priority.value.trim() || "לא צוין";
+            
+            const formattedImprovement = `<b>[אבחון דיגיטלי לעסק]</b><br>
+<hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;"><br>
+<b>איזה תהליך בעסק הכי גוזל זמן או יוצר בלגן?</b><br>
+${timeWaster}<br><br>
+<b>איפה מנהלים את המידע היום?</b><br>
+${infoManagement}<br><br>
+<b>מה הכי מפריע בתהליך הזה?</b><br>
+${painPoints}<br><br>
+<b>מה היית רוצה שמערכת פשוטה תעשה עבורך?</b><br>
+${desiredFeatures}<br><br>
+<b>כמה חשוב לפתור את זה בתקופה הקרובה?</b><br>
+${priority}`;
+
+            formData.append('improvement', formattedImprovement);
+            
+            // Submit using fetch
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            })
+            .then(() => {
+                // Success
+                diagForm.classList.add('hidden');
+                diagSuccess.classList.remove('hidden');
+                diagForm.reset();
+                
+                // Clear chips selected state
+                chips.forEach(c => c.classList.remove('selected'));
+                diagForm.querySelectorAll('input[type="hidden"]').forEach(h => h.value = '');
+            })
+            .catch(error => {
+                console.error('Diagnosis submission error:', error);
+                diagMessage.textContent = 'אופס! משהו השתבש בשליחה. אנא נסו שוב או פנו בטלפון.';
+                diagMessage.className = 'form-message error';
+            })
+            .finally(() => {
+                submitDiagBtn.disabled = false;
+                diagBtnText.classList.remove('hidden');
+                diagLoader.classList.add('hidden');
+            });
+        });
+    }
 
     function showMessage(text, type) {
         formMessage.textContent = text;

@@ -299,6 +299,164 @@
         </div>
     </section>
 
+    <!-- Digital Diagnosis Section -->
+    <section class="section diagnosis-section" id="diagnosis">
+        <div class="container">
+            <div class="diagnosis-header reveal">
+                <h2 class="section-title">איפה העסק שלך מאבד זמן?</h2>
+                <p class="diagnosis-intro">ענו על כמה שאלות קצרות ונבדוק האם יש תהליך בעסק שלכם שאפשר להפוך למערכת פשוטה, מסודרת וחוסכת זמן.</p>
+                <p class="diagnosis-subtext">בלי התחייבות, בלי מילים מסובכות ובלי טופס ארוך. רק להבין איפה אפשר לעשות סדר.</p>
+            </div>
+            
+            <div class="diagnosis-wrapper reveal delay-1">
+                <!-- Right Side: Value Points (Visible alongside questionnaire) -->
+                <div class="diagnosis-benefits">
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                        <div class="benefit-text">
+                            <h3>מזהים איפה הזמן נשרף</h3>
+                            <p>מיפוי מהיר של התהליכים הידניים והשוחקים שגוזלים ממך שעות עבודה יקרות.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="benefit-text">
+                            <h3>מבינים איזה תהליך כדאי לסדר</h3>
+                            <p>סינון ומיקוד במשימה אחת מרכזית שהפיכתה לדיגיטלית תניב את האימפקט הגדול ביותר.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div class="benefit-text">
+                            <h3>מקבלים כיוון לפתרון פשוט</h3>
+                            <p>רעיונות פרקטיים ומותאמים אישית שיעשו לך סדר, בלי לסבך את העסק.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Left Side: Interactive Questionnaire Card -->
+                <div class="diagnosis-card-wrapper">
+                    <form id="diagnosisForm" class="diagnosis-card">
+                        <!-- Progress Bar -->
+                        <div class="diagnosis-progress-container">
+                            <div class="diagnosis-progress-text">
+                                <span>אבחון דיגיטלי לעסק</span>
+                                <span class="step-indicator">שלב 1 מתוך 6</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: 16.66%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div class="diagnosis-step active" data-step="1">
+                            <h3 class="step-question">איזה תהליך בעסק הכי גוזל לך זמן או יוצר בלגן?</h3>
+                            <div class="form-group">
+                                <textarea name="timeWaster" id="diag_timeWaster" rows="4" placeholder="לדוגמה: ניהול לקוחות, הזמנות, הצעות מחיר, פניות מוואטסאפ, תשלומים, משימות..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="diagnosis-step" data-step="2">
+                            <h3 class="step-question">איפה אתם מנהלים את המידע היום?</h3>
+                            <p class="step-subtitle">ניתן לבחור מספר אפשרויות</p>
+                            <div class="chip-group" data-type="multiple">
+                                <button type="button" class="chip-btn" data-value="וואטסאפ">וואטסאפ</button>
+                                <button type="button" class="chip-btn" data-value="אקסל / Google Sheets">אקסל / Google Sheets</button>
+                                <button type="button" class="chip-btn" data-value="מיילים">מיילים</button>
+                                <button type="button" class="chip-btn" data-value="מחברת / דפים">מחברת / דפים</button>
+                                <button type="button" class="chip-btn" data-value="מערכת CRM">מערכת CRM</button>
+                                <button type="button" class="chip-btn" data-value="בעיקר בזיכרון">בעיקר בזיכרון</button>
+                                <button type="button" class="chip-btn" data-value="אחר">אחר</button>
+                            </div>
+                            <input type="hidden" name="infoManagement" id="diag_infoManagement" value="">
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="diagnosis-step" data-step="3">
+                            <h3 class="step-question">מה הכי מפריע לך בתהליך הזה?</h3>
+                            <p class="step-subtitle">ניתן לבחור מספר אפשרויות</p>
+                            <div class="chip-group" data-type="multiple">
+                                <button type="button" class="chip-btn" data-value="מידע הולך לאיבוד">מידע הולך לאיבוד</button>
+                                <button type="button" class="chip-btn" data-value="קשה לעקוב אחרי לקוחות">קשה לעקוב אחרי לקוחות</button>
+                                <button type="button" class="chip-btn" data-value="שוכחים לחזור לאנשים">שוכחים לחזור לאנשים</button>
+                                <button type="button" class="chip-btn" data-value="יש הרבה עבודה ידנית">יש הרבה עבודה ידנית</button>
+                                <button type="button" class="chip-btn" data-value="אין תמונת מצב ברורה">אין תמונת מצב ברורה</button>
+                                <button type="button" class="chip-btn" data-value="קשה להוציא דוחות">קשה להוציא דוחות</button>
+                                <button type="button" class="chip-btn" data-value="זה פשוט עושה בלגן">זה פשוט עושה בלגן</button>
+                            </div>
+                            <input type="hidden" name="painPoints" id="diag_painPoints" value="">
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="diagnosis-step" data-step="4">
+                            <h3 class="step-question">מה היית רוצה שמערכת פשוטה תעשה עבורך?</h3>
+                            <div class="form-group">
+                                <textarea name="desiredFeatures" id="diag_desiredFeatures" rows="4" placeholder="לדוגמה: לרכז פניות, לשלוח תזכורות, לנהל לקוחות, לעקוב אחרי סטטוסים, להפיק דוחות..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="diagnosis-step" data-step="5">
+                            <h3 class="step-question">כמה חשוב לך לפתור את זה בתקופה הקרובה?</h3>
+                            <p class="step-subtitle">בחרו אפשרות אחת</p>
+                            <div class="chip-group" data-type="single">
+                                <button type="button" class="chip-btn" data-value="נחמד שיהיה">נחמד שיהיה</button>
+                                <button type="button" class="chip-btn" data-value="חשוב, אבל לא דחוף">חשוב, אבל לא דחוף</button>
+                                <button type="button" class="chip-btn" data-value="חשוב מאוד">חשוב מאוד</button>
+                                <button type="button" class="chip-btn" data-value="דחוף, זה כבר מפריע לעסק">דחוף, זה כבר מפריע לעסק</button>
+                            </div>
+                            <input type="hidden" name="priority" id="diag_priority" value="">
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="diagnosis-step" data-step="6">
+                            <h3 class="step-question">מעולה, לאן לחזור אליך?</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="diag_fullName">שם מלא *</label>
+                                    <input type="text" id="diag_fullName" name="fullName" placeholder="השם שלך">
+                                </div>
+                                <div class="form-group">
+                                    <label for="diag_businessName">שם העסק</label>
+                                    <input type="text" id="diag_businessName" name="businessName" placeholder="שם העסק שלך">
+                                </div>
+                                <div class="form-group">
+                                    <label for="diag_phone">טלפון / וואטסאפ *</label>
+                                    <input type="tel" id="diag_phone" name="phone" placeholder="050-0000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="diag_email">אימייל</label>
+                                    <input type="email" id="diag_email" name="email" placeholder="example@mail.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step Controls -->
+                        <div class="diagnosis-controls">
+                            <button type="button" class="btn btn-outline diag-prev-btn hidden">חזרה</button>
+                            <button type="button" class="btn btn-primary diag-next-btn">הבא</button>
+                            <button type="submit" class="btn btn-primary diag-submit-btn hidden">
+                                <span class="btn-text">שלחו לי כיוון ראשוני לפתרון</span>
+                                <span class="loader hidden"></span>
+                            </button>
+                        </div>
+
+                        <!-- Validation & Messages inside the card -->
+                        <div id="diagMessage" class="form-message hidden"></div>
+                    </form>
+
+                    <!-- Success Screen (Initially Hidden) -->
+                    <div id="diagSuccess" class="diagnosis-success-card hidden">
+                        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <h2>תודה, הפרטים התקבלו!</h2>
+                        <p>אעבור על התשובות ואחזור אליך עם כיוון ראשוני לפתרון שיכול לעשות סדר בעסק.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- About Section -->
     <section class="section about-section">
         <div class="container">

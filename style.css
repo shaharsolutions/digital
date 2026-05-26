@@ -1266,3 +1266,374 @@ img {
         transform: translateX(-50%) translateY(-5px);
     }
 }
+
+/* --- Digital Diagnosis Section --- */
+.diagnosis-section {
+    background: linear-gradient(180deg, var(--white) 0%, #f1f5f9 50%, var(--white) 100%);
+    position: relative;
+}
+
+.diagnosis-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.diagnosis-header h2 {
+    color: var(--primary-dark);
+}
+
+.diagnosis-intro {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    max-width: 800px;
+    margin: 0 auto 0.75rem;
+    font-weight: 500;
+}
+
+.diagnosis-subtext {
+    font-size: 0.95rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.diagnosis-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+/* Right Side: Benefits */
+.diagnosis-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 1.25rem;
+    background: var(--white);
+    padding: 1.75rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: var(--transition);
+    align-items: flex-start;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px) translateX(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.benefit-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.benefit-item:hover .benefit-icon {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: var(--white);
+    transform: scale(1.05) rotate(-5deg);
+}
+
+.benefit-text h3 {
+    font-size: 1.2rem;
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+    text-align: right;
+}
+
+.benefit-text p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+    text-align: right;
+}
+
+/* Left Side: Interactive Questionnaire Card */
+.diagnosis-card-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.diagnosis-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 3rem;
+    border-radius: 24px;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    transition: var(--transition);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Progress Bar */
+.diagnosis-progress-container {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 1.5rem;
+}
+
+.diagnosis-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+}
+
+.diagnosis-progress-text .step-indicator {
+    color: var(--primary-color);
+}
+
+.progress-bar-bg {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    border-radius: 10px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step content transitions */
+.diagnosis-step {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    flex: 1;
+}
+
+.diagnosis-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.step-question {
+    font-size: 1.35rem;
+    color: var(--text-heading);
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+    text-align: right;
+    line-height: 1.4;
+}
+
+.step-subtitle {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: -0.75rem;
+    margin-bottom: 1.5rem;
+    text-align: right;
+}
+
+/* Chips Selection */
+.chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    justify-content: flex-start;
+}
+
+.chip-btn {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    padding: 0.65rem 1.2rem;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    outline: none;
+    user-select: none;
+}
+
+.chip-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: var(--text-heading);
+}
+
+.chip-btn.selected {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: var(--white);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
+}
+
+/* Textarea customization */
+.diagnosis-step textarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--white);
+    resize: none;
+    line-height: 1.6;
+}
+
+.diagnosis-step textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Contact step layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.form-grid label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+.form-grid input {
+    width: 100%;
+    padding: 0.9rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.form-grid input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Controls */
+.diagnosis-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 2rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.diag-next-btn,
+.diag-submit-btn {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.diag-prev-btn {
+    flex-shrink: 0;
+    min-width: 100px;
+}
+
+/* Success Card Styling */
+.diagnosis-success-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 4rem 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.success-icon {
+    font-size: 4.5rem;
+    color: #10b981;
+    margin-bottom: 1.5rem;
+}
+
+.diagnosis-success-card h2 {
+    font-size: 1.8rem;
+    color: var(--text-heading);
+    margin-bottom: 1rem;
+}
+
+.diagnosis-success-card p {
+    font-size: 1.1rem;
+    color: #64748b;
+    line-height: 1.8;
+    max-width: 500px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 992px) {
+    .diagnosis-wrapper {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    .diagnosis-benefits {
+        order: 2; /* Put value cards below questionnaire on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .diagnosis-section {
+        padding: 4rem 0;
+    }
+    
+    .diagnosis-card {
+        padding: 2.25rem 1.5rem;
+        min-height: auto;
+    }
+    
+    .step-question {
+        font-size: 1.2rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .chip-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .benefit-item {
+        padding: 1.5rem;
+    }
+}
+
