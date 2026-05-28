@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const formattedImprovement = `<b>[אבחון דיגיטלי לעסק]</b><br>
 <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;"><br>
-<b>איזה תהליך בעסק הכי גוזל זמן או יוצר בלגן?</b><br>
+<b>איזה תהליך בעסק הכי גוזל זמן או יוצר בלאגן?</b><br>
 ${timeWaster}<br><br>
 <b>איפה מנהלים את המידע היום?</b><br>
 ${infoManagement}<br><br>
