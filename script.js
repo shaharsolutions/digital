@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => {
                 showMessage('תודה! הפרטים נשלחו בהצלחה. נחזור אליך בהקדם.', 'success');
                 form.reset();
+                openSegmentModal();
             })
             .catch(error => {
                 console.error('Error!', error.message);
@@ -272,6 +273,7 @@ ${priority}`;
                 // Clear chips selected state
                 chips.forEach(c => c.classList.remove('selected'));
                 diagForm.querySelectorAll('input[type="hidden"]').forEach(h => h.value = '');
+                openSegmentModal();
             })
             .catch(error => {
                 console.error('Diagnosis submission error:', error);
@@ -296,6 +298,76 @@ ${priority}`;
                 formMessage.textContent = '';
                 formMessage.className = 'form-message';
             }, 5000);
+        }
+    }
+    // --- Segmented Lead Confirmation Modal Logic ---
+    const TELEGRAM_CHANNEL_URL = 'https://t.me/shaharsolutions';
+    const modal = document.querySelector('#lead-segment-modal');
+    
+    function openSegmentModal() {
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+    
+    function closeSegmentModal() {
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+    
+    if (modal) {
+        const closeBtn = modal.querySelector('#close-modal-btn');
+        const telegramBtn = modal.querySelector('#modal-btn-telegram');
+        const messageBtn = modal.querySelector('#modal-btn-message');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeSegmentModal);
+        }
+        
+        // Close on overlay background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeSegmentModal();
+            }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSegmentModal();
+            }
+        });
+        
+        if (telegramBtn) {
+            telegramBtn.addEventListener('click', () => {
+                // Track GA Event
+                if (typeof gtag === 'function') {
+                    gtag('event', 'lead_group_telegram', {
+                        'event_category': 'lead_segmentation',
+                        'event_label': 'Telegram Channel'
+                    });
+                }
+                
+                // Open telegram link in a new window
+                window.open(TELEGRAM_CHANNEL_URL, '_blank');
+                
+                closeSegmentModal();
+            });
+        }
+        
+        if (messageBtn) {
+            messageBtn.addEventListener('click', () => {
+                // Track GA Event
+                if (typeof gtag === 'function') {
+                    gtag('event', 'lead_group_message_today', {
+                        'event_category': 'lead_segmentation',
+                        'event_label': 'Message Today'
+                    });
+                }
+                
+                closeSegmentModal();
+            });
         }
     }
 });

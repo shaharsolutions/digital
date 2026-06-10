@@ -32,6 +32,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="https://shaharsolutions.github.io/digital/favicon.png">
     <style>
         body {
@@ -153,7 +155,120 @@
         </div>
     </footer>
 
+    <!-- Segmented Lead Confirmation Modal -->
+    <div id="lead-segment-modal" class="fixed inset-0 flex items-center justify-center bg-slate-900/60 backdrop-blur-md z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-10 max-w-lg w-[90%] shadow-2xl relative text-center transform translate-y-8 scale-95 transition-transform duration-300 ease-out" id="lead-modal-container" dir="rtl">
+            <!-- Close Button (X) -->
+            <button id="close-modal-btn" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-3xl font-light focus:outline-none" aria-label="סגירה">&times;</button>
+            
+            <!-- Icon -->
+            <div class="text-6xl mb-6 inline-block animate-bounce" style="animation-duration: 2.5s;">👋</div>
+            
+            <!-- Header -->
+            <h2 class="text-2xl font-black text-slate-900 mb-4 leading-tight">תודה רבה על השארת הפרטים!</h2>
+            
+            <!-- Subtitle / Body -->
+            <p class="text-slate-500 text-base mb-8 leading-relaxed">
+                אני כבר עובר על הנתונים ואצור איתך קשר עוד היום. <br>
+                בזמן שאני מתכונן לשיחה שלנו, מה הכי מתאים לך?
+            </p>
+            
+            <!-- Buttons Group -->
+            <div class="flex flex-col gap-4">
+                <!-- Button 1: Telegram -->
+                <button id="modal-btn-telegram" class="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-blue-500/20 hover:shadow-xl transition duration-200 focus:outline-none">
+                    <span>להצטרף לערוץ הטלגרם שלי (תוכן וטיפים)</span>
+                    <i class="fa-brands fa-telegram text-xl"></i>
+                </button>
+                
+                <!-- Button 2: Message Today -->
+                <button id="modal-btn-message" class="flex items-center justify-center gap-3 w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold py-4 px-6 rounded-2xl border border-slate-200 transition duration-200 focus:outline-none">
+                    <span>אשמח לקבל הודעה פרטית היום</span>
+                    <i class="fa-solid fa-message text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Modal logic
+        const TELEGRAM_CHANNEL_URL = 'https://t.me/shaharsolutions';
+        const modal = document.getElementById('lead-segment-modal');
+        const modalContainer = document.getElementById('lead-modal-container');
+        
+        function openSegmentModal() {
+            if (modal && modalContainer) {
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                modal.classList.add('opacity-100', 'pointer-events-auto');
+                modalContainer.classList.remove('translate-y-8', 'scale-95');
+                modalContainer.classList.add('translate-y-0', 'scale-100');
+            }
+        }
+        
+        function closeSegmentModal() {
+            if (modal && modalContainer) {
+                modal.classList.add('pointer-events-none', 'opacity-0');
+                modal.classList.remove('opacity-100', 'pointer-events-auto');
+                modalContainer.classList.add('translate-y-8', 'scale-95');
+                modalContainer.classList.remove('translate-y-0', 'scale-100');
+            }
+        }
+
+        if (modal) {
+            const closeBtn = document.getElementById('close-modal-btn');
+            const telegramBtn = document.getElementById('modal-btn-telegram');
+            const messageBtn = document.getElementById('modal-btn-message');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeSegmentModal);
+            }
+            
+            // Close on overlay background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeSegmentModal();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeSegmentModal();
+                }
+            });
+            
+            if (telegramBtn) {
+                telegramBtn.addEventListener('click', () => {
+                    // Track GA Event
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'lead_group_telegram', {
+                            'event_category': 'lead_segmentation',
+                            'event_label': 'Telegram Channel'
+                        });
+                    }
+                    
+                    // Open telegram link in a new window
+                    window.open(TELEGRAM_CHANNEL_URL, '_blank');
+                    
+                    closeSegmentModal();
+                });
+            }
+            
+            if (messageBtn) {
+                messageBtn.addEventListener('click', () => {
+                    // Track GA Event
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'lead_group_message_today', {
+                            'event_category': 'lead_segmentation',
+                            'event_label': 'Message Today'
+                        });
+                    }
+                    
+                    closeSegmentModal();
+                });
+            }
+        }
+
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // מונע מהדף להתרענן
             
@@ -165,7 +280,7 @@
             submitBtn.innerText = 'שולח...';
             submitBtn.disabled = true;
             errorMsg.classList.add('hidden');
-
+ 
             try {
                 // שליחה חכמה ברקע ל-Formspree שלך
                 const response = await fetch("https://formspree.io/f/mpqbqnrk", {
@@ -175,12 +290,14 @@
                         'Accept': 'application/json'
                     }
                 });
-
+ 
                 if (response.ok) {
                     // הצלחה! מסתירים את הטופס ומציגים הודעת תודה
                     document.getElementById('form-content').classList.add('hidden');
                     document.getElementById('success').classList.remove('hidden');
                     form.reset();
+                    // פתיחת המודאל
+                    openSegmentModal();
                 } else {
                     throw new Error("Network response was not ok");
                 }
@@ -191,6 +308,8 @@
                 // ברגע שהאתר יאוחסן באוויר (כמו ב-Github Pages שלך), הוא יעבוד ב-100%.
                 document.getElementById('form-content').classList.add('hidden');
                 document.getElementById('success').classList.remove('hidden');
+                // פתיחת המודאל
+                openSegmentModal();
             } finally {
                 // החזרת הכפתור למצבו המקורי במקרה של ניסיון חוזר
                 submitBtn.innerText = 'שליחת פרטים';
