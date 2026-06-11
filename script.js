@@ -370,4 +370,30 @@ ${priority}`;
             });
         }
     }
+
+    // --- Projects Toggle Logic ---
+    const toggleProjectsBtn = document.getElementById('toggle-projects-btn');
+    if (toggleProjectsBtn) {
+        const collapsedProjects = document.querySelectorAll('.project-card.project-collapsed');
+        toggleProjectsBtn.addEventListener('click', () => {
+            const isExpanded = toggleProjectsBtn.getAttribute('aria-expanded') === 'true';
+            
+            collapsedProjects.forEach(project => {
+                project.classList.toggle('project-collapsed');
+            });
+            
+            if (isExpanded) {
+                toggleProjectsBtn.setAttribute('aria-expanded', 'false');
+                toggleProjectsBtn.textContent = 'הצג פרויקטים נוספים';
+                // Scroll back to the projects section header
+                const projectsSection = document.getElementById('projects');
+                if (projectsSection) {
+                    projectsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                toggleProjectsBtn.setAttribute('aria-expanded', 'true');
+                toggleProjectsBtn.textContent = 'הצג פחות';
+            }
+        });
+    }
 });

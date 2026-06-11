@@ -85,7 +85,7 @@
         </div>
     </header>
 
-    <!-- 2. כאב עסקי (Pain Points) Section -->
+    <!-- 2. למי זה מתאים (Target Audience & Pain Points) Section -->
     <section class="section pain-section" id="pain">
         <div class="container">
             <h2 class="section-title">העסק מתנהל ביותר מדי מקומות?</h2>
@@ -94,53 +94,24 @@
             </p>
             <div class="grid-4 pain-grid">
                 <div class="pain-card card reveal">
-                    <div class="pain-icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <h3>פניות הולכות לאיבוד</h3>
-                    <p>לקוחות כותבים, אבל אין מקום מסודר לעקוב אחרי מי חזרו אליו ומי מחכה.</p>
+                    <div class="pain-icon-box"><i class="fa-brands fa-whatsapp"></i></div>
+                    <h3>ניהול בוואטסאפ ובזיכרון</h3>
+                    <p>פניות הולכות לאיבוד ואין מקום מסודר לעקוב אחרי מי חזרו אליו ומי מחכה לטיפול.</p>
                 </div>
                 <div class="pain-card card reveal delay-1">
-                    <div class="pain-icon-box"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <h3>יותר מדי עבודה ידנית</h3>
-                    <p>העתקות, עדכונים כפולים וחיפושים חוזרים גוזלים זמן כל שבוע.</p>
+                    <div class="pain-icon-box"><i class="fa-solid fa-file-excel"></i></div>
+                    <h3>תלות באקסלים ועבודה ידנית</h3>
+                    <p>העתקות כפולות, עדכונים ידניים וחיפושים מייגעים שגוזלים שעות יקרות כל שבוע.</p>
                 </div>
                 <div class="pain-card card reveal delay-2">
                     <div class="pain-icon-box"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
                     <h3>אין תמונת מצב ברורה</h3>
-                    <p>קשה לדעת מה פתוח, מה תקוע ומה דורש טיפול.</p>
+                    <p>קושי לדעת מה פתוח, מה תקוע, ואיזה ליד דורש המשך טיפול מיידי בעסק.</p>
                 </div>
                 <div class="pain-card card reveal delay-3">
-                    <div class="pain-icon-box"><i class="fa-solid fa-brain"></i></div>
-                    <h3>העסק תלוי בזיכרון</h3>
-                    <p>כשידע חשוב נמצא בראש או בצ'אטים, קשה לגדול בצורה מסודרת.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. למי זה מתאים (Audience) Section -->
-    <section class="section audience-section" id="audience">
-        <div class="container">
-            <h2 class="section-title">למי זה מתאים?</h2>
-            <div class="grid-4">
-                <div class="card reveal">
-                    <div class="icon-box"><i class="fa-brands fa-whatsapp"></i></div>
-                    <h3>ניהול בוואטסאפ</h3>
-                    <p>עסקים שמנהלים לקוחות, הזמנות או משימות בצ'אטים ומרגישים את הבלאגן.</p>
-                </div>
-                <div class="card reveal delay-1">
-                    <div class="icon-box"><i class="fa-solid fa-file-excel"></i></div>
-                    <h3>תלות באקסלים</h3>
-                    <p>עסקים שמשתמשים בגיליונות אקסל אבל מרגישים שזה מסורבל וכבר לא מספיק לעסק.</p>
-                </div>
-                <div class="card reveal delay-2">
-                    <div class="icon-box"><i class="fa-solid fa-minimize"></i></div>
-                    <h3>מערכת מדויקת</h3>
-                    <p>בעלי עסקים שרוצים כלי קטן וממוקד שעונה בדיוק על הצורך, בלי להסתבך עם מערכת כבדה.</p>
-                </div>
-                <div class="card reveal delay-3">
-                    <div class="icon-box"><i class="fa-solid fa-circle-check"></i></div>
-                    <h3>חיסכון ודיוק</h3>
-                    <p>עסקים שרוצים לחסוך שעות של עבודה ידנית, לייעל תהליכים ולמנוע מלקוחות לפספס.</p>
+                    <div class="pain-icon-box"><i class="fa-solid fa-minimize"></i></div>
+                    <h3>צורך במערכת מדויקת ופשוטה</h3>
+                    <p>כלי קטן, מהיר וממוקד שעונה בדיוק על הצורך שלכם, בלי להסתבך עם מערכות כבדות.</p>
                 </div>
             </div>
         </div>
@@ -486,7 +457,7 @@
                     </div>
                 </div>
                 <!-- Project: Photography Business Management -->
-                <div class="project-card reveal delay-2">
+                <div class="project-card reveal delay-2 project-collapsed">
                     <div class="project-image">
                         <img src="photographer-system.png" alt="מערכת ניהול עסק לצילום">
                         <div class="project-overlay">
@@ -511,7 +482,7 @@
                     </div>
                 </div>
                 <!-- Project: Shithead Game -->
-                <div class="project-card reveal delay-3">
+                <div class="project-card reveal delay-3 project-collapsed">
                     <div class="project-image">
                         <img src="shithead-game.png" alt="משחק קלפים שיטהד אונליין">
                         <div class="project-overlay">
@@ -536,6 +507,11 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Toggle Projects Button -->
+            <div class="projects-toggle-container reveal">
+                <button id="toggle-projects-btn" class="btn" aria-expanded="false" aria-label="הצגת פרויקטים נוספים">הצג פרויקטים נוספים</button>
+            </div>
         </div>
     </section>
 
@@ -546,7 +522,7 @@
                 <div class="about-text">
                     <h2>היי, אני שחר</h2>
                     <p>
-                        היי, אני שחר. אני מתכנת ואיש מכירות, וזה השילוב שמאפשר לי להבין גם את הצד הטכני של המערכת וגם את המציאות העסקית של האנשים שמשתמשים בה. אני בונה פתרונות דיגיטליים בגישה שקופה, ממוקדת ופרקטית - כאלה שעושים סדר, חוסכים זמן ונותנים לעסק כלי שאפשר לסמוך עליו ביום-יום.
+                        אני מתכנת ואיש מכירות, וזה השילוב שמאפשר לי להבין גם את הצד הטכני של המערכת וגם את המציאות העסקית של האנשים שמשתמשים בה. אני בונה פתרונות דיגיטליים בגישה שקופה, ממוקדת ופרקטית - כאלה שעושים סדר, חוסכים זמן ונותנים לעסק כלי שאפשר לסמוך עליו ביום-יום.
                     </p>
                 </div>
                 <div class="about-img">
@@ -597,34 +573,18 @@
         </div>
     </section>
 
-    <!-- 10. CTA סופי קצר Section -->
-    <section class="section contact-section" id="contact">
-        <div class="container contact-container">
-            <div class="contact-header reveal">
-                <h2>רוצה לבדוק אם זה מתאים לעסק שלך?</h2>
-                <p class="contact-subtitle">אפשר למלא את האבחון הדיגיטלי הקצר ולקבל כיוון ראשוני, או לשלוח לי הודעה קצרה בוואטסאפ אם נוח לך להתחיל משיחה.</p>
-            </div>
-            
-            <div class="cta-buttons-wrapper reveal delay-1">
+    <!-- Footer / final CTA -->
+    <footer class="footer" id="contact">
+        <div class="container center-text">
+            <h3>רוצה לבדוק אם זה מתאים לעסק שלך?</h3>
+            <p>אפשר למלא את האבחון הדיגיטלי הקצר ולקבל כיוון ראשוני, או לשלוח לי הודעה קצרה בוואטסאפ אם נוח לך להתחיל משיחה.</p>
+            <div class="footer-cta">
                 <div class="cta-buttons-container">
                     <a href="#diagnosis" class="btn btn-primary cta-diag-btn" aria-label="מעבר למילוי אבחון דיגיטלי קצר">מלאו אבחון קצר</a>
                     <a href="https://wa.me/972528366744?text=%D7%94%D7%99%D7%99%20%D7%A9%D7%97%D7%A8%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%A4%D7%AA%D7%A8%D7%95%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C%D7%99%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" class="btn btn-whatsapp cta-wa-btn" aria-label="שלחו הודעה בוואטסאפ לשחר">
                         <i class="fa-brands fa-whatsapp"></i> שלחו הודעה בוואטסאפ
                     </a>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container center-text">
-            <h3>הגיע הזמן שגם המערכות מאחורי הקלעים יעבדו בשבילך...</h3>
-            <p>מלאו את האבחון הדיגיטלי או שלחו הודעה בוואטסאפ.</p>
-            <div class="footer-cta">
-                <a href="https://wa.me/972528366744?text=%D7%94%D7%99%D7%99%20%D7%A9%D7%97%D7%A8%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%91%D7%93%D7%95%D7%A7%20%D7%94%D7%AA%D7%90%D7%9E%D7%94%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener" class="btn btn-outline" aria-label="מעבר לבדיקת התאמה בוואטסאפ">
-                    <i class="fa-brands fa-whatsapp"></i> רוצה לבדוק התאמה?
-                </a>
             </div>
             <div class="footer-copyright">
                 &copy; 2026 שחר פתרונות דיגיטליים. כל הזכויות שמורות.
