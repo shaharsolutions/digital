@@ -396,4 +396,29 @@ ${priority}`;
             }
         });
     }
+
+    // --- Project Image Gallery Logic ---
+    const galleryDots = document.querySelectorAll('.gallery-dot');
+    galleryDots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parent = dot.closest('.project-image-gallery');
+            if (!parent) return;
+            
+            // Remove active class from all dots and images in this gallery
+            parent.querySelectorAll('.gallery-dot').forEach(d => d.classList.remove('active'));
+            parent.querySelectorAll('.gallery-img').forEach(img => img.classList.remove('active'));
+            
+            // Set this dot active
+            dot.classList.add('active');
+            
+            // Set targeted image active
+            const targetId = dot.dataset.target;
+            const targetImg = parent.querySelector(`#${targetId}`);
+            if (targetImg) {
+                targetImg.classList.add('active');
+            }
+        });
+    });
 });
+
