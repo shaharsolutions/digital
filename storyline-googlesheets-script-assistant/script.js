@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const input = document.createElement('input');
       input.type = 'text';
+      input.dir = 'ltr';
+      input.placeholder = `Variable${i + 1}`;
       input.value = variableNames[i] || '';
       input.addEventListener('input', function(e) {
         variableNames[i] = e.target.value;
@@ -37,6 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function generateAppScriptCode() {
+    if (variableCount <= 0) {
+      appScriptCodeTextarea.value = '';
+      return;
+    }
     const appScriptCode = `function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   
@@ -49,7 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function generateStorylineCode() {
-    if (!webAppUrlInput.value) return;
+    if (!webAppUrlInput.value) {
+      storylineCodeTextarea.value = '';
+      return;
+    }
     const storylineCode = `var player = GetPlayer();
 
 var form = document.createElement("form");
@@ -102,8 +111,8 @@ xhr.send(new FormData(form));`;
   });
 
   variableCountInput.addEventListener('input', function(e) {
-    variableCount = parseInt(e.target.value, 10) || 0;
-    variableNames = Array(variableCount).fill('');
+    variableCount = Math.max(0, parseInt(e.target.value, 10) || 0);
+    variableNames = Array.from({ length: variableCount }, (_, i) => variableNames[i] || '');
     updateVariableNames();
     generateAppScriptCode();
     generateStorylineCode();

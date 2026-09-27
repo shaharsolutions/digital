@@ -5,44 +5,81 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Storyline variables to Google Sheets Script Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/storyline-googlesheets-script-assistant/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Storyline variables to Google Sheets Script Generator</h1>
-    <div class="input-group">
-      <label for="variable-count">מספר המשתנים:</label>
-      <input type="number" id="variable-count" value="0">
-    </div>
-    
-    <!-- Important note about case sensitivity -->
-    <div class="note">
-      <p> <center><b>חשוב מאוד ⚠️</b><br> יש לוודא ששמות המשתנים שמוזנים בטופס יהיו כתובים בדיוק כמו שהם כתובים בסטוריליין (case sensitive).</center></p>
-    </div>
+  <main class="page-wrapper">
+    <div class="container">
+      <header class="app-header">
+        <h1 dir="ltr">Storyline variables to Google Sheets Script Generator</h1>
+      </header>
 
-    <div id="variable-names"></div>
-    
-    <div class="input-group">
-      <label for="web-app-url">כתובת URL של יישום האינטרנט של Google Apps Script:</label>
-      <input type="text" id="web-app-url">
-    </div>
-    <div id="app-script-code-container" class="code-container">
-      <h2>קוד Google Apps Script:</h2>
-      <textarea id="app-script-code" readonly></textarea>
-      <div class="button-container">
-        <div id="app-script-notification" class="notification"></div>
-        <button id="copy-app-script" class="copy-button">העתק קוד</button>
+      <!-- Important note about case sensitivity -->
+      <div class="note" role="note">
+        <svg class="note-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <path d="M12 9v4"/>
+          <path d="M12 17h.01"/>
+        </svg>
+        <div class="note-content">
+          <strong>חשוב מאוד:</strong> יש לוודא ששמות המשתנים שמוזנים בטופס יהיו כתובים בדיוק כמו שהם כתובים בסטוריליין (<span dir="ltr">case sensitive</span>).
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="input-group">
+          <label for="variable-count">מספר המשתנים:</label>
+          <input type="number" id="variable-count" value="0" min="0" max="50">
+        </div>
+
+        <div id="variable-names" class="variables-grid"></div>
+
+        <div class="input-group">
+          <label for="web-app-url">כתובת URL של יישום האינטרנט של Google Apps Script:</label>
+          <input type="url" id="web-app-url" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+      </div>
+
+      <div class="code-sections">
+        <div id="app-script-code-container" class="code-container">
+          <div class="code-header">
+            <h2>קוד Google Apps Script</h2>
+            <div class="button-container">
+              <div id="app-script-notification" class="notification" role="status" aria-live="polite"></div>
+              <button id="copy-app-script" class="copy-button" type="button">
+                <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+                <span>העתק קוד</span>
+              </button>
+            </div>
+          </div>
+          <textarea id="app-script-code" readonly placeholder="// הקוד של Google Apps Script יופיע כאן אוטומטית..."></textarea>
+        </div>
+
+        <div id="storyline-code-container" class="code-container">
+          <div class="code-header">
+            <h2>קוד JavaScript של Storyline 360</h2>
+            <div class="button-container">
+              <div id="storyline-notification" class="notification" role="status" aria-live="polite"></div>
+              <button id="copy-storyline-code" class="copy-button" type="button">
+                <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+                <span>העתק קוד</span>
+              </button>
+            </div>
+          </div>
+          <textarea id="storyline-code" readonly placeholder="// הקוד של Storyline 360 יופיע כאן לאחר הזנת המשתנים וכתובת ה-URL..."></textarea>
+        </div>
       </div>
     </div>
-    <div id="storyline-code-container" class="code-container">
-      <h2>קוד JavaScript של Storyline 360:</h2>
-      <textarea id="storyline-code" readonly></textarea>
-      <div class="button-container">
-        <div id="storyline-notification" class="notification"></div>
-        <button id="copy-storyline-code" class="copy-button">העתק קוד</button>
-      </div>
-    </div>
-  </div>
+  </main>
   <script src="/storyline-googlesheets-script-assistant/script.js"></script>
 </body>
 </html>
