@@ -302,6 +302,30 @@ textarea:focus {
   display: none;
 }
 
+.app-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.app-footer a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition-property: color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.app-footer a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 @media (max-width: 640px) {
   .page-wrapper {
     padding: 16px 12px 32px;
