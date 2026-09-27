@@ -14,69 +14,220 @@
 <body>
   <main class="page-wrapper">
     <div class="container">
+      <!-- Top User & Subscription Status Bar -->
+      <div id="user-bar" class="user-bar" hidden>
+        <div class="user-info">
+          <div id="user-avatar" class="user-avatar" aria-hidden="true">S</div>
+          <div class="user-meta">
+            <span id="user-email-display" class="user-email" dir="ltr"></span>
+            <div class="subscription-pill-row">
+              <span id="subscription-badge" class="subscription-badge">טוען סטטוס...</span>
+              <span id="subscription-subtext" class="subscription-subtext"></span>
+            </div>
+          </div>
+        </div>
+        <div class="user-actions">
+          <button id="upgrade-top-btn" class="btn-primary btn-sm" type="button" hidden>
+            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 3h12l4 6-10 13L2 9Z"/>
+              <path d="M11 3 8 9l4 13 4-13-3-6"/>
+              <path d="M2 9h20"/>
+            </svg>
+            <span>רכישת מנוי • 39 ₪/חודש</span>
+          </button>
+          <button id="manage-sub-btn" class="btn-secondary btn-sm" type="button">
+            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+            <span>ניהול מנוי</span>
+          </button>
+          <button id="logout-btn" class="btn-ghost btn-sm" type="button">התנתק</button>
+        </div>
+      </div>
+
+      <!-- Sandbox Testing Bar (shown when sandboxControlsEnabled is active) -->
+      <div id="sandbox-bar" class="sandbox-bar" hidden>
+        <div class="sandbox-bar-label">
+          <span class="sandbox-dot" aria-hidden="true"></span>
+          <strong>סרגל בדיקות מערכת:</strong>
+          <span id="sandbox-mode-text">ניתן לדמות סיום תקופת ניסיון ולבדוק סליקה מול מסוף טרנזילה.</span>
+        </div>
+        <div class="sandbox-bar-actions">
+          <button id="sim-expire-btn" class="btn-sandbox" type="button">דמה סיום 3 ימי ניסיון</button>
+          <button id="sim-reset-btn" class="btn-sandbox" type="button">אפס ל-3 ימי ניסיון</button>
+        </div>
+      </div>
+
       <header class="app-header">
         <h1 dir="ltr">Storyline variables to Google Sheets Script Generator</h1>
+        <p class="app-subtitle">מחולל אוטומטי של קוד Google Apps Script וקוד JavaScript ל-Storyline 360</p>
       </header>
 
-      <!-- Important note about case sensitivity -->
-      <div class="note" role="note">
-        <svg class="note-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-          <path d="M12 9v4"/>
-          <path d="M12 17h.01"/>
-        </svg>
-        <div class="note-content">
-          <strong>חשוב מאוד:</strong> יש לוודא ששמות המשתנים שמוזנים בטופס יהיו כתובים בדיוק כמו שהם כתובים בסטוריליין (<span dir="ltr">case sensitive</span>).
-        </div>
+      <!-- Global Feedback Banner (e.g. after payment redirect) -->
+      <div id="global-banner" class="global-banner" role="status" aria-live="polite" hidden></div>
+
+      <!-- Loading State -->
+      <div id="auth-loading" class="loading-card" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>בודק חיבור וסטטוס מנוי מול השרת...</p>
       </div>
 
-      <div class="form-section">
-        <div class="input-group">
-          <label for="variable-count">מספר המשתנים:</label>
-          <input type="number" id="variable-count" value="0" min="0" max="50">
+      <!-- Authentication Section (Shown when logged out) -->
+      <section id="auth-section" class="auth-section" aria-labelledby="auth-title" hidden>
+        <div class="auth-promo-badge">
+          <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span>3 ימי ניסיון חינם לכל משתמש חדש • לאחר מכן 39 ₪ לחודש בלבד</span>
         </div>
 
-        <div id="variable-names" class="variables-grid"></div>
+        <h2 id="auth-title" class="auth-title">התחברות למחולל הסקריפטים</h2>
+        <p class="auth-description">התחבר או צור חשבון חינמי כדי לקבל גישה מיידית ל-3 ימי ניסיון מלאים ללא התחייבות.</p>
 
-        <div class="input-group">
-          <label for="web-app-url">כתובת URL של יישום האינטרנט של Google Apps Script:</label>
-          <input type="url" id="web-app-url" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec">
+        <div class="auth-tabs" role="tablist">
+          <button id="tab-login" class="auth-tab active" type="button" role="tab" aria-selected="true">התחברות</button>
+          <button id="tab-register" class="auth-tab" type="button" role="tab" aria-selected="false">הרשמה (3 ימים חינם)</button>
         </div>
-      </div>
 
-      <div class="code-sections">
-        <div id="app-script-code-container" class="code-container">
-          <div class="code-header">
-            <h2>קוד Google Apps Script</h2>
-            <div class="button-container">
-              <div id="app-script-notification" class="notification" role="status" aria-live="polite"></div>
-              <button id="copy-app-script" class="copy-button" type="button">
-                <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                </svg>
-                <span>העתק קוד</span>
-              </button>
-            </div>
+        <button id="google-login-btn" class="google-auth-button" type="button">
+          <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          <span>המשך באמצעות Google</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>או באמצעות אימייל וסיסמה</span>
+        </div>
+
+        <form id="email-auth-form" class="auth-form" novalidate>
+          <div id="register-name-group" class="input-group" hidden>
+            <label for="auth-name">שם מלא / שם העסק:</label>
+            <input type="text" id="auth-name" autocomplete="name" placeholder="ישראל ישראלי">
           </div>
-          <textarea id="app-script-code" readonly placeholder="// הקוד של Google Apps Script יופיע כאן אוטומטית..."></textarea>
+
+          <div class="input-group">
+            <label for="auth-email">כתובת אימייל:</label>
+            <input type="email" id="auth-email" dir="ltr" autocomplete="email" required placeholder="name@example.com">
+          </div>
+
+          <div class="input-group">
+            <div class="label-row">
+              <label for="auth-password">סיסמה:</label>
+              <button id="forgot-password-btn" class="link-button" type="button">שכחת סיסמה?</button>
+            </div>
+            <input type="password" id="auth-password" dir="ltr" autocomplete="current-password" required minlength="6" placeholder="לפחות 6 תווים">
+          </div>
+
+          <div id="auth-error" class="auth-error" role="alert" hidden></div>
+
+          <button id="auth-submit-btn" class="btn-primary btn-full" type="submit">התחברות למערכת</button>
+        </form>
+      </section>
+
+      <!-- Paywall Lock Card (Shown when trial expired and no active subscription) -->
+      <section id="paywall-section" class="paywall-card" aria-labelledby="paywall-title" hidden>
+        <div class="paywall-badge">תקופת הניסיון הסתיימה</div>
+        <h2 id="paywall-title">שדרג למנוי חודשי כדי להמשיך להפיק סקריפטים</h2>
+        <p class="paywall-desc">
+          תקופת הניסיון החינמית שלך (3 ימים) הסתיימה. כדי להמשיך לייצר קוד Google Apps Script וקוד JavaScript ל-Storyline 360 ללא הגבלה, הפעל מנוי חודשי מתחדש.
+        </p>
+
+        <div class="pricing-box">
+          <div class="pricing-amount-row">
+            <span class="pricing-amount">39 ₪</span>
+            <span class="pricing-period">/ לחודש (כולל מע״מ)</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>יצירת סקריפטים ללא הגבלה עד 50 משתנים בכל פרויקט</span>
+            </li>
+            <li>
+              <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>סליקה מאובטחת בתקן PCI-DSS Level 1 באמצעות טרנזילה</span>
+            </li>
+            <li>
+              <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>חשבונית מס/קבלה אוטומטית למייל בכל חודש מבית טרנזילה</span>
+            </li>
+            <li>
+              <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>ללא התחייבות – ביטול עצמי בלחיצת כפתור בכל עת</span>
+            </li>
+          </ul>
+          <button id="paywall-subscribe-btn" class="btn-primary btn-full btn-lg" type="button">
+            מעבר לתשלום מאובטח בטרנזילה • 39 ₪ לחודש
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Generator Tool (Shown when user has active trial or active subscription) -->
+      <div id="generator-workspace" hidden>
+        <!-- Important note about case sensitivity -->
+        <div class="note" role="note">
+          <svg class="note-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <path d="M12 9v4"/>
+            <path d="M12 17h.01"/>
+          </svg>
+          <div class="note-content">
+            <strong>חשוב מאוד:</strong> יש לוודא ששמות המשתנים שמוזנים בטופס יהיו כתובים בדיוק כמו שהם כתובים בסטוריליין (<span dir="ltr">case sensitive</span>).
+          </div>
         </div>
 
-        <div id="storyline-code-container" class="code-container">
-          <div class="code-header">
-            <h2>קוד JavaScript של Storyline 360</h2>
-            <div class="button-container">
-              <div id="storyline-notification" class="notification" role="status" aria-live="polite"></div>
-              <button id="copy-storyline-code" class="copy-button" type="button">
-                <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                </svg>
-                <span>העתק קוד</span>
-              </button>
-            </div>
+        <div class="form-section">
+          <div class="input-group">
+            <label for="variable-count">מספר המשתנים:</label>
+            <input type="number" id="variable-count" value="0" min="0" max="50">
           </div>
-          <textarea id="storyline-code" readonly placeholder="// הקוד של Storyline 360 יופיע כאן לאחר הזנת המשתנים וכתובת ה-URL..."></textarea>
+
+          <div id="variable-names" class="variables-grid"></div>
+
+          <div class="input-group">
+            <label for="web-app-url">כתובת URL של יישום האינטרנט של Google Apps Script:</label>
+            <input type="url" id="web-app-url" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec">
+          </div>
+        </div>
+
+        <div class="code-sections">
+          <div id="app-script-code-container" class="code-container">
+            <div class="code-header">
+              <h2>קוד Google Apps Script</h2>
+              <div class="button-container">
+                <div id="app-script-notification" class="notification" role="status" aria-live="polite"></div>
+                <button id="copy-app-script" class="copy-button" type="button">
+                  <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                  <span>העתק קוד</span>
+                </button>
+              </div>
+            </div>
+            <textarea id="app-script-code" readonly placeholder="// הקוד של Google Apps Script יופיע כאן אוטומטית..."></textarea>
+          </div>
+
+          <div id="storyline-code-container" class="code-container">
+            <div class="code-header">
+              <h2>קוד JavaScript של Storyline 360</h2>
+              <div class="button-container">
+                <div id="storyline-notification" class="notification" role="status" aria-live="polite"></div>
+                <button id="copy-storyline-code" class="copy-button" type="button">
+                  <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                  <span>העתק קוד</span>
+                </button>
+              </div>
+            </div>
+            <textarea id="storyline-code" readonly placeholder="// הקוד של Storyline 360 יופיע כאן לאחר הזנת המשתנים וכתובת ה-URL..."></textarea>
+          </div>
         </div>
       </div>
 
@@ -85,6 +236,126 @@
       </footer>
     </div>
   </main>
-  <script src="/storyline-googlesheets-script-generator/script.js"></script>
+
+  <!-- Tranzila Checkout Modal -->
+  <div id="checkout-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title" hidden>
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h2 id="checkout-modal-title">רכישת מנוי חודשי • 39 ₪ לחודש</h2>
+          <p class="modal-subtitle">סליקה מאובטחת בהוראת קבע חודשית באמצעות טרנזילה (PCI-DSS Level 1)</p>
+        </div>
+        <button id="close-checkout-modal" class="modal-close-btn" type="button" aria-label="סגור חלון תשלום">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="checkout-loading" class="loading-card">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>מבצע אימות Handshake מול שרתי טרנזילה ונועל סכום עסקה (39 ₪)...</p>
+        </div>
+
+        <!-- Live Tranzila DirectNG iFrame Container -->
+        <div id="tranzila-iframe-wrapper" class="iframe-wrapper" hidden>
+          <form id="tranzila-post-form" method="POST" target="tranzila-payment-iframe" hidden></form>
+          <iframe
+            id="tranzila-payment-iframe"
+            name="tranzila-payment-iframe"
+            title="דף תשלום מאובטח טרנזילה"
+            allowpaymentrequest="true"
+            class="tranzila-iframe"
+          ></iframe>
+        </div>
+
+        <!-- Sandbox / Mock Tranzila Simulator (Active when TRANZILA_MODE=mock) -->
+        <div id="mock-checkout-simulator" class="mock-simulator" hidden>
+          <div class="mock-simulator-header">
+            <span class="sandbox-pill">Tranzila DirectNG Sandbox Simulator</span>
+            <span id="mock-thtk-display" class="mock-thtk" dir="ltr"></span>
+          </div>
+          <p class="mock-simulator-desc">
+            השרת ביצע Handshake ונעל את העסקה על סך <strong>39.00 ₪ לחודש</strong> (`recur_transaction=4_approved`) עם הפקת חשבונית מס/קבלה אוטומטית (`u71=1`).
+            במצב בדיקות ניתן לדמות את תגובת ה-Webhook של טרנזילה לשרת:
+          </p>
+          <div class="mock-card-preview" dir="ltr">
+            <div><strong>Card (Test):</strong> •••• •••• •••• 4580</div>
+            <div><strong>Expiry:</strong> 08/29</div>
+            <div><strong>Standing Order:</strong> 39.00 ILS / Monthly</div>
+          </div>
+          <div class="mock-simulator-actions">
+            <button id="mock-approve-payment-btn" class="btn-primary btn-full" type="button">
+              אשר תשלום מנוי (Response=000 + הפקת חשבונית מס/קבלה)
+            </button>
+            <button id="mock-fail-payment-btn" class="btn-danger-outline btn-full" type="button">
+              דמה סירוב חברת אשראי (Response=004)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Management & Cancellation Modal -->
+  <div id="manage-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="manage-modal-title" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="manage-modal-title">ניהול מנוי וחיובים</h2>
+          <p class="modal-subtitle">פרטי החשבון, תוקף המנוי וניהול הוראת הקבע</p>
+        </div>
+        <button id="close-manage-modal" class="modal-close-btn" type="button" aria-label="סגור חלון ניהול מנוי">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="sub-details-grid">
+          <div class="sub-detail-item">
+            <span class="sub-detail-label">כתובת אימייל</span>
+            <strong id="manage-email" class="sub-detail-value" dir="ltr">-</strong>
+          </div>
+          <div class="sub-detail-item">
+            <span class="sub-detail-label">סטטוס מנוי</span>
+            <strong id="manage-status" class="sub-detail-value">-</strong>
+          </div>
+          <div class="sub-detail-item">
+            <span class="sub-detail-label">תאריך סיום ניסיון / חיוב הבא</span>
+            <strong id="manage-date" class="sub-detail-value">-</strong>
+          </div>
+          <div class="sub-detail-item">
+            <span class="sub-detail-label">אמצעי תשלום שמור (טוקן טרנזילה)</span>
+            <strong id="manage-card" class="sub-detail-value" dir="ltr">-</strong>
+          </div>
+        </div>
+
+        <div id="manage-invoice-row" class="invoice-box" hidden>
+          <span>מסמך חשבונאי אחרון (טרנזילה חשבוניות):</span>
+          <a id="manage-invoice-link" href="#" target="_blank" rel="noopener noreferrer">צפייה בחשבונית מס/קבלה</a>
+        </div>
+
+        <div id="manage-feedback" class="auth-error" hidden></div>
+
+        <div class="manage-actions">
+          <button id="manage-upgrade-btn" class="btn-primary btn-full" type="button" hidden>
+            שדרוג למנוי חודשי • 39 ₪ לחודש
+          </button>
+
+          <div id="cancel-confirm-box" class="cancel-confirm-box" hidden>
+            <p>
+              <strong>האם לבטל את החידוש האוטומטי של המנוי?</strong><br>
+              הוראת הקבע בטרנזילה תופסק מיד ולא תחויב בחודשים הבאים. הגישה שלך למחולל תישאר פתוחה במלואה עד לתום תקופת החיוב הנוכחית ששולמה.
+            </p>
+            <div class="cancel-confirm-buttons">
+              <button id="confirm-cancel-sub-btn" class="btn-danger" type="button">כן, בטל מנוי</button>
+              <button id="abort-cancel-sub-btn" class="btn-secondary" type="button">השאר מנוי פעיל</button>
+            </div>
+          </div>
+
+          <button id="open-cancel-confirm-btn" class="btn-danger-outline btn-full" type="button" hidden>
+            ביטול מנוי חודשי (ללא חיובים נוספים)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/storyline-googlesheets-script-generator/script.js"></script>
 </body>
 </html>

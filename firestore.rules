@@ -1,0 +1,276 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (matches Firebase Auth request.auth.uid)
+// Fields:
+//   - uid: string (required, immutable, 1..128 chars) - Firebase Auth UID
+//   - email: string (required, immutable, 3..254 chars) - Verified user email (PII)
+//   - displayName: string (optional, 0..100 chars) - User display name
+//   - createdAt: timestamp (required, immutable) - Account creation timestamp
+//   - updatedAt: timestamp (required) - Last server update timestamp
+//   - trialStartedAt: timestamp (required, immutable) - 3-day trial start time
+//   - trialEndsAt: timestamp (required, immutable) - 3-day trial expiration time
+//   - subscriptionStatus: string (required, enum: ['trialing', 'active', 'past_due', 'canceled', 'expired'])
+//   - currentPeriodEnd: timestamp (optional) - Current paid billing cycle end timestamp
+//   - cancelAtPeriodEnd: bool (required) - Whether subscription will terminate at period end
+//   - tranzilaStoId: string (optional, 1..64 chars) - Tranzila My Billing Standing Order ID
+//   - cardLast4: string (optional, 4 chars) - Masked last 4 digits of card (never full PAN)
+//   - cardExp: string (optional, 4..7 chars) - Card expiry MM/YY
+//   - lastInvoiceUrl: string (optional, 1..500 chars) - Link to latest Tranzila tax invoice
+//
+// Collection: checkout_sessions
+// Document ID: {sessionId}
+// Fields:
+//   - sessionId: string (required, immutable, 1..128 chars)
+//   - uid: string (required, immutable, 1..128 chars) - Owner UID
+//   - email: string (required, 3..254 chars) - Owner email
+//   - amount: number (required, positive, == 39) - Locked subscription price in ILS
+//   - currency: string (required, == 'ILS')
+//   - thtk: string (required, 1..256 chars) - Tranzila Handshake token
+//   - dcDisable: string (required, 1..254 chars) - Duplicate charge prevention token
+//   - status: string (required, enum: ['pending', 'completed', 'failed', 'expired'])
+//   - mode: string (required, enum: ['tranzila', 'mock'])
+//   - createdAt: timestamp (required, immutable)
+//   - expiresAt: timestamp (required, immutable)
+//
+// Collection: payment_events
+// Document ID: {eventId} (Tranzila transaction index for idempotency)
+// Fields:
+//   - eventId: string (required, immutable, 1..128 chars)
+//   - uid: string (required, immutable, 1..128 chars) - Owner UID
+//   - stoId: string (optional, 0..64 chars) - Standing order ID
+//   - amount: number (required, positive)
+//   - currency: string (required, 1..10 chars)
+//   - responseCode: string (required, 1..16 chars) - Tranzila Response code ('000' = success)
+//   - eventType: string (required, enum: ['initial_charge', 'renewal_success', 'renewal_failed', 'subscription_canceled', 'invoice_created'])
+//   - invoiceId: string (optional, 0..64 chars)
+//   - invoiceUrl: string (optional, 0..500 chars)
+//   - createdAt: timestamp (required, immutable)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() &&
+             ('uid' in resource.data) &&
+             resource.data.uid is string &&
+             request.auth.uid == resource.data.uid;
+    }
+
+    function uidUnchanged() {
+      return ('uid' in request.resource.data) &&
+             request.resource.data.uid is string &&
+             request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return ('uid' in request.resource.data) &&
+             ('uid' in resource.data) &&
+             request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return (field in request.resource.data) &&
+             request.resource.data[field] is string &&
+             request.resource.data[field].size() >= minLen &&
+             request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+             email.size() >= 3 &&
+             email.size() <= 254 &&
+             email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+             url.size() >= 8 &&
+             url.size() <= 500 &&
+             (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isPositive(field) {
+      return (field in request.resource.data) &&
+             request.resource.data[field] is number &&
+             request.resource.data[field] > 0 &&
+             request.resource.data[field] <= 100000;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      let allowedFields = [
+        'uid', 'email', 'displayName', 'createdAt', 'updatedAt',
+        'trialStartedAt', 'trialEndsAt', 'subscriptionStatus',
+        'currentPeriodEnd', 'cancelAtPeriodEnd', 'tranzilaStoId',
+        'cardLast4', 'cardExp', 'lastInvoiceUrl'
+      ];
+      let requiredFields = [
+        'uid', 'email', 'createdAt', 'updatedAt',
+        'trialStartedAt', 'trialEndsAt', 'subscriptionStatus', 'cancelAtPeriodEnd'
+      ];
+      let validStatuses = ['trialing', 'active', 'past_due', 'canceled', 'expired'];
+
+      return hasOnlyAllowedFields(allowedFields) &&
+             hasRequiredFields(requiredFields) &&
+             validStringLength('uid', 1, 128) &&
+             isValidEmail(data.email) &&
+             isValidOptionalString('displayName', 0, 100) &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             data.trialStartedAt is timestamp &&
+             data.trialEndsAt is timestamp &&
+             data.subscriptionStatus is string &&
+             (data.subscriptionStatus in validStatuses) &&
+             (!('currentPeriodEnd' in data) || data.currentPeriodEnd is timestamp) &&
+             data.cancelAtPeriodEnd is bool &&
+             isValidOptionalString('tranzilaStoId', 1, 64) &&
+             isValidOptionalString('cardLast4', 4, 4) &&
+             isValidOptionalString('cardExp', 4, 7) &&
+             (!('lastInvoiceUrl' in data) || isValidUrl(data.lastInvoiceUrl));
+    }
+
+    function isValidCheckoutSession(data) {
+      let allowedFields = [
+        'sessionId', 'uid', 'email', 'amount', 'currency',
+        'thtk', 'dcDisable', 'status', 'mode', 'createdAt', 'expiresAt'
+      ];
+      let requiredFields = [
+        'sessionId', 'uid', 'email', 'amount', 'currency',
+        'thtk', 'dcDisable', 'status', 'mode', 'createdAt', 'expiresAt'
+      ];
+      let validStatuses = ['pending', 'completed', 'failed', 'expired'];
+      let validModes = ['tranzila', 'mock'];
+
+      return hasOnlyAllowedFields(allowedFields) &&
+             hasRequiredFields(requiredFields) &&
+             validStringLength('sessionId', 1, 128) &&
+             validStringLength('uid', 1, 128) &&
+             isValidEmail(data.email) &&
+             isPositive('amount') &&
+             data.amount == 39 &&
+             data.currency is string && data.currency == 'ILS' &&
+             validStringLength('thtk', 1, 256) &&
+             validStringLength('dcDisable', 1, 254) &&
+             data.status is string && (data.status in validStatuses) &&
+             data.mode is string && (data.mode in validModes) &&
+             data.createdAt is timestamp &&
+             data.expiresAt is timestamp;
+    }
+
+    function isValidPaymentEvent(data) {
+      let allowedFields = [
+        'eventId', 'uid', 'stoId', 'amount', 'currency',
+        'responseCode', 'eventType', 'invoiceId', 'invoiceUrl', 'createdAt'
+      ];
+      let requiredFields = [
+        'eventId', 'uid', 'amount', 'currency',
+        'responseCode', 'eventType', 'createdAt'
+      ];
+      let validTypes = [
+        'initial_charge', 'renewal_success', 'renewal_failed',
+        'subscription_canceled', 'invoice_created'
+      ];
+
+      return hasOnlyAllowedFields(allowedFields) &&
+             hasRequiredFields(requiredFields) &&
+             validStringLength('eventId', 1, 128) &&
+             validStringLength('uid', 1, 128) &&
+             isValidOptionalString('stoId', 0, 64) &&
+             isPositive('amount') &&
+             validStringLength('currency', 1, 10) &&
+             validStringLength('responseCode', 1, 16) &&
+             data.eventType is string && (data.eventType in validTypes) &&
+             isValidOptionalString('invoiceId', 0, 64) &&
+             (!('invoiceUrl' in data) || isValidUrl(data.invoiceUrl)) &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+    // CRITICAL SECURITY POLICY:
+    // Subscription status, trial dates, checkout sessions, and payment events
+    // MUST ONLY be written by the trusted server (Firebase Admin SDK).
+    // Client-side writes are strictly denied (`if false`) even when valid,
+    // preventing any browser manipulation of trial or subscription status.
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if false && isOwner(userId) && uidUnchanged() && isValidUser(request.resource.data);
+      allow update: if false && isOwner(userId) && uidNotModified() &&
+                       areImmutableFieldsUnchanged(['uid', 'email', 'createdAt', 'trialStartedAt', 'trialEndsAt', 'subscriptionStatus']) &&
+                       isValidUser(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /checkout_sessions/{sessionId} {
+      allow read: if isDocOwner();
+      allow create: if false && isAuthenticated() && uidUnchanged() && isValidCheckoutSession(request.resource.data);
+      allow update: if false && isDocOwner() && uidNotModified() &&
+                       areImmutableFieldsUnchanged(['sessionId', 'uid', 'amount', 'currency', 'createdAt', 'expiresAt']) &&
+                       isValidCheckoutSession(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /payment_events/{eventId} {
+      allow read: if isDocOwner();
+      allow create: if false && isAuthenticated() && uidUnchanged() && isValidPaymentEvent(request.resource.data);
+      allow update: if false && isDocOwner() && uidNotModified() &&
+                       areImmutableFieldsUnchanged(['eventId', 'uid', 'amount', 'currency', 'responseCode', 'eventType', 'createdAt']) &&
+                       isValidPaymentEvent(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /_server_vault/{vaultId} {
+      allow get: if vaultId.size() >= 32;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    // Default deny for all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

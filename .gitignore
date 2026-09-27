@@ -1,1 +1,9 @@
 logo.af
+node_modules/
+.env
+.env.local
+.env.*.local
+.firebase/
+.vercel/
+*service-account*.json
+.DS_Store

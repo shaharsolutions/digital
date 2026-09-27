@@ -1,0 +1,22 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "authorizedDomains": [
+      "localhost",
+      "127.0.0.1",
+      "shaharsolutions.com",
+      "www.shaharsolutions.com"
+    ],
+    "providers": {
+      "anonymous": false,
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Shahar Digital Solutions",
+        "supportEmail": "shaharsolutions@gmail.com"
+      }
+    }
+  }
+}
