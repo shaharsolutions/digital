@@ -73,9 +73,14 @@ const storylineNotification = document.getElementById('storyline-notification');
 
 // DOM Elements - Modals
 const paywallSubscribeBtn = document.getElementById('paywall-subscribe-btn');
+const paywallPriceAmount = document.getElementById('paywall-price-amount');
+const paywallBasePrice = document.getElementById('paywall-base-price');
+const paywallDiscountBadge = document.getElementById('paywall-discount-badge');
 const checkoutModal = document.getElementById('checkout-modal');
+const checkoutModalTitle = document.getElementById('checkout-modal-title');
 const closeCheckoutModalBtn = document.getElementById('close-checkout-modal');
 const checkoutLoading = document.getElementById('checkout-loading');
+const checkoutLoadingText = document.getElementById('checkout-loading-text');
 const tranzilaIframeWrapper = document.getElementById('tranzila-iframe-wrapper');
 const tranzilaPostForm = document.getElementById('tranzila-post-form');
 const mockCheckoutSimulator = document.getElementById('mock-checkout-simulator');
@@ -106,6 +111,10 @@ const adminStatActive = document.getElementById('admin-stat-active');
 const adminStatMrr = document.getElementById('admin-stat-mrr');
 const adminStatTrialing = document.getElementById('admin-stat-trialing');
 const adminStatExpired = document.getElementById('admin-stat-expired');
+const adminGlobalBasePrice = document.getElementById('admin-global-base-price');
+const adminGlobalDiscount = document.getElementById('admin-global-discount');
+const adminGlobalFinalPrice = document.getElementById('admin-global-final-price');
+const adminSaveGlobalPricingBtn = document.getElementById('admin-save-global-pricing-btn');
 const adminSearchInput = document.getElementById('admin-search-input');
 const adminStatusFilter = document.getElementById('admin-status-filter');
 const adminRefreshBtn = document.getElementById('admin-refresh-btn');
@@ -119,6 +128,7 @@ let currentUser = null;
 let currentSubState = null;
 let activeCheckoutSession = null;
 let adminUsersCache = [];
+let adminGlobalPricingCache = { basePriceIls: 39, globalDiscountPercent: 0, effectivePriceIls: 39 };
 let variableCount = 0;
 let variableNames = [];
 let generateDebounceTimer = null;
@@ -198,12 +208,51 @@ function renderSubscriptionState(sub) {
   authSection.hidden = true;
   userBar.hidden = false;
 
+  const priceIls = Number(sub.priceIls) || 39;
+  const basePriceIls = Number(sub.basePriceIls) || priceIls;
+  const discountPercent = Number(sub.discountPercent) || 0;
+  const discountSuffix = discountPercent > 0 ? ` (${discountPercent}% הנחה)` : '';
+
   const initial = (sub.displayName || sub.email || 'S').trim().charAt(0).toUpperCase();
   userAvatar.textContent = initial;
   userEmailDisplay.textContent = sub.email || '';
 
   if (adminPanelBtn) {
     adminPanelBtn.hidden = !sub.isAdmin;
+  }
+
+  // Update dynamic price labels across buttons & paywall
+  const upgradeTopSpan = upgradeTopBtn ? upgradeTopBtn.querySelector('span') : null;
+  if (upgradeTopSpan) {
+    upgradeTopSpan.textContent = `רכישת מנוי • ${priceIls} ₪/חודש${discountSuffix}`;
+  }
+  if (paywallPriceAmount) {
+    paywallPriceAmount.textContent = `${priceIls} ₪`;
+  }
+  if (paywallBasePrice) {
+    if (discountPercent > 0 && basePriceIls > priceIls) {
+      paywallBasePrice.textContent = `${basePriceIls} ₪`;
+      paywallBasePrice.hidden = false;
+    } else {
+      paywallBasePrice.hidden = true;
+    }
+  }
+  if (paywallDiscountBadge) {
+    if (discountPercent > 0) {
+      paywallDiscountBadge.textContent = `${discountPercent}% הנחה`;
+      paywallDiscountBadge.hidden = false;
+    } else {
+      paywallDiscountBadge.hidden = true;
+    }
+  }
+  if (paywallSubscribeBtn) {
+    paywallSubscribeBtn.textContent = `מעבר לתשלום מאובטח בטרנזילה • ${priceIls} ₪ לחודש${discountSuffix}`;
+  }
+  if (checkoutModalTitle) {
+    checkoutModalTitle.textContent = `רכישת מנוי חודשי • ${priceIls} ₪ לחודש${discountSuffix}`;
+  }
+  if (manageUpgradeBtn) {
+    manageUpgradeBtn.textContent = `שדרוג למנוי חודשי • ${priceIls} ₪ לחודש${discountSuffix}`;
   }
 
   sandboxBar.hidden = !(sub.sandboxControlsEnabled || sub.billingMode === 'mock');
@@ -220,8 +269,8 @@ function renderSubscriptionState(sub) {
     subscriptionBadge.classList.add('badge-active');
     subscriptionBadge.textContent = 'מנוי חודשי פעיל';
     subscriptionSubtext.textContent = sub.currentPeriodEnd
-      ? `חידוש אוטומטי ב-${formatDateHe(sub.currentPeriodEnd)} (39 ₪/חודש)`
-      : '39 ₪ לחודש';
+      ? `חידוש אוטומטי ב-${formatDateHe(sub.currentPeriodEnd)} (${priceIls} ₪/חודש)`
+      : `${priceIls} ₪ לחודש`;
     upgradeTopBtn.hidden = true;
   } else if (sub.subscriptionStatus === 'canceled' && sub.hasAccess) {
     subscriptionBadge.classList.add('badge-canceled');
@@ -231,13 +280,13 @@ function renderSubscriptionState(sub) {
   } else if (sub.subscriptionStatus === 'trialing' && sub.hasAccess) {
     subscriptionBadge.classList.add('badge-trialing');
     subscriptionBadge.textContent = `תקופת ניסיון חינמית • נותרו ${sub.trialRemainingDays} ימים`;
-    subscriptionSubtext.textContent = `מסתיים ב-${formatDateHe(sub.trialEndsAt)} (${sub.trialRemainingHours} שעות)`;
+    subscriptionSubtext.textContent = `מסתיים ב-${formatDateHe(sub.trialEndsAt)} (${sub.trialRemainingHours} שעות)${discountPercent > 0 ? ` • מחיר מיוחד: ${priceIls} ₪/חודש (${discountPercent}% הנחה)` : ''}`;
     upgradeTopBtn.hidden = false;
   } else {
     subscriptionBadge.classList.add('badge-expired');
     subscriptionBadge.textContent =
       sub.subscriptionStatus === 'past_due' ? 'נדרש עדכון אמצעי תשלום' : 'תקופת הניסיון הסתיימה';
-    subscriptionSubtext.textContent = 'נדרש מנוי חודשי (39 ₪) להמשך שימוש';
+    subscriptionSubtext.textContent = `נדרש מנוי חודשי (${priceIls} ₪${discountSuffix}) להמשך שימוש`;
     upgradeTopBtn.hidden = false;
   }
 
@@ -257,14 +306,18 @@ function renderSubscriptionState(sub) {
 
 function populateManageModal(sub) {
   if (!sub) return;
+  const priceIls = Number(sub.priceIls) || 39;
+  const discountPercent = Number(sub.discountPercent) || 0;
+  const discountSuffix = discountPercent > 0 ? ` (${discountPercent}% הנחה)` : '';
+
   manageEmail.textContent = sub.email || '-';
 
   const statusLabels = {
-    trialing: `תקופת ניסיון חינמית (נותרו ${sub.trialRemainingDays} ימים)`,
-    active: 'מנוי חודשי פעיל (39 ₪ לחודש)',
+    trialing: `תקופת ניסיון חינמית (נותרו ${sub.trialRemainingDays} ימים) • מחיר מנוי: ${priceIls} ₪/חודש${discountSuffix}`,
+    active: `מנוי חודשי פעיל (${priceIls} ₪ לחודש${discountSuffix})`,
     canceled: 'בוטל (גישה פעילה עד סוף התקופה ששולמה)',
     past_due: 'חיוב חודשי נכשל – ממתין לעדכון אשראי',
-    expired: 'לא פעיל (תקופת הניסיון הסתיימה)'
+    expired: `לא פעיל (תקופת הניסיון הסתיימה) • מחיר מנוי: ${priceIls} ₪/חודש${discountSuffix}`
   };
   manageStatus.textContent = statusLabels[sub.subscriptionStatus] || sub.subscriptionStatus;
 
@@ -430,6 +483,11 @@ async function openCheckoutModal() {
   mockCheckoutSimulator.hidden = true;
   recreateCleanTranzilaIframe();
 
+  const expectedPrice = (currentSubState && Number(currentSubState.priceIls)) || 39;
+  if (checkoutLoadingText) {
+    checkoutLoadingText.textContent = `מבצע אימות Handshake מול שרתי טרנזילה ונועל סכום עסקה (${expectedPrice} ₪)...`;
+  }
+
   try {
     const resp = await authorizedFetch('/api/billing/create-checkout', {
       method: 'POST'
@@ -441,6 +499,15 @@ async function openCheckoutModal() {
 
     activeCheckoutSession = data;
     checkoutLoading.hidden = true;
+
+    const lockedAmount = Number(data.amount) || expectedPrice;
+    const discountPct = Number(data.discountPercent) || 0;
+    if (checkoutModalTitle) {
+      checkoutModalTitle.textContent =
+        discountPct > 0
+          ? `רכישת מנוי חודשי • ${lockedAmount} ₪ לחודש (${discountPct}% הנחה)`
+          : `רכישת מנוי חודשי • ${lockedAmount} ₪ לחודש`;
+    }
 
     if (data.mode === 'tranzila' && data.iframe) {
       // Populate and submit POST form into a fresh Tranzila iFrame
@@ -473,6 +540,8 @@ async function triggerMockWebhook(responseCode) {
   mockApprovePaymentBtn.disabled = true;
   mockFailPaymentBtn.disabled = true;
 
+  const sessionSum = Number(activeCheckoutSession.amount || 39).toFixed(2);
+
   try {
     const resp = await fetch(
       `/api/webhooks/tranzila?session_id=${encodeURIComponent(activeCheckoutSession.sessionId)}`,
@@ -482,7 +551,7 @@ async function triggerMockWebhook(responseCode) {
         body: JSON.stringify({
           session_id: activeCheckoutSession.sessionId,
           Response: responseCode,
-          sum: '39.00',
+          sum: sessionSum,
           currency: 'ILS',
           index: `${Date.now()}`,
           ConfirmationCode: responseCode === '000' ? '0849201' : '0000000',
@@ -586,6 +655,19 @@ async function loadAdminUsers() {
     }
 
     adminUsersCache = Array.isArray(data.users) ? data.users : [];
+    if (data.globalPricing) {
+      adminGlobalPricingCache = data.globalPricing;
+      if (adminGlobalBasePrice) {
+        adminGlobalBasePrice.value = String(data.globalPricing.basePriceIls ?? 39);
+      }
+      if (adminGlobalDiscount) {
+        adminGlobalDiscount.value = String(data.globalPricing.globalDiscountPercent ?? 0);
+      }
+      if (adminGlobalFinalPrice) {
+        adminGlobalFinalPrice.value = String(data.globalPricing.effectivePriceIls ?? 39);
+      }
+    }
+
     const stats = data.stats || {};
     adminStatTotal.textContent = String(stats.totalUsers || 0);
     adminStatActive.textContent = String(stats.activeCount || 0);
@@ -622,7 +704,7 @@ function renderAdminTable() {
   if (filtered.length === 0) {
     adminUsersTbody.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align:center;padding:28px;color:#64748b;">
+        <td colspan="6" style="text-align:center;padding:28px;color:#64748b;">
           לא נמצאו משתמשים התואמים לחיפוש או לסינון שנבחר.
         </td>
       </tr>
@@ -656,6 +738,10 @@ function renderAdminTable() {
         ? `•••• ${escapeHtml(u.cardLast4)}${u.cardExp ? ` (${escapeHtml(u.cardExp)})` : ''}`
         : '-';
 
+      const basePrice = Number(u.basePriceIls) || Number(adminGlobalPricingCache.basePriceIls) || 39;
+      const effectivePrice = Number(u.effectivePriceIls) || 39;
+      const discountPct = Number(u.discountPercent) || 0;
+
       return `
         <tr data-uid="${escapeHtml(u.uid)}">
           <td>
@@ -674,6 +760,56 @@ function renderAdminTable() {
           </td>
           <td>
             <div>${dateLabel}</div>
+          </td>
+          <td>
+            <div class="admin-user-pricing-box">
+              <div class="admin-user-price-summary">
+                <span>${effectivePrice} ₪/חודש</span>
+                ${discountPct > 0 ? `<span class="admin-discount-tag">${discountPct}% הנחה</span>` : ''}
+                ${u.hasCustomPricing ? '<span class="admin-custom-tag">מחיר אישי</span>' : ''}
+              </div>
+              <div class="admin-price-input-row">
+                <label class="admin-price-mini-field" title="אחוז הנחה למשתמש זה">
+                  <span>%</span>
+                  <input
+                    type="number"
+                    class="admin-price-input"
+                    data-discount-uid="${escapeHtml(u.uid)}"
+                    data-base-price="${basePrice}"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="${discountPct}"
+                  >
+                </label>
+                <label class="admin-price-mini-field" title="מחיר סופי לתשלום בשקלים">
+                  <span>₪</span>
+                  <input
+                    type="number"
+                    class="admin-price-input"
+                    data-price-uid="${escapeHtml(u.uid)}"
+                    data-base-price="${basePrice}"
+                    min="1"
+                    max="9999"
+                    step="0.5"
+                    value="${effectivePrice}"
+                  >
+                </label>
+                <button
+                  type="button"
+                  class="btn-admin-price-save"
+                  data-save-pricing-uid="${escapeHtml(u.uid)}"
+                  data-save-pricing-email="${escapeHtml(u.email)}"
+                >
+                  שמור
+                </button>
+                ${
+                  u.hasCustomPricing
+                    ? `<button type="button" class="btn-admin-price-reset" data-reset-pricing-uid="${escapeHtml(u.uid)}" title="איפוס לתמחור המערכת">איפוס</button>`
+                    : ''
+                }
+              </div>
+            </div>
           </td>
           <td dir="ltr" style="text-align:right;">
             <div><strong>${stoInfo}</strong></div>
@@ -704,6 +840,85 @@ function renderAdminTable() {
       `;
     })
     .join('');
+}
+
+async function saveGlobalPricing() {
+  if (!adminSaveGlobalPricingBtn) return;
+  const basePriceIls = Math.max(1, Number(adminGlobalBasePrice?.value) || 39);
+  const globalDiscountPercent = Math.max(0, Math.min(100, Number(adminGlobalDiscount?.value) || 0));
+  const customPriceIls = Math.max(1, Number(adminGlobalFinalPrice?.value) || basePriceIls);
+
+  adminSaveGlobalPricingBtn.disabled = true;
+  showAdminFeedback('');
+
+  try {
+    const resp = await authorizedFetch('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'update_global_pricing',
+        basePriceIls,
+        globalDiscountPercent,
+        customPriceIls
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'שגיאה בשמירת תמחור המערכת');
+    }
+
+    showAdminFeedback(data.message || 'תמחור המערכת נשמר בהצלחה.', 'success');
+    await loadAdminUsers();
+    await fetchSubscriptionStatus();
+  } catch (err) {
+    showAdminFeedback(err.message, 'error');
+  } finally {
+    adminSaveGlobalPricingBtn.disabled = false;
+  }
+}
+
+async function saveUserPricing(targetUid, reset = false, btnElement = null) {
+  if (!targetUid) return;
+  const discountInput = adminUsersTbody?.querySelector(
+    `input[data-discount-uid="${CSS.escape(targetUid)}"]`
+  );
+  const priceInput = adminUsersTbody?.querySelector(
+    `input[data-price-uid="${CSS.escape(targetUid)}"]`
+  );
+
+  const payload = {
+    action: 'set_user_pricing',
+    targetUid,
+    reset: Boolean(reset)
+  };
+
+  if (!reset) {
+    payload.discountPercent = discountInput ? Number(discountInput.value) : 0;
+    payload.customPriceIls = priceInput ? Number(priceInput.value) : undefined;
+  }
+
+  if (btnElement) btnElement.disabled = true;
+  showAdminFeedback('');
+
+  try {
+    const resp = await authorizedFetch('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'שגיאה בעדכון מחיר המשתמש');
+    }
+
+    showAdminFeedback(data.message || 'המחיר האישי עודכן בהצלחה.', 'success');
+    await loadAdminUsers();
+    if (currentUser && targetUid === currentUser.uid) {
+      await fetchSubscriptionStatus();
+    }
+  } catch (err) {
+    showAdminFeedback(err.message, 'error');
+  } finally {
+    if (btnElement) btnElement.disabled = false;
+  }
 }
 
 async function executeAdminUserAction(targetUid, email, selectedValue, btnElement) {
@@ -888,8 +1103,81 @@ if (adminStatusFilter) {
   adminStatusFilter.addEventListener('change', renderAdminTable);
 }
 
+// Live two-way calculation for Global Pricing Bar
+if (adminGlobalBasePrice && adminGlobalDiscount && adminGlobalFinalPrice) {
+  const recalcGlobalFromDiscount = () => {
+    const base = Math.max(1, Number(adminGlobalBasePrice.value) || 39);
+    const disc = Math.max(0, Math.min(100, Number(adminGlobalDiscount.value) || 0));
+    const finalPrice = Math.max(1, Math.round(base * (1 - disc / 100) * 100) / 100);
+    adminGlobalFinalPrice.value = String(finalPrice);
+  };
+  const recalcGlobalFromFinalPrice = () => {
+    const base = Math.max(1, Number(adminGlobalBasePrice.value) || 39);
+    const finalPrice = Math.max(1, Number(adminGlobalFinalPrice.value) || base);
+    const disc =
+      base > finalPrice
+        ? Math.max(0, Math.min(100, Math.round(((base - finalPrice) / base) * 10000) / 100))
+        : 0;
+    adminGlobalDiscount.value = String(disc);
+  };
+  adminGlobalBasePrice.addEventListener('input', recalcGlobalFromDiscount);
+  adminGlobalDiscount.addEventListener('input', recalcGlobalFromDiscount);
+  adminGlobalFinalPrice.addEventListener('input', recalcGlobalFromFinalPrice);
+}
+
+if (adminSaveGlobalPricingBtn) {
+  adminSaveGlobalPricingBtn.addEventListener('click', saveGlobalPricing);
+}
+
 if (adminUsersTbody) {
+  // Live two-way calculation between % discount and ₪ price in each user row
+  adminUsersTbody.addEventListener('input', (e) => {
+    const discountEl = e.target.closest('input[data-discount-uid]');
+    if (discountEl) {
+      const uid = discountEl.getAttribute('data-discount-uid');
+      const base = Math.max(1, Number(discountEl.getAttribute('data-base-price')) || 39);
+      const disc = Math.max(0, Math.min(100, Number(discountEl.value) || 0));
+      const priceEl = adminUsersTbody.querySelector(`input[data-price-uid="${CSS.escape(uid)}"]`);
+      if (priceEl) {
+        const computed = Math.max(1, Math.round(base * (1 - disc / 100) * 100) / 100);
+        priceEl.value = String(computed);
+      }
+      return;
+    }
+
+    const priceEl = e.target.closest('input[data-price-uid]');
+    if (priceEl) {
+      const uid = priceEl.getAttribute('data-price-uid');
+      const base = Math.max(1, Number(priceEl.getAttribute('data-base-price')) || 39);
+      const customPrice = Math.max(1, Number(priceEl.value) || base);
+      const discountInput = adminUsersTbody.querySelector(
+        `input[data-discount-uid="${CSS.escape(uid)}"]`
+      );
+      if (discountInput) {
+        const computedDisc =
+          base > customPrice
+            ? Math.max(0, Math.min(100, Math.round(((base - customPrice) / base) * 10000) / 100))
+            : 0;
+        discountInput.value = String(computedDisc);
+      }
+    }
+  });
+
   adminUsersTbody.addEventListener('click', (e) => {
+    const savePriceBtn = e.target.closest('[data-save-pricing-uid]');
+    if (savePriceBtn) {
+      const targetUid = savePriceBtn.getAttribute('data-save-pricing-uid');
+      saveUserPricing(targetUid, false, savePriceBtn);
+      return;
+    }
+
+    const resetPriceBtn = e.target.closest('[data-reset-pricing-uid]');
+    if (resetPriceBtn) {
+      const targetUid = resetPriceBtn.getAttribute('data-reset-pricing-uid');
+      saveUserPricing(targetUid, true, resetPriceBtn);
+      return;
+    }
+
     const btn = e.target.closest('[data-apply-uid]');
     if (!btn) return;
     const targetUid = btn.getAttribute('data-apply-uid');
@@ -998,6 +1286,7 @@ window.addEventListener('message', async (event) => {
   setTimeout(async () => {
     try {
       if (activeCheckoutSession && activeCheckoutSession.sessionId) {
+        const sessionSum = Number(activeCheckoutSession.amount || 39).toFixed(2);
         await fetch(
           `/api/webhooks/tranzila?session_id=${encodeURIComponent(activeCheckoutSession.sessionId)}`,
           {
@@ -1006,7 +1295,7 @@ window.addEventListener('message', async (event) => {
             body: JSON.stringify({
               session_id: activeCheckoutSession.sessionId,
               Response: isApproved ? '000' : 'ERR',
-              sum: '39.00',
+              sum: sessionSum,
               currency: 'ILS'
             })
           }

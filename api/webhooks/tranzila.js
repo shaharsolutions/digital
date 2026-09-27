@@ -200,7 +200,11 @@ module.exports = async function handler(req, res) {
         (sessionId ? `sess_${sessionId}` : `evt_${Date.now()}`)
     ).trim();
 
-    const chargedSum = Number(payload.sum || payload.amount || SUBSCRIPTION_PRICE_ILS);
+    const expectedAmount =
+      sessionDoc && Number(sessionDoc.amount) > 0
+        ? Number(sessionDoc.amount)
+        : SUBSCRIPTION_PRICE_ILS;
+    const chargedSum = Number(payload.sum || payload.amount || expectedAmount);
     const stoExternalId = String(
       payload.sto_external_id || payload.sto_id || payload.stoId || ''
     ).trim();
@@ -249,8 +253,12 @@ module.exports = async function handler(req, res) {
       );
     }
 
-    // 4. Validate charged amount matches subscription price (39 ILS)
-    if (rawResponse === '000' && Math.abs(chargedSum - SUBSCRIPTION_PRICE_ILS) > 0.01) {
+    // 4. Validate charged amount matches checkout session amount (supports custom price & discount %)
+    const amountMismatch =
+      sessionDoc && Number(sessionDoc.amount) > 0
+        ? Math.abs(chargedSum - Number(sessionDoc.amount)) > 0.05
+        : !(chargedSum > 0);
+    if (rawResponse === '000' && amountMismatch) {
       if (callbackMode) {
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.status(400).send(
@@ -262,7 +270,7 @@ module.exports = async function handler(req, res) {
         );
       }
       return res.status(400).json({
-        error: `Amount mismatch: expected ${SUBSCRIPTION_PRICE_ILS}, received ${chargedSum}`
+        error: `Amount mismatch: expected ${expectedAmount}, received ${chargedSum}`
       });
     }
 

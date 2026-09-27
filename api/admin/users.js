@@ -10,6 +10,7 @@ const {
 } = require('../_lib/firebaseAdmin');
 const {
   SUBSCRIPTION_PRICE_ILS,
+  resolveUserSubscriptionPrice,
   cancelStandingOrder,
   findStandingOrder
 } = require('../_lib/tranzila');
@@ -27,8 +28,30 @@ function parseBody(req) {
   return {};
 }
 
-function formatUserForAdmin(u, nowMs = Date.now()) {
+function normalizeGlobalPricing(doc) {
+  const basePriceIls =
+    doc && Number(doc.basePriceIls) >= 1
+      ? Math.round(Number(doc.basePriceIls) * 100) / 100
+      : SUBSCRIPTION_PRICE_ILS;
+  const globalDiscountPercent =
+    doc && Number.isFinite(Number(doc.globalDiscountPercent))
+      ? Math.max(0, Math.min(100, Math.round(Number(doc.globalDiscountPercent) * 100) / 100))
+      : 0;
+  const effectivePriceIls = Math.max(
+    1,
+    Math.round(basePriceIls * (1 - globalDiscountPercent / 100) * 100) / 100
+  );
+  return {
+    basePriceIls,
+    globalDiscountPercent,
+    effectivePriceIls,
+    updatedAt: (doc && doc.updatedAt) || null
+  };
+}
+
+function formatUserForAdmin(u, nowMs = Date.now(), globalPricing = null) {
   const access = evaluateAccessState(u, nowMs);
+  const pricing = resolveUserSubscriptionPrice(u, globalPricing);
   return {
     uid: u.uid,
     email: u.email || '',
@@ -47,6 +70,18 @@ function formatUserForAdmin(u, nowMs = Date.now()) {
     cardLast4: u.cardLast4 || null,
     cardExp: u.cardExp || null,
     lastInvoiceUrl: u.lastInvoiceUrl || null,
+    basePriceIls: pricing.basePriceIls,
+    discountPercent: pricing.discountPercent,
+    customPriceIls:
+      u.customPriceIls !== undefined && u.customPriceIls !== null && u.customPriceIls !== ''
+        ? Number(u.customPriceIls)
+        : null,
+    userDiscountPercent:
+      u.discountPercent !== undefined && u.discountPercent !== null && u.discountPercent !== ''
+        ? Number(u.discountPercent)
+        : null,
+    effectivePriceIls: pricing.effectivePriceIls,
+    hasCustomPricing: pricing.hasCustomPricing,
     createdAt: u.createdAt || null,
     updatedAt: u.updatedAt || null
   };
@@ -67,30 +102,41 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    const rawGlobalPricing = await getDocument('system_settings', 'pricing');
+    let globalPricing = normalizeGlobalPricing(rawGlobalPricing);
+
     if (req.method === 'GET') {
       const rawUsers = await listDocuments('users', 500);
       const nowMs = Date.now();
       const users = rawUsers
         .filter((u) => u && (u.uid || u.email))
-        .map((u) => formatUserForAdmin(u, nowMs))
+        .map((u) => formatUserForAdmin(u, nowMs, globalPricing))
         .sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
 
-      const activeCount = users.filter((u) => u.subscriptionStatus === 'active').length;
+      const activeUsers = users.filter((u) => u.subscriptionStatus === 'active');
+      const activeCount = activeUsers.length;
       const trialingCount = users.filter((u) => u.subscriptionStatus === 'trialing').length;
       const canceledCount = users.filter((u) => u.subscriptionStatus === 'canceled').length;
       const expiredCount = users.filter(
         (u) => u.subscriptionStatus === 'expired' || u.subscriptionStatus === 'past_due'
       ).length;
 
+      const estimatedMrrIls =
+        Math.round(
+          activeUsers.reduce((sum, u) => sum + (Number(u.effectivePriceIls) || globalPricing.effectivePriceIls), 0) *
+            100
+        ) / 100;
+
       return res.status(200).json({
         ok: true,
+        globalPricing,
         stats: {
           totalUsers: users.length,
           activeCount,
           trialingCount,
           canceledCount,
           expiredCount,
-          estimatedMrrIls: activeCount * SUBSCRIPTION_PRICE_ILS
+          estimatedMrrIls
         },
         users
       });
@@ -99,6 +145,55 @@ module.exports = async function handler(req, res) {
     if (req.method === 'POST') {
       const body = parseBody(req);
       const action = String(body.action || '').trim();
+      const nowMs = Date.now();
+      const nowIso = new Date(nowMs).toISOString();
+
+      // Global system pricing action (does not require targetUid)
+      if (action === 'update_global_pricing') {
+        const basePriceIls = Math.max(
+          1,
+          Math.round((Number(body.basePriceIls) || SUBSCRIPTION_PRICE_ILS) * 100) / 100
+        );
+        let globalDiscountPercent = 0;
+        if (body.customPriceIls !== undefined && body.customPriceIls !== null && body.customPriceIls !== '') {
+          const targetPrice = Math.max(1, Math.round(Number(body.customPriceIls) * 100) / 100);
+          globalDiscountPercent = Math.max(
+            0,
+            Math.min(100, Math.round(((basePriceIls - targetPrice) / basePriceIls) * 10000) / 100)
+          );
+        } else if (body.globalDiscountPercent !== undefined) {
+          globalDiscountPercent = Math.max(
+            0,
+            Math.min(100, Math.round((Number(body.globalDiscountPercent) || 0) * 100) / 100)
+          );
+        }
+
+        const effectivePriceIls = Math.max(
+          1,
+          Math.round(basePriceIls * (1 - globalDiscountPercent / 100) * 100) / 100
+        );
+
+        const newPricingDoc = {
+          basePriceIls,
+          globalDiscountPercent,
+          effectivePriceIls,
+          updatedBy: authUser.email,
+          updatedAt: nowIso
+        };
+
+        await setDocument('system_settings', 'pricing', newPricingDoc);
+        globalPricing = normalizeGlobalPricing(newPricingDoc);
+
+        return res.status(200).json({
+          ok: true,
+          globalPricing,
+          message:
+            globalDiscountPercent > 0
+              ? `תמחור המערכת עודכן: מחיר בסיס ₪${basePriceIls}, הנחה גורפת ${globalDiscountPercent}% -> מחיר לתשלום ₪${effectivePriceIls}.`
+              : `תמחור המערכת עודכן: מחיר לתשלום ₪${effectivePriceIls} לחודש.`
+        });
+      }
+
       const targetUid = String(body.targetUid || '').trim();
 
       if (!targetUid) {
@@ -110,12 +205,68 @@ module.exports = async function handler(req, res) {
         return res.status(404).json({ error: 'המשתמש המבוקש לא נמצא במסד הנתונים.' });
       }
 
-      const nowMs = Date.now();
-      const nowIso = new Date(nowMs).toISOString();
       let updatedUser = null;
       let message = '';
 
-      if (action === 'grant_active') {
+      if (action === 'set_user_pricing') {
+        const basePrice = globalPricing.basePriceIls || SUBSCRIPTION_PRICE_ILS;
+
+        if (body.reset) {
+          updatedUser = {
+            ...targetUser,
+            discountPercent: undefined,
+            customPriceIls: undefined,
+            updatedAt: nowIso
+          };
+          await setDocument('users', targetUid, updatedUser);
+          message = `התמחור האישי של ${targetUser.email} אופס לתמחור המערכת (₪${globalPricing.effectivePriceIls}).`;
+        } else {
+          let discountPercent = undefined;
+          let customPriceIls = undefined;
+
+          const hasExplicitPrice =
+            body.customPriceIls !== undefined &&
+            body.customPriceIls !== null &&
+            String(body.customPriceIls).trim() !== '';
+          const hasExplicitDiscount =
+            body.discountPercent !== undefined &&
+            body.discountPercent !== null &&
+            String(body.discountPercent).trim() !== '';
+
+          if (hasExplicitPrice) {
+            customPriceIls = Math.max(1, Math.round(Number(body.customPriceIls) * 100) / 100);
+            discountPercent =
+              basePrice > customPriceIls
+                ? Math.max(0, Math.min(100, Math.round(((basePrice - customPriceIls) / basePrice) * 10000) / 100))
+                : 0;
+          } else if (hasExplicitDiscount) {
+            discountPercent = Math.max(
+              0,
+              Math.min(100, Math.round(Number(body.discountPercent) * 100) / 100)
+            );
+            customPriceIls = Math.max(
+              1,
+              Math.round(basePrice * (1 - discountPercent / 100) * 100) / 100
+            );
+          } else {
+            return res.status(400).json({
+              error: 'יש להזין אחוז הנחה או מחיר לתשלום בשקלים.'
+            });
+          }
+
+          updatedUser = {
+            ...targetUser,
+            discountPercent,
+            customPriceIls,
+            updatedAt: nowIso
+          };
+          await setDocument('users', targetUid, updatedUser);
+          message =
+            discountPercent > 0
+              ? `עודכן מחיר אישי עבור ${targetUser.email}: ₪${customPriceIls} לחודש (${discountPercent}% הנחה).`
+              : `עודכן מחיר אישי עבור ${targetUser.email}: ₪${customPriceIls} לחודש.`;
+        }
+      } else if (action === 'grant_active') {
         const days = Math.max(1, Math.min(3650, Number(body.days) || 30));
         const periodEnd = new Date(nowMs + days * 24 * 60 * 60 * 1000).toISOString();
         updatedUser = {
@@ -212,7 +363,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         ok: true,
         message,
-        user: formatUserForAdmin(updatedUser, nowMs)
+        user: formatUserForAdmin(updatedUser, nowMs, globalPricing)
       });
     }
 

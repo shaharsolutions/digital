@@ -2,10 +2,11 @@ const crypto = require('crypto');
 const {
   verifyFirebaseIdToken,
   getOrCreateUser,
+  getDocument,
   setDocument
 } = require('../_lib/firebaseAdmin');
 const {
-  SUBSCRIPTION_PRICE_ILS,
+  resolveUserSubscriptionPrice,
   createHandshake,
   buildIframeCheckoutConfig
 } = require('../_lib/tranzila');
@@ -33,6 +34,9 @@ module.exports = async function handler(req, res) {
   try {
     const authUser = await verifyFirebaseIdToken(req);
     const userDoc = await getOrCreateUser(authUser);
+    const globalPricing = await getDocument('system_settings', 'pricing');
+    const pricing = resolveUserSubscriptionPrice(userDoc, globalPricing);
+    const checkoutAmount = pricing.effectivePriceIls;
 
     const sessionId = 'chk_' + crypto.randomBytes(12).toString('hex');
     const dcDisable = `storyline_${authUser.uid.slice(0, 12)}_${sessionId}`;
@@ -42,9 +46,9 @@ module.exports = async function handler(req, res) {
 
     const baseUrl = resolveBaseUrl(req);
 
-    // 1. Lock 39 ILS on Tranzila server via Handshake API
+    // 1. Lock effective subscription amount on Tranzila server via Handshake API
     const handshake = await createHandshake({
-      sum: SUBSCRIPTION_PRICE_ILS,
+      sum: checkoutAmount,
       sessionId,
       uid: authUser.uid,
       baseUrl
@@ -55,7 +59,9 @@ module.exports = async function handler(req, res) {
       sessionId,
       uid: authUser.uid,
       email: userDoc.email,
-      amount: SUBSCRIPTION_PRICE_ILS,
+      amount: checkoutAmount,
+      basePriceIls: pricing.basePriceIls,
+      discountPercent: pricing.discountPercent,
       currency: 'ILS',
       thtk: handshake.thtk,
       dcDisable,
@@ -73,12 +79,15 @@ module.exports = async function handler(req, res) {
       dcDisable,
       sessionId,
       user: userDoc,
-      baseUrl
+      baseUrl,
+      sum: checkoutAmount
     });
 
     return res.status(200).json({
       sessionId,
-      amount: SUBSCRIPTION_PRICE_ILS,
+      amount: checkoutAmount,
+      basePriceIls: pricing.basePriceIls,
+      discountPercent: pricing.discountPercent,
       currency: 'ILS',
       mode: handshake.mode,
       iframe: iframeConfig

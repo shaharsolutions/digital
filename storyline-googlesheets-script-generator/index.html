@@ -146,7 +146,9 @@
 
         <div class="pricing-box">
           <div class="pricing-amount-row">
-            <span class="pricing-amount">39 ₪</span>
+            <span id="paywall-price-amount" class="pricing-amount">39 ₪</span>
+            <span id="paywall-base-price" class="pricing-base-strike" hidden>39 ₪</span>
+            <span id="paywall-discount-badge" class="pricing-discount-pill" hidden></span>
             <span class="pricing-period">/ לחודש (כולל מע״מ)</span>
           </div>
           <ul class="pricing-features">
@@ -258,7 +260,7 @@
       <div class="modal-body">
         <div id="checkout-loading" class="loading-card">
           <div class="spinner" aria-hidden="true"></div>
-          <p>מבצע אימות Handshake מול שרתי טרנזילה ונועל סכום עסקה (39 ₪)...</p>
+          <p id="checkout-loading-text">מבצע אימות Handshake מול שרתי טרנזילה ונועל סכום עסקה...</p>
         </div>
 
         <!-- Live Tranzila DirectNG iFrame Container -->
@@ -280,13 +282,13 @@
             <span id="mock-thtk-display" class="mock-thtk" dir="ltr"></span>
           </div>
           <p class="mock-simulator-desc">
-            השרת ביצע Handshake ונעל את העסקה על סך <strong>39.00 ₪ לחודש</strong> (`recur_transaction=4_approved`) עם הפקת חשבונית מס/קבלה אוטומטית (`u71=1`).
+            השרת ביצע Handshake ונעל את העסקה (`recur_transaction=4_approved`) עם הפקת חשבונית מס/קבלה אוטומטית (`u71=1`).
             במצב בדיקות ניתן לדמות את תגובת ה-Webhook של טרנזילה לשרת:
           </p>
           <div class="mock-card-preview" dir="ltr">
             <div><strong>Card (Test):</strong> •••• •••• •••• 4580</div>
             <div><strong>Expiry:</strong> 08/29</div>
-            <div><strong>Standing Order:</strong> 39.00 ILS / Monthly</div>
+            <div><strong>Standing Order:</strong> Monthly Recurring</div>
           </div>
           <div class="mock-simulator-actions">
             <button id="mock-approve-payment-btn" class="btn-primary btn-full" type="button">
@@ -368,8 +370,8 @@
     <div class="modal-card modal-xl">
       <div class="modal-header">
         <div>
-          <h2 id="admin-modal-title">פאנל ניהול מערכת • ניהול משתמשים ומנויים</h2>
-          <p class="modal-subtitle">צפייה בכל המשתמשים הרשומים במערכת וביצוע פעולות ניהול ישירות על חשבונות</p>
+          <h2 id="admin-modal-title">פאנל ניהול מערכת • ניהול משתמשים, מחירים והנחות</h2>
+          <p class="modal-subtitle">צפייה בכל המשתמשים הרשומים, קביעת מחיר מנוי או אחוז הנחה (גורף או אישי), וביצוע פעולות על חשבונות</p>
         </div>
         <button id="close-admin-modal" class="modal-close-btn" type="button" aria-label="סגור פאנל ניהול">✕</button>
       </div>
@@ -393,6 +395,31 @@
           <div class="admin-stat-card admin-stat-expired">
             <span class="admin-stat-label">בוטלו / פג תוקף</span>
             <strong id="admin-stat-expired" class="admin-stat-value">0</strong>
+          </div>
+        </div>
+
+        <!-- Global System Pricing & Discount Configuration Bar -->
+        <div class="admin-pricing-bar">
+          <div class="admin-pricing-info">
+            <strong>תמחור מערכת ברירת מחדל (לכלל המשתמשים):</strong>
+            <span>קבע את מחיר הבסיס, תן הנחה גורפת באחוזים או הזן ישירות את המחיר החודשי לתשלום בשקלים.</span>
+          </div>
+          <div class="admin-pricing-controls">
+            <div class="admin-pricing-field">
+              <label for="admin-global-base-price">מחיר בסיס (₪)</label>
+              <input type="number" id="admin-global-base-price" min="1" max="9999" step="0.5" value="39">
+            </div>
+            <div class="admin-pricing-field">
+              <label for="admin-global-discount">הנחה גורפת (%)</label>
+              <input type="number" id="admin-global-discount" min="0" max="100" step="1" value="0">
+            </div>
+            <div class="admin-pricing-field">
+              <label for="admin-global-final-price">מחיר לתשלום (₪)</label>
+              <input type="number" id="admin-global-final-price" min="1" max="9999" step="0.5" value="39">
+            </div>
+            <button id="admin-save-global-pricing-btn" class="btn-primary btn-sm" type="button">
+              שמור תמחור מערכת
+            </button>
           </div>
         </div>
 
@@ -434,7 +461,8 @@
                 <th>משתמש ואימייל</th>
                 <th>סטטוס וגישה</th>
                 <th>תוקף / חיוב הבא</th>
-                <th>הוראת קבע וכרטיס (טרנזילה)</th>
+                <th>מחיר לתשלום והנחה (%)</th>
+                <th>הוראת קבע וכרטיס</th>
                 <th>פעולות ניהול על החשבון</th>
               </tr>
             </thead>

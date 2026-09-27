@@ -4,9 +4,13 @@ const {
   verifyFirebaseIdToken,
   getOrCreateUser,
   evaluateAccessState,
+  getDocument,
   setDocument
 } = require('./_lib/firebaseAdmin');
-const { SUBSCRIPTION_PRICE_ILS, getTranzilaConfig } = require('./_lib/tranzila');
+const {
+  getTranzilaConfig,
+  resolveUserSubscriptionPrice
+} = require('./_lib/tranzila');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -59,6 +63,8 @@ module.exports = async function handler(req, res) {
     }
 
     const access = evaluateAccessState(userDoc);
+    const globalPricing = await getDocument('system_settings', 'pricing');
+    const pricing = resolveUserSubscriptionPrice(userDoc, globalPricing);
 
     return res.status(200).json({
       uid: userDoc.uid,
@@ -78,7 +84,10 @@ module.exports = async function handler(req, res) {
       cardLast4: userDoc.cardLast4 || null,
       cardExp: userDoc.cardExp || null,
       lastInvoiceUrl: userDoc.lastInvoiceUrl || null,
-      priceIls: SUBSCRIPTION_PRICE_ILS,
+      priceIls: pricing.effectivePriceIls,
+      basePriceIls: pricing.basePriceIls,
+      discountPercent: pricing.discountPercent,
+      hasCustomPricing: pricing.hasCustomPricing,
       billingMode: tranzilaCfg.mode,
       sandboxControlsEnabled: Boolean(tranzilaCfg.sandboxControlsEnabled),
       checkoutTerminalName: tranzilaCfg.checkoutTerminalName,

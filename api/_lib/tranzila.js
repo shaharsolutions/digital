@@ -183,6 +183,86 @@ async function createHandshake({ sum = SUBSCRIPTION_PRICE_ILS, sessionId, uid })
   throw new Error('Missing Tranzila credentials for Handshake');
 }
 
+function roundPrice(val) {
+  return Math.round(Number(val) * 100) / 100;
+}
+
+/**
+ * Resolves the effective monthly subscription price (in ILS) and discount percentage for a user,
+ * combining global pricing settings and any per-user discountPercent / customPriceIls override.
+ */
+function resolveUserSubscriptionPrice(userDoc = {}, globalPricing = null) {
+  const basePriceIls =
+    globalPricing && Number(globalPricing.basePriceIls) > 0
+      ? roundPrice(globalPricing.basePriceIls)
+      : SUBSCRIPTION_PRICE_ILS;
+
+  const globalDiscount =
+    globalPricing && Number(globalPricing.globalDiscountPercent) > 0
+      ? Math.min(99, Math.max(0, roundPrice(globalPricing.globalDiscountPercent)))
+      : 0;
+
+  const globalEffective =
+    globalPricing && Number(globalPricing.effectivePriceIls) > 0
+      ? roundPrice(globalPricing.effectivePriceIls)
+      : roundPrice(basePriceIls * (1 - globalDiscount / 100));
+
+  const hasUserCustomPrice =
+    userDoc &&
+    userDoc.customPriceIls !== undefined &&
+    userDoc.customPriceIls !== null &&
+    userDoc.customPriceIls !== '' &&
+    Number(userDoc.customPriceIls) > 0;
+
+  const hasUserDiscount =
+    userDoc &&
+    userDoc.discountPercent !== undefined &&
+    userDoc.discountPercent !== null &&
+    userDoc.discountPercent !== '' &&
+    Number(userDoc.discountPercent) > 0;
+
+  if (hasUserCustomPrice) {
+    const effectivePriceIls = Math.max(1, roundPrice(userDoc.customPriceIls));
+    const discountPercent = hasUserDiscount
+      ? Math.min(99, Math.max(0, roundPrice(userDoc.discountPercent)))
+      : basePriceIls > effectivePriceIls
+      ? Math.max(0, Math.round(((basePriceIls - effectivePriceIls) / basePriceIls) * 100))
+      : 0;
+    return {
+      basePriceIls,
+      discountPercent,
+      effectivePriceIls,
+      hasCustomPricing: true
+    };
+  }
+
+  if (hasUserDiscount) {
+    const discountPercent = Math.min(99, Math.max(0, roundPrice(userDoc.discountPercent)));
+    const effectivePriceIls = Math.max(1, roundPrice(basePriceIls * (1 - discountPercent / 100)));
+    return {
+      basePriceIls,
+      discountPercent,
+      effectivePriceIls,
+      hasCustomPricing: true
+    };
+  }
+
+  const finalGlobalPrice = Math.max(1, globalEffective);
+  const effectiveGlobalDiscount =
+    globalDiscount > 0
+      ? globalDiscount
+      : basePriceIls > finalGlobalPrice
+      ? Math.max(0, Math.round(((basePriceIls - finalGlobalPrice) / basePriceIls) * 100))
+      : 0;
+
+  return {
+    basePriceIls,
+    discountPercent: effectiveGlobalDiscount,
+    effectivePriceIls: finalGlobalPrice,
+    hasCustomPricing: false
+  };
+}
+
 /**
  * Builds itemized purchase JSON for Tranzila Invoices module inside the Tranzila iFrame.
  * Note: Because the frontend submits a hidden <input> via a standard HTML <form method="POST">,
@@ -202,15 +282,11 @@ function buildInvoicePurchaseData(sum = SUBSCRIPTION_PRICE_ILS) {
 /**
  * Builds the POST parameters for Tranzila Recurring iFrame (`iframenew.php`).
  * Configured for dual-terminal recurring billing (`shaharsol` checkout + `shaharsoltok` STO token terminal).
- *
- * - On HTTPS production (`https://shaharsolutions.com`), `notify_url_address`, `success_url_address`,
- *   and `fail_url_address` point directly to `${baseUrl}/api/webhooks/tranzila?...`.
- * - On HTTP localhost (`http://localhost:3080`), `success_url_address` / `fail_url_address` use a public
- *   HTTPS postMessage relay so Chrome 153+ Private Network Access (PNA) never blocks `tranzila.com -> 127.0.0.1`.
  */
-function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl }) {
+function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl, sum }) {
   const cfg = getTranzilaConfig();
-  const sum = SUBSCRIPTION_PRICE_ILS;
+  const resolvedSum =
+    Number(sum) > 0 ? roundPrice(sum) : resolveUserSubscriptionPrice(user).effectivePriceIls;
   const nextBillingDate = addMonthsDateOnly(new Date(), 1);
 
   const isHttpsOrigin = String(baseUrl || '').startsWith('https://');
@@ -245,12 +321,12 @@ function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl }
 
   const fields = {
     supplier: cfg.checkoutTerminalName,
-    sum: String(sum),
+    sum: String(resolvedSum),
     currency: '1', // 1 = ILS (NIS)
     cred_type: '1', // Regular credit transaction
     tranmode: 'A', // Standard charge with My Billing standing order creation
     thtk,
-    recur_sum: String(sum),
+    recur_sum: String(resolvedSum),
     recur_start_date: nextBillingDate,
     recur_transaction: '4_approved', // Monthly standing order locked by merchant
     lang: 'il',
@@ -258,11 +334,11 @@ function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl }
     contact: cleanContact,
     email: user.email || '',
     pdesc: SUBSCRIPTION_PRODUCT_NAME,
-    json_purchase_data: buildInvoicePurchaseData(sum),
+    json_purchase_data: buildInvoicePurchaseData(resolvedSum),
     remarks: `STORYLINE-${sessionId}`,
     DCdisable: dcDisable || sessionId,
     requested_by_user: cfg.apiUsername,
-    buttonLabel: 'רכישת מנוי חודשי - 39 שח',
+    buttonLabel: `רכישת מנוי חודשי - ${resolvedSum} שח`,
     trButtonColor: '2563eb',
     trBgColor: 'ffffff',
     trTextColor: '0f172a',
@@ -486,6 +562,7 @@ module.exports = {
   SUBSCRIPTION_PRICE_ILS,
   SUBSCRIPTION_PRODUCT_NAME,
   getTranzilaConfig,
+  resolveUserSubscriptionPrice,
   createTranzilaAuthHeaders,
   addMonthsDateOnly,
   createHandshake,
