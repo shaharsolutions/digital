@@ -1,7 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <style>
+    @font-face {
+      font-family: 'Frank Ruhl Libre';
+      font-style: normal;
+      font-weight: 900;
+      src: url(data:font/woff2;base64,d09GMgABAAAAAANEAA8AAAAABjwAAALtAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhQbHhwuBmA/U1RBVCoAPBEICoIcgW4LCAABNgIkAwwEIAWEPgcgG/8EyAQCqrOqpydZQHML+wAlKx6tF8QXXwDy89fkT37PD/AUK95FLYoisZtGMCqbVeBUBjhQ2CK7YO1KqkYA1mi2kFk+Zok33y4Ki9t0wRx1KGQyAXhDixRR8ufdq8oNg3CuGzikAefREeBxVUmUU9CBMkvpIRit082iH/HCHY++AfMPuULrjW5ef1DcpRhOo+luyxP/D3Ed8oRop8Fh9rGHyhIxoSFXiubrQee4zRtleGXVEFGi0iojzOWUOYiCEmRKcEwlVI3pUQVdmUdYsZBmTC9+x+GKp5I2mbDLUbZMfUi6mUaAqc7wz6mgqm4uVm5WOhvVYCOtBy5b5Vqxa51YfdjLigkrXcp3HmTCAXeDsJq92td31frDMd2jIlescem6d6N79+yJu90igpxXrFnTfdky127HDomJj7ysmLAyqGjrXiZs8J7d/LX5UF7zu2bOWVlsetJ1cHF3K7td15z0Vs9u5vYu6ubjbXh92KqFo0O4YX4ry/xh4YXn1jwunJfUqyLz4v13sx2iV6d+7fnyUWyH7m7d7uSbb93gF+fbapCTjc0gg+5cbbDbjLMAnEYAeqEv7v45uL9d5jdzKV8CPBsZsgrg+ZwfMaaa/4fU/XIfoEeBtyHe1oDDElPNv27q/hOUvWtSWjJbSSCAh2/pMMkwzJiKHmaqL00fd1uuaiGmjgu1BEEkj0HBlqsgyWTesjoOOjwZAnpCaUPZkoxrjRBYY8lr5sqnkE8dAzFSS3fKqaaSKoaErUNoYjDpxCjHBmNkENU0MUTUom2Wf15HNI0MopIY2lNMG/6XgxhIA7V0YihV1NGGagwMopyoWUg3HIT/bSMNaCQTTSyxJObFDIrpIq4mgyLplKhkaH15EIatqcuaytQqC2ikiZG7E/f+TiOeWOJIQqMLVdAZqWkdhMpGaijHiJ/IY+g58ie0fjAaoWeaqKR6VBsqnIvGSCP1xFBxJtoQHitq8pzmIMWuU8ywn7oXpjXE4wE=) format('woff2');
+    }
+  </style>
   <rect width="64" height="64" rx="16" fill="#16645A" />
-  <rect x="10" y="10" width="44" height="44" rx="10" fill="#FAF8F3" />
-  <circle cx="44" cy="20" r="4.5" fill="#F4B69A" />
-  <path d="M22 44V26C22 22.6863 24.6863 20 28 20H32C35.3137 20 38 22.6863 38 26V44" stroke="#16645A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M22 33H31" stroke="#16645A" stroke-width="4.5" stroke-linecap="round"/>
+  <rect x="9" y="9" width="46" height="46" rx="11" fill="#FAF8F3" />
+  <circle cx="17.5" cy="17.5" r="4" fill="#F4B69A" />
+  <text
+    x="33"
+    y="44.5"
+    text-anchor="middle"
+    font-family="'Frank Ruhl Libre', serif"
+    font-weight="900"
+    font-size="40"
+    fill="#16645A"
+  >א</text>
 </svg>
