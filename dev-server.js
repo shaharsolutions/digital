@@ -45,7 +45,8 @@ const apiRoutes = {
   '/api/generate-scripts': require('./api/generate-scripts'),
   '/api/billing/create-checkout': require('./api/billing/create-checkout'),
   '/api/billing/cancel': require('./api/billing/cancel'),
-  '/api/webhooks/tranzila': require('./api/webhooks/tranzila')
+  '/api/webhooks/tranzila': require('./api/webhooks/tranzila'),
+  '/api/admin/users': require('./api/admin/users')
 };
 
 function readRequestBody(req) {

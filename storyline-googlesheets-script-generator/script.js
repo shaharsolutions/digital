@@ -38,6 +38,7 @@ const userAvatar = document.getElementById('user-avatar');
 const userEmailDisplay = document.getElementById('user-email-display');
 const subscriptionBadge = document.getElementById('subscription-badge');
 const subscriptionSubtext = document.getElementById('subscription-subtext');
+const adminPanelBtn = document.getElementById('admin-panel-btn');
 const upgradeTopBtn = document.getElementById('upgrade-top-btn');
 const manageSubBtn = document.getElementById('manage-sub-btn');
 const logoutBtn = document.getElementById('logout-btn');
@@ -97,11 +98,27 @@ const cancelConfirmBox = document.getElementById('cancel-confirm-box');
 const confirmCancelSubBtn = document.getElementById('confirm-cancel-sub-btn');
 const abortCancelSubBtn = document.getElementById('abort-cancel-sub-btn');
 
+// DOM Elements - Admin Panel Modal
+const adminModal = document.getElementById('admin-modal');
+const closeAdminModalBtn = document.getElementById('close-admin-modal');
+const adminStatTotal = document.getElementById('admin-stat-total');
+const adminStatActive = document.getElementById('admin-stat-active');
+const adminStatMrr = document.getElementById('admin-stat-mrr');
+const adminStatTrialing = document.getElementById('admin-stat-trialing');
+const adminStatExpired = document.getElementById('admin-stat-expired');
+const adminSearchInput = document.getElementById('admin-search-input');
+const adminStatusFilter = document.getElementById('admin-status-filter');
+const adminRefreshBtn = document.getElementById('admin-refresh-btn');
+const adminFeedback = document.getElementById('admin-feedback');
+const adminLoading = document.getElementById('admin-loading');
+const adminUsersTbody = document.getElementById('admin-users-tbody');
+
 // Application State
 let authMode = 'login'; // 'login' | 'register'
 let currentUser = null;
 let currentSubState = null;
 let activeCheckoutSession = null;
+let adminUsersCache = [];
 let variableCount = 0;
 let variableNames = [];
 let generateDebounceTimer = null;
@@ -184,6 +201,10 @@ function renderSubscriptionState(sub) {
   const initial = (sub.displayName || sub.email || 'S').trim().charAt(0).toUpperCase();
   userAvatar.textContent = initial;
   userEmailDisplay.textContent = sub.email || '';
+
+  if (adminPanelBtn) {
+    adminPanelBtn.hidden = !sub.isAdmin;
+  }
 
   sandboxBar.hidden = !(sub.sandboxControlsEnabled || sub.billingMode === 'mock');
   if (sandboxModeText) {
@@ -522,6 +543,230 @@ async function handleCancelSubscription() {
 }
 
 // ===============================================================
+// System Administrator Panel Functions
+// ===============================================================
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showAdminFeedback(message, type = 'success') {
+  if (!adminFeedback) return;
+  if (!message) {
+    adminFeedback.hidden = true;
+    return;
+  }
+  adminFeedback.textContent = message;
+  adminFeedback.className = `global-banner ${type === 'error' ? 'banner-error' : 'banner-success'}`;
+  adminFeedback.hidden = false;
+}
+
+async function openAdminModal() {
+  if (!adminModal) return;
+  adminModal.hidden = false;
+  showAdminFeedback('');
+  await loadAdminUsers();
+}
+
+async function loadAdminUsers() {
+  if (!adminUsersTbody) return;
+  adminLoading.hidden = false;
+  adminRefreshBtn.disabled = true;
+
+  try {
+    const resp = await authorizedFetch('/api/admin/users', { method: 'GET' });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'שגיאה בטעינת רשימת המשתמשים');
+    }
+
+    adminUsersCache = Array.isArray(data.users) ? data.users : [];
+    const stats = data.stats || {};
+    adminStatTotal.textContent = String(stats.totalUsers || 0);
+    adminStatActive.textContent = String(stats.activeCount || 0);
+    adminStatMrr.textContent = `MRR: ${stats.estimatedMrrIls || 0} ₪ / חודש`;
+    adminStatTrialing.textContent = String(stats.trialingCount || 0);
+    adminStatExpired.textContent = String((stats.canceledCount || 0) + (stats.expiredCount || 0));
+
+    renderAdminTable();
+  } catch (err) {
+    showAdminFeedback(err.message, 'error');
+  } finally {
+    adminLoading.hidden = true;
+    adminRefreshBtn.disabled = false;
+  }
+}
+
+function renderAdminTable() {
+  if (!adminUsersTbody) return;
+  const query = (adminSearchInput.value || '').trim().toLowerCase();
+  const statusFilter = adminStatusFilter.value || 'all';
+
+  const filtered = adminUsersCache.filter((u) => {
+    if (statusFilter !== 'all' && u.subscriptionStatus !== statusFilter) {
+      return false;
+    }
+    if (!query) return true;
+    const haystack = [u.email, u.displayName, u.uid, u.tranzilaStoId, u.cardLast4]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(query);
+  });
+
+  if (filtered.length === 0) {
+    adminUsersTbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center;padding:28px;color:#64748b;">
+          לא נמצאו משתמשים התואמים לחיפוש או לסינון שנבחר.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  adminUsersTbody.innerHTML = filtered
+    .map((u) => {
+      let badgeClass = 'badge-expired';
+      let badgeLabel = 'פג תוקף / חסום';
+      if (u.subscriptionStatus === 'active') {
+        badgeClass = 'badge-active';
+        badgeLabel = 'מנוי פעיל';
+      } else if (u.subscriptionStatus === 'trialing') {
+        badgeClass = 'badge-trialing';
+        badgeLabel = `בניסיון (${u.trialRemainingDays} ימים)`;
+      } else if (u.subscriptionStatus === 'canceled') {
+        badgeClass = 'badge-canceled';
+        badgeLabel = 'בוטל (פעיל עד סוף תקופה)';
+      }
+
+      const accessText = u.hasAccess ? '✓ גישה פתוחה למחולל' : '✕ גישה חסומה (Paywall)';
+      const dateLabel =
+        u.subscriptionStatus === 'active' || u.subscriptionStatus === 'canceled'
+          ? `סיום תקופה: ${formatDateHe(u.currentPeriodEnd)}`
+          : `סיום ניסיון: ${formatDateHe(u.trialEndsAt)}`;
+
+      const stoInfo = u.tranzilaStoId ? `STO #${escapeHtml(u.tranzilaStoId)}` : 'ללא הו״ק';
+      const cardInfo = u.cardLast4
+        ? `•••• ${escapeHtml(u.cardLast4)}${u.cardExp ? ` (${escapeHtml(u.cardExp)})` : ''}`
+        : '-';
+
+      return `
+        <tr data-uid="${escapeHtml(u.uid)}">
+          <td>
+            <div class="admin-user-cell">
+              <div class="admin-user-name">
+                <span>${escapeHtml(u.displayName || 'ללא שם')}</span>
+                ${u.isAdmin ? '<span class="admin-role-tag">מנהל מערכת</span>' : ''}
+              </div>
+              <span class="admin-user-email" dir="ltr">${escapeHtml(u.email)}</span>
+              <span class="admin-user-joined">נרשם: ${formatDateHe(u.createdAt)}</span>
+            </div>
+          </td>
+          <td>
+            <span class="subscription-badge ${badgeClass}">${badgeLabel}</span>
+            <span class="admin-access-sub">${accessText}</span>
+          </td>
+          <td>
+            <div>${dateLabel}</div>
+          </td>
+          <td dir="ltr" style="text-align:right;">
+            <div><strong>${stoInfo}</strong></div>
+            <div style="font-size:0.78rem;color:#64748b;">${cardInfo}</div>
+          </td>
+          <td>
+            <div class="admin-action-group">
+              <select class="admin-row-select" data-select-uid="${escapeHtml(u.uid)}" aria-label="בחר פעולה על חשבון המשתמש">
+                <option value="grant_active_30">הפעל מנוי חודשי (+30 יום)</option>
+                <option value="grant_active_365">הפעל מנוי שנתי / VIP (+365 יום)</option>
+                <option value="reset_trial_3">אפס / הארך ניסיון (3 ימים)</option>
+                <option value="reset_trial_7">הארך תקופת ניסיון (7 ימים)</option>
+                <option value="cancel_subscription">בטל מנוי והו״ק בטרנזילה</option>
+                <option value="expire_access">חסום גישה מיידית (פג תוקף)</option>
+                <option value="delete_user">מחק משתמש מהמערכת</option>
+              </select>
+              <button
+                type="button"
+                class="btn-admin-apply"
+                data-apply-uid="${escapeHtml(u.uid)}"
+                data-apply-email="${escapeHtml(u.email)}"
+              >
+                בצע
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+}
+
+async function executeAdminUserAction(targetUid, email, selectedValue, btnElement) {
+  let payload = { targetUid };
+
+  if (selectedValue === 'grant_active_30') {
+    payload.action = 'grant_active';
+    payload.days = 30;
+  } else if (selectedValue === 'grant_active_365') {
+    payload.action = 'grant_active';
+    payload.days = 365;
+  } else if (selectedValue === 'reset_trial_3') {
+    payload.action = 'reset_trial';
+    payload.days = 3;
+  } else if (selectedValue === 'reset_trial_7') {
+    payload.action = 'reset_trial';
+    payload.days = 7;
+  } else if (selectedValue === 'cancel_subscription') {
+    if (!window.confirm(`האם לבטל את המנוי והוראת הקבע בטרנזילה עבור ${email}?`)) return;
+    payload.action = 'cancel_subscription';
+  } else if (selectedValue === 'expire_access') {
+    payload.action = 'expire_access';
+  } else if (selectedValue === 'delete_user') {
+    if (
+      !window.confirm(
+        `האם אתה בטוח שברצונך למחוק לצמיתות את המשתמש ${email} מהמערכת (כולל ביטול הוראת קבע אם קיימת)?`
+      )
+    ) {
+      return;
+    }
+    payload.action = 'delete_user';
+  } else {
+    return;
+  }
+
+  if (btnElement) btnElement.disabled = true;
+  showAdminFeedback('');
+
+  try {
+    const resp = await authorizedFetch('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'שגיאה בביצוע פעולת הניהול');
+    }
+
+    showAdminFeedback(data.message || 'הפעולה בוצעה בהצלחה.', 'success');
+    await loadAdminUsers();
+
+    // If admin modified their own account, refresh main header state too
+    if (currentUser && targetUid === currentUser.uid) {
+      await fetchSubscriptionStatus();
+    }
+  } catch (err) {
+    showAdminFeedback(err.message, 'error');
+  } finally {
+    if (btnElement) btnElement.disabled = false;
+  }
+}
+
+// ===============================================================
 // Event Listeners
 // ===============================================================
 
@@ -620,6 +865,40 @@ logoutBtn.addEventListener('click', async () => {
   showGlobalBanner('');
   await signOut(auth);
 });
+
+if (adminPanelBtn) {
+  adminPanelBtn.addEventListener('click', openAdminModal);
+}
+
+if (closeAdminModalBtn) {
+  closeAdminModalBtn.addEventListener('click', () => {
+    adminModal.hidden = true;
+  });
+}
+
+if (adminRefreshBtn) {
+  adminRefreshBtn.addEventListener('click', loadAdminUsers);
+}
+
+if (adminSearchInput) {
+  adminSearchInput.addEventListener('input', renderAdminTable);
+}
+
+if (adminStatusFilter) {
+  adminStatusFilter.addEventListener('change', renderAdminTable);
+}
+
+if (adminUsersTbody) {
+  adminUsersTbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-apply-uid]');
+    if (!btn) return;
+    const targetUid = btn.getAttribute('data-apply-uid');
+    const email = btn.getAttribute('data-apply-email') || '';
+    const selectEl = adminUsersTbody.querySelector(`select[data-select-uid="${CSS.escape(targetUid)}"]`);
+    if (!selectEl) return;
+    executeAdminUserAction(targetUid, email, selectEl.value, btn);
+  });
+}
 
 upgradeTopBtn.addEventListener('click', openCheckoutModal);
 paywallSubscribeBtn.addEventListener('click', openCheckoutModal);

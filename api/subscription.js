@@ -1,5 +1,6 @@
 const {
   TRIAL_DURATION_MS,
+  isAdminEmail,
   verifyFirebaseIdToken,
   getOrCreateUser,
   evaluateAccessState,
@@ -64,6 +65,7 @@ module.exports = async function handler(req, res) {
       email: userDoc.email,
       displayName: userDoc.displayName || '',
       emailVerified: authUser.emailVerified,
+      isAdmin: isAdminEmail(userDoc.email || authUser.email),
       subscriptionStatus: access.effectiveStatus,
       hasAccess: access.hasAccess,
       trialStartedAt: userDoc.trialStartedAt,

@@ -27,6 +27,13 @@
           </div>
         </div>
         <div class="user-actions">
+          <button id="admin-panel-btn" class="btn-admin btn-sm" type="button" hidden>
+            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>פאנל ניהול</span>
+          </button>
           <button id="upgrade-top-btn" class="btn-primary btn-sm" type="button" hidden>
             <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 3h12l4 6-10 13L2 9Z"/>
@@ -351,6 +358,88 @@
           <button id="open-cancel-confirm-btn" class="btn-danger-outline btn-full" type="button" hidden>
             ביטול מנוי חודשי (ללא חיובים נוספים)
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Administrator Panel Modal -->
+  <div id="admin-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title" hidden>
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div>
+          <h2 id="admin-modal-title">פאנל ניהול מערכת • ניהול משתמשים ומנויים</h2>
+          <p class="modal-subtitle">צפייה בכל המשתמשים הרשומים במערכת וביצוע פעולות ניהול ישירות על חשבונות</p>
+        </div>
+        <button id="close-admin-modal" class="modal-close-btn" type="button" aria-label="סגור פאנל ניהול">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Admin Summary KPI Cards -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <span class="admin-stat-label">סה״כ משתמשים רשומים</span>
+            <strong id="admin-stat-total" class="admin-stat-value">0</strong>
+          </div>
+          <div class="admin-stat-card admin-stat-active">
+            <span class="admin-stat-label">מנויים משלמים פעילים</span>
+            <strong id="admin-stat-active" class="admin-stat-value">0</strong>
+            <span id="admin-stat-mrr" class="admin-stat-sub">MRR: 0 ₪</span>
+          </div>
+          <div class="admin-stat-card admin-stat-trial">
+            <span class="admin-stat-label">בתקופת ניסיון (3 ימים)</span>
+            <strong id="admin-stat-trialing" class="admin-stat-value">0</strong>
+          </div>
+          <div class="admin-stat-card admin-stat-expired">
+            <span class="admin-stat-label">בוטלו / פג תוקף</span>
+            <strong id="admin-stat-expired" class="admin-stat-value">0</strong>
+          </div>
+        </div>
+
+        <!-- Search, Filter & Refresh Toolbar -->
+        <div class="admin-toolbar">
+          <div class="admin-search-wrap">
+            <input
+              type="search"
+              id="admin-search-input"
+              class="admin-search-input"
+              placeholder="חיפוש לפי אימייל, שם, או מזהה הוראת קבע..."
+            >
+          </div>
+          <div class="admin-filter-wrap">
+            <select id="admin-status-filter" class="admin-filter-select" aria-label="סינון לפי סטטוס מנוי">
+              <option value="all">כל הסטטוסים</option>
+              <option value="active">מנוי פעיל (Active)</option>
+              <option value="trialing">בתקופת ניסיון (Trialing)</option>
+              <option value="canceled">בוטל (Canceled)</option>
+              <option value="expired">פג תוקף / חסום (Expired)</option>
+            </select>
+            <button id="admin-refresh-btn" class="btn-secondary btn-sm" type="button">
+              <span>↻ רענן נתונים</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="admin-feedback" class="global-banner" role="status" aria-live="polite" hidden></div>
+
+        <div id="admin-loading" class="loading-card" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <p>טוען רשימת משתמשים מ-Cloud Firestore...</p>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>משתמש ואימייל</th>
+                <th>סטטוס וגישה</th>
+                <th>תוקף / חיוב הבא</th>
+                <th>הוראת קבע וכרטיס (טרנזילה)</th>
+                <th>פעולות ניהול על החשבון</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody"></tbody>
+          </table>
         </div>
       </div>
     </div>

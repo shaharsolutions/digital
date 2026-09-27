@@ -18,6 +18,22 @@ const DISPOSABLE_EMAIL_DOMAINS = new Set([
   'temp-mail.org'
 ]);
 
+const DEFAULT_ADMIN_EMAILS = new Set([
+  'shaharc94@gmail.com',
+  'shaharsolutions@gmail.com'
+]);
+
+function isAdminEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const lower = email.trim().toLowerCase();
+  if (DEFAULT_ADMIN_EMAILS.has(lower)) return true;
+  const customAdmins = String(process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return customAdmins.includes(lower);
+}
+
 let adminApp = null;
 let firestoreDb = null;
 let adminInitAttempted = false;
@@ -493,6 +509,84 @@ async function findUserByField(fieldName, value) {
   return users.find((u) => u && u[fieldName] === value) || null;
 }
 
+async function listDocuments(collectionName, pageSize = 300) {
+  const { firestoreDb: db } = initFirebaseAdmin();
+  if (db) {
+    const snap = await db.collection(collectionName).limit(pageSize).get();
+    return snap.docs.map((d) => normalizeAdminDoc({ uid: d.id, ...d.data() }));
+  }
+
+  const cliToken = await getFirestoreAccessToken();
+  if (cliToken) {
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}?pageSize=${pageSize}`;
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${cliToken}` }
+    });
+    if (resp.ok) {
+      const json = await resp.json();
+      const docs = Array.isArray(json.documents) ? json.documents : [];
+      return docs.map((d) => {
+        const docId = String(d.name || '').split('/').pop();
+        const obj = firestoreFieldsToObj(d.fields);
+        return { uid: obj.uid || docId, ...obj };
+      });
+    }
+  }
+
+  const store = readLocalStore();
+  return Object.values(store[collectionName] || {});
+}
+
+async function deleteDocument(collectionName, docId) {
+  const store = readLocalStore();
+  if (store[collectionName] && store[collectionName][docId]) {
+    delete store[collectionName][docId];
+    writeLocalStore(store);
+  }
+
+  const { firestoreDb: db } = initFirebaseAdmin();
+  if (db) {
+    await db.collection(collectionName).doc(docId).delete();
+    return true;
+  }
+
+  const cliToken = await getFirestoreAccessToken();
+  if (cliToken) {
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}/${encodeURIComponent(docId)}`;
+    await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${cliToken}` }
+    });
+  }
+  return true;
+}
+
+async function deleteFirebaseAuthUser(uid) {
+  if (!uid) return false;
+  const { adminApp: app } = initFirebaseAdmin();
+  if (app) {
+    try {
+      await app.auth().deleteUser(uid);
+      return true;
+    } catch (_) {}
+  }
+
+  const cliToken = await getFirestoreAccessToken();
+  if (cliToken) {
+    const url = `https://identitytoolkit.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/accounts:delete`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${cliToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ localId: String(uid) })
+    });
+    return resp.ok;
+  }
+  return false;
+}
+
 /**
  * Evaluates authoritative subscription state and access rights on the server.
  */
@@ -609,9 +703,13 @@ module.exports = {
   FIREBASE_API_KEY,
   TRIAL_DURATION_MS,
   ensureRuntimeEnv,
+  isAdminEmail,
   verifyFirebaseIdToken,
   getDocument,
   setDocument,
+  listDocuments,
+  deleteDocument,
+  deleteFirebaseAuthUser,
   findUserByField,
   getOrCreateUser,
   evaluateAccessState
