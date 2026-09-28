@@ -1579,6 +1579,24 @@ textarea:focus {
   cursor: not-allowed;
 }
 
+.admin-inline-confirm {
+  padding: 12px 14px;
+  min-width: 260px;
+  max-width: 340px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.admin-inline-confirm p {
+  margin: 0 0 10px;
+}
+
+.admin-inline-confirm .cancel-confirm-buttons {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 820px) {
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr);

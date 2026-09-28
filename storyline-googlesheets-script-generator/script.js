@@ -588,7 +588,8 @@ async function triggerMockWebhook(responseCode) {
 }
 
 async function handleCancelSubscription() {
-  confirmCancelSubBtn.disabled = true;
+  const confirmBtn = cancelConfirmBox ? cancelConfirmBox.querySelector('#confirm-cancel-sub-btn') : confirmCancelSubBtn;
+  if (confirmBtn) confirmBtn.disabled = true;
   manageFeedback.hidden = true;
 
   try {
@@ -607,8 +608,22 @@ async function handleCancelSubscription() {
     manageFeedback.textContent = err.message;
     manageFeedback.hidden = false;
   } finally {
-    confirmCancelSubBtn.disabled = false;
+    if (confirmBtn) confirmBtn.disabled = false;
   }
+}
+
+function renderManageCancelConfirmBox() {
+  if (!cancelConfirmBox) return;
+  cancelConfirmBox.innerHTML = `
+    <p>
+      <strong>האם לבטל את החידוש האוטומטי של המנוי?</strong><br>
+      הוראת הקבע בטרנזילה תופסק מיד ולא תחויב בחודשים הבאים. הגישה שלך למחולל תישאר פתוחה במלואה עד לתום תקופת החיוב הנוכחית ששולמה.
+    </p>
+    <div class="cancel-confirm-buttons">
+      <button id="confirm-cancel-sub-btn" class="btn-danger" type="button">כן, בטל מנוי</button>
+      <button id="abort-cancel-sub-btn" class="btn-secondary" type="button">השאר מנוי פעיל</button>
+    </div>
+  `;
 }
 
 // ===============================================================
@@ -816,7 +831,7 @@ function renderAdminTable() {
             <div style="font-size:0.78rem;color:#64748b;">${cardInfo}</div>
           </td>
           <td>
-            <div class="admin-action-group">
+            <div class="admin-action-group" data-action-group-uid="${escapeHtml(u.uid)}">
               <select class="admin-row-select" data-select-uid="${escapeHtml(u.uid)}" aria-label="בחר פעולה על חשבון המשתמש">
                 <option value="grant_active_30">הפעל מנוי חודשי (+30 יום)</option>
                 <option value="grant_active_365">הפעל מנוי שנתי / VIP (+365 יום)</option>
@@ -835,6 +850,7 @@ function renderAdminTable() {
                 בצע
               </button>
             </div>
+            <div class="cancel-confirm-box admin-inline-confirm" data-confirm-box-uid="${escapeHtml(u.uid)}" hidden></div>
           </td>
         </tr>
       `;
@@ -921,7 +937,77 @@ async function saveUserPricing(targetUid, reset = false, btnElement = null) {
   }
 }
 
-async function executeAdminUserAction(targetUid, email, selectedValue, btnElement) {
+function closeAllAdminRowConfirmBoxes() {
+  if (!adminUsersTbody) return;
+  adminUsersTbody.querySelectorAll('[data-confirm-box-uid]').forEach((box) => {
+    box.innerHTML = '';
+    box.hidden = true;
+  });
+  adminUsersTbody.querySelectorAll('[data-action-group-uid]').forEach((group) => {
+    group.hidden = false;
+  });
+}
+
+function openAdminRowConfirmBox(targetUid, email, selectedValue) {
+  if (!adminUsersTbody || !targetUid) return;
+  closeAllAdminRowConfirmBoxes();
+
+  const actionGroup = adminUsersTbody.querySelector(
+    `[data-action-group-uid="${CSS.escape(targetUid)}"]`
+  );
+  const confirmBox = adminUsersTbody.querySelector(
+    `[data-confirm-box-uid="${CSS.escape(targetUid)}"]`
+  );
+  if (!confirmBox) return;
+
+  let titleHtml = '';
+  let descHtml = '';
+  let confirmBtnLabel = '';
+
+  if (selectedValue === 'delete_user') {
+    titleHtml = 'האם למחוק לצמיתות את המשתמש מהמערכת?';
+    descHtml = `המשתמש <strong dir="ltr">${escapeHtml(email)}</strong> יימחק לצמיתות (כולל ביטול הוראת קבע בטרנזילה אם קיימת).`;
+    confirmBtnLabel = 'כן, מחק משתמש';
+  } else if (selectedValue === 'cancel_subscription') {
+    titleHtml = 'האם לבטל את המנוי והוראת הקבע?';
+    descHtml = `הוראת הקבע בטרנזילה עבור <strong dir="ltr">${escapeHtml(email)}</strong> תופסק והמנוי יעבור לסטטוס מבוטל.`;
+    confirmBtnLabel = 'כן, בטל מנוי';
+  } else {
+    return;
+  }
+
+  if (actionGroup) {
+    actionGroup.hidden = true;
+  }
+
+  confirmBox.innerHTML = `
+    <p>
+      <strong>${titleHtml}</strong><br>
+      ${descHtml}
+    </p>
+    <div class="cancel-confirm-buttons">
+      <button
+        type="button"
+        class="btn-danger btn-sm"
+        data-confirm-exec-uid="${escapeHtml(targetUid)}"
+        data-confirm-exec-email="${escapeHtml(email)}"
+        data-confirm-exec-action="${escapeHtml(selectedValue)}"
+      >
+        ${confirmBtnLabel}
+      </button>
+      <button
+        type="button"
+        class="btn-secondary btn-sm"
+        data-confirm-abort-uid="${escapeHtml(targetUid)}"
+      >
+        ביטול
+      </button>
+    </div>
+  `;
+  confirmBox.hidden = false;
+}
+
+async function executeAdminUserAction(targetUid, email, selectedValue, btnElement, isConfirmed = false) {
   let payload = { targetUid };
 
   if (selectedValue === 'grant_active_30') {
@@ -937,16 +1023,16 @@ async function executeAdminUserAction(targetUid, email, selectedValue, btnElemen
     payload.action = 'reset_trial';
     payload.days = 7;
   } else if (selectedValue === 'cancel_subscription') {
-    if (!window.confirm(`האם לבטל את המנוי והוראת הקבע בטרנזילה עבור ${email}?`)) return;
+    if (!isConfirmed) {
+      openAdminRowConfirmBox(targetUid, email, selectedValue);
+      return;
+    }
     payload.action = 'cancel_subscription';
   } else if (selectedValue === 'expire_access') {
     payload.action = 'expire_access';
   } else if (selectedValue === 'delete_user') {
-    if (
-      !window.confirm(
-        `האם אתה בטוח שברצונך למחוק לצמיתות את המשתמש ${email} מהמערכת (כולל ביטול הוראת קבע אם קיימת)?`
-      )
-    ) {
+    if (!isConfirmed) {
+      openAdminRowConfirmBox(targetUid, email, selectedValue);
       return;
     }
     payload.action = 'delete_user';
@@ -976,6 +1062,7 @@ async function executeAdminUserAction(targetUid, email, selectedValue, btnElemen
     }
   } catch (err) {
     showAdminFeedback(err.message, 'error');
+    closeAllAdminRowConfirmBoxes();
   } finally {
     if (btnElement) btnElement.disabled = false;
   }
@@ -1178,13 +1265,28 @@ if (adminUsersTbody) {
       return;
     }
 
+    const confirmExecBtn = e.target.closest('[data-confirm-exec-uid]');
+    if (confirmExecBtn) {
+      const targetUid = confirmExecBtn.getAttribute('data-confirm-exec-uid');
+      const email = confirmExecBtn.getAttribute('data-confirm-exec-email') || '';
+      const actionType = confirmExecBtn.getAttribute('data-confirm-exec-action') || '';
+      executeAdminUserAction(targetUid, email, actionType, confirmExecBtn, true);
+      return;
+    }
+
+    const confirmAbortBtn = e.target.closest('[data-confirm-abort-uid]');
+    if (confirmAbortBtn) {
+      closeAllAdminRowConfirmBoxes();
+      return;
+    }
+
     const btn = e.target.closest('[data-apply-uid]');
     if (!btn) return;
     const targetUid = btn.getAttribute('data-apply-uid');
     const email = btn.getAttribute('data-apply-email') || '';
     const selectEl = adminUsersTbody.querySelector(`select[data-select-uid="${CSS.escape(targetUid)}"]`);
     if (!selectEl) return;
-    executeAdminUserAction(targetUid, email, selectEl.value, btn);
+    executeAdminUserAction(targetUid, email, selectEl.value, btn, false);
   });
 }
 
@@ -1212,16 +1314,22 @@ closeManageModalBtn.addEventListener('click', () => {
 });
 
 openCancelConfirmBtn.addEventListener('click', () => {
+  renderManageCancelConfirmBox();
   openCancelConfirmBtn.hidden = true;
   cancelConfirmBox.hidden = false;
 });
 
-abortCancelSubBtn.addEventListener('click', () => {
-  cancelConfirmBox.hidden = true;
-  openCancelConfirmBtn.hidden = false;
-});
-
-confirmCancelSubBtn.addEventListener('click', handleCancelSubscription);
+if (cancelConfirmBox) {
+  cancelConfirmBox.addEventListener('click', (e) => {
+    if (e.target.closest('#confirm-cancel-sub-btn')) {
+      handleCancelSubscription();
+    } else if (e.target.closest('#abort-cancel-sub-btn')) {
+      cancelConfirmBox.innerHTML = '';
+      cancelConfirmBox.hidden = true;
+      openCancelConfirmBtn.hidden = false;
+    }
+  });
+}
 
 // Sandbox testing buttons
 simExpireBtn.addEventListener('click', async () => {
