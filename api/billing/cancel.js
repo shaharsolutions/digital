@@ -35,11 +35,15 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    if (stoIdToCancel) {
-      await cancelStandingOrder({
+    if (stoIdToCancel || userDoc.email) {
+      const cancelRes = await cancelStandingOrder({
         stoId: stoIdToCancel,
+        clientEmail: userDoc.email,
         updatedByUser: authUser.uid
       });
+      if (cancelRes && cancelRes.stoId) {
+        stoIdToCancel = String(cancelRes.stoId);
+      }
     }
 
     const nowIso = new Date().toISOString();

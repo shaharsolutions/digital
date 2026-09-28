@@ -311,11 +311,15 @@ module.exports = async function handler(req, res) {
             stoIdToCancel = String(remoteSto.sto_id);
           }
         }
-        if (stoIdToCancel) {
-          await cancelStandingOrder({
+        if (stoIdToCancel || targetUser.email) {
+          const cancelRes = await cancelStandingOrder({
             stoId: stoIdToCancel,
+            clientEmail: targetUser.email,
             updatedByUser: authUser.email
           });
+          if (cancelRes && cancelRes.stoId) {
+            stoIdToCancel = String(cancelRes.stoId);
+          }
         }
         updatedUser = {
           ...targetUser,

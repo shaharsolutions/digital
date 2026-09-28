@@ -368,10 +368,10 @@ function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl, 
  * Cancels an active Standing Order (STO) in Tranzila My Billing via STO API V2 on `shaher1tok`.
  * Official Reference: https://docs.tranzila.com/docs/payments-and-billing/sto-api-v2/updatestov2
  */
-async function cancelStandingOrder({ stoId, updatedByUser }) {
+async function cancelStandingOrder({ stoId, clientEmail, updatedByUser }) {
   const cfg = getTranzilaConfig();
 
-  if (cfg.mode === 'mock' || String(stoId).startsWith('mock_sto_')) {
+  if (cfg.mode === 'mock' || String(stoId || '').startsWith('mock_sto_')) {
     return {
       ok: true,
       mode: 'mock',
@@ -384,42 +384,80 @@ async function cancelStandingOrder({ stoId, updatedByUser }) {
     throw new Error('Missing TRANZILA_API_APP_KEY or TRANZILA_API_SECRET for STO cancellation');
   }
 
-  const parsedStoId = Number(String(stoId).trim());
-  const endpoints = [
-    'https://api.tranzila.com/v2/sto/update',
-    'https://api.tranzila.com/v2/v2/sto/update'
-  ];
+  // Verify whether the STO is active on the current production terminal (shaher1tok / shaher1)
+  let targetStoId = stoId ? Number(String(stoId).trim()) : 0;
+  let activeSto = null;
+
+  if (targetStoId) {
+    activeSto = await findStandingOrder({ stoId: targetStoId });
+  }
+  if (!activeSto && clientEmail) {
+    activeSto = await findStandingOrder({ clientEmail });
+    if (activeSto && activeSto.sto_id) {
+      targetStoId = Number(activeSto.sto_id);
+    }
+  }
+
+  // If no active STO exists on the production terminal (e.g. STO was from old test terminal or already inactive),
+  // return success so subscription cancellation in Firestore is not blocked.
+  if (!activeSto && !targetStoId) {
+    return {
+      ok: true,
+      mode: 'tranzila',
+      error_code: 0,
+      alreadyInactive: true,
+      message: 'No active STO found on terminal'
+    };
+  }
+
   const terminalsToTry = Array.from(
-    new Set([cfg.terminalName, cfg.checkoutTerminalName].filter(Boolean))
+    new Set(
+      [
+        activeSto && activeSto.terminal_name,
+        cfg.terminalName,
+        cfg.checkoutTerminalName
+      ].filter(Boolean)
+    )
   );
 
   let lastError = null;
   for (const terminal of terminalsToTry) {
-    for (const url of endpoints) {
-      const headers = createTranzilaAuthHeaders(cfg.apiAppKey, cfg.apiSecret);
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          terminal_name: terminal,
-          sto_id: parsedStoId,
-          sto_status: 'inactive',
-          response_language: 'hebrew',
-          updated_by_user: String(cfg.apiUsername || updatedByUser || 'shaher1').slice(0, 40)
-        })
-      });
+    const headers = createTranzilaAuthHeaders(cfg.apiAppKey, cfg.apiSecret);
+    const resp = await fetch('https://api.tranzila.com/v2/sto/update', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        terminal_name: terminal,
+        sto_id: targetStoId,
+        sto_status: 'inactive',
+        response_language: 'hebrew',
+        updated_by_user: String(cfg.apiUsername || updatedByUser || 'shaher1').slice(0, 40)
+      })
+    });
 
-      const data = await resp.json().catch(() => null);
-      if (resp.ok && data && Number(data.error_code) === 0) {
-        return {
-          ok: true,
-          mode: 'tranzila',
-          error_code: data.error_code,
-          message: data.message || 'Success'
-        };
-      }
-      lastError = (data && (data.message || data.error_msg)) || `HTTP ${resp.status}`;
+    const data = await resp.json().catch(() => null);
+    if (resp.ok && data && Number(data.error_code) === 0) {
+      return {
+        ok: true,
+        mode: 'tranzila',
+        stoId: String(targetStoId),
+        error_code: data.error_code,
+        message: data.message || 'Success'
+      };
     }
+    lastError = (data && (data.message || data.error_msg)) || `HTTP ${resp.status}`;
+  }
+
+  // If targetStoId was not found as an active STO on the current terminal (e.g. old test terminal STO),
+  // do not block cancellation.
+  if (!activeSto) {
+    return {
+      ok: true,
+      mode: 'tranzila',
+      error_code: 0,
+      alreadyInactive: true,
+      message: 'STO not active on current terminal'
+    };
   }
 
   throw new Error(lastError || 'Tranzila STO cancel failed');
@@ -459,10 +497,22 @@ async function findStandingOrder({ stoId, token, clientEmail }) {
     if (!resp.ok) continue;
     const data = await resp.json().catch(() => null);
     if (data && Number(data.error_code) === 0 && Array.isArray(data.stos) && data.stos.length > 0) {
-      const sorted = [...data.stos].sort(
-        (a, b) => Number(b.sto_id || 0) - Number(a.sto_id || 0)
-      );
-      return sorted[0];
+      let matches = data.stos;
+      if (stoId) {
+        matches = matches.filter((s) => String(s.sto_id) === String(stoId));
+      }
+      if (clientEmail) {
+        const lowerEmail = String(clientEmail).trim().toLowerCase();
+        matches = matches.filter(
+          (s) => s.client && String(s.client.email || '').trim().toLowerCase() === lowerEmail
+        );
+      }
+      if (matches.length > 0) {
+        const sorted = [...matches].sort(
+          (a, b) => Number(b.sto_id || 0) - Number(a.sto_id || 0)
+        );
+        return sorted[0];
+      }
     }
   }
 
