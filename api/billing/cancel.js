@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 1. Cancel recurring Standing Order (STO) in Tranzila My Billing (`shaharsoltok`)
+    // 1. Cancel recurring Standing Order (STO) in Tranzila My Billing (`shaher1tok`)
     let stoIdToCancel = userDoc.tranzilaStoId || '';
     if (!stoIdToCancel && userDoc.email) {
       const remoteSto = await findStandingOrder({ clientEmail: userDoc.email });

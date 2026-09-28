@@ -23,7 +23,7 @@ function getTranzilaConfig() {
   const apiUsername = (
     process.env.TRANZILA_API_USERNAME ||
     checkoutTerminalName ||
-    'shaharsol'
+    'shaher1'
   ).trim();
   const apiAppKey = (process.env.TRANZILA_API_APP_KEY || '').trim();
   const apiSecret = (process.env.TRANZILA_API_SECRET || '').trim();
@@ -51,10 +51,10 @@ function getTranzilaConfig() {
 
   return {
     mode,
-    checkoutTerminalName: checkoutTerminalName || 'shaharsol',
+    checkoutTerminalName: checkoutTerminalName || 'shaher1',
     checkoutPassword,
     checkoutCreditPassword,
-    terminalName: terminalName || 'shaharsoltok',
+    terminalName: terminalName || 'shaher1tok',
     tokenPassword,
     tokenCreditPassword,
     apiUsername,
@@ -105,7 +105,7 @@ function addMonthsDateOnly(fromDate = new Date(), months = 1) {
 }
 
 /**
- * Creates a server-side Handshake (thtk) with Tranzila on the checkout terminal (`shaharsol`)
+ * Creates a server-side Handshake (thtk) with Tranzila on the checkout terminal (`shaher1`)
  * to lock the transaction amount (39 ILS).
  * Supports both Tranzila Handshake V2 (HMAC headers) and V1 (TranzilaPW query param),
  * plus a signed sandbox/mock fallback when credentials are not supplied.
@@ -281,7 +281,7 @@ function buildInvoicePurchaseData(sum = SUBSCRIPTION_PRICE_ILS) {
 
 /**
  * Builds the POST parameters for Tranzila Recurring iFrame (`iframenew.php`).
- * Configured for dual-terminal recurring billing (`shaharsol` checkout + `shaharsoltok` STO token terminal).
+ * Configured for dual-terminal recurring billing (`shaher1` checkout + `shaher1tok` STO token terminal).
  */
 function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl, sum }) {
   const cfg = getTranzilaConfig();
@@ -365,7 +365,7 @@ function buildIframeCheckoutConfig({ thtk, dcDisable, sessionId, user, baseUrl, 
 }
 
 /**
- * Cancels an active Standing Order (STO) in Tranzila My Billing via STO API V2 on `shaharsoltok`.
+ * Cancels an active Standing Order (STO) in Tranzila My Billing via STO API V2 on `shaher1tok`.
  * Official Reference: https://docs.tranzila.com/docs/payments-and-billing/sto-api-v2/updatestov2
  */
 async function cancelStandingOrder({ stoId, updatedByUser }) {
@@ -405,7 +405,7 @@ async function cancelStandingOrder({ stoId, updatedByUser }) {
           sto_id: parsedStoId,
           sto_status: 'inactive',
           response_language: 'hebrew',
-          updated_by_user: String(cfg.apiUsername || updatedByUser || 'shaharsol').slice(0, 40)
+          updated_by_user: String(cfg.apiUsername || updatedByUser || 'shaher1').slice(0, 40)
         })
       });
 
@@ -426,7 +426,7 @@ async function cancelStandingOrder({ stoId, updatedByUser }) {
 }
 
 /**
- * Retrieves Standing Orders (STOs) from Tranzila (`shaharsoltok` / `shaharsol`) to cross-verify webhook authenticity or lookup sto_id.
+ * Retrieves Standing Orders (STOs) from Tranzila (`shaher1tok` / `shaher1`) to cross-verify webhook authenticity or lookup sto_id.
  * Official Reference: https://docs.tranzila.com/docs/payments-and-billing/tranzila-api/getstos
  * Endpoint: POST https://api.tranzila.com/v1/stos/get
  */

@@ -173,7 +173,7 @@ module.exports = async function handler(req, res) {
       return res.status(403).json({ error: 'Untrusted webhook notification' });
     }
 
-    // Check terminal supplier if provided (allow both shaharsol and shaharsoltok)
+    // Check terminal supplier if provided (allow both shaher1 and shaher1tok)
     const supplier = String(payload.supplier || payload.terminal_name || '').trim();
     if (
       supplier &&
@@ -303,7 +303,7 @@ module.exports = async function handler(req, res) {
     const isSuccess = rawResponse === '000';
     const isRecurringRenewal = Boolean(stoExternalId && !sessionDoc);
 
-    // Look up sto_id and card details from Tranzila API (`shaharsoltok`)
+    // Look up sto_id and card details from Tranzila API (`shaher1tok`)
     let resolvedStoId = stoExternalId || '';
     let remoteCardLast4 = '';
     let remoteCardExp = '';

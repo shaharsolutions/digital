@@ -258,7 +258,7 @@ function renderSubscriptionState(sub) {
   sandboxBar.hidden = !(sub.sandboxControlsEnabled || sub.billingMode === 'mock');
   if (sandboxModeText) {
     if (sub.billingMode === 'tranzila') {
-      sandboxModeText.textContent = `מחובר למסופי טרנזילה (${sub.checkoutTerminalName || 'shaharsol'} / ${sub.stoTerminalName || 'shaharsoltok'}). ניתן לדמות סיום 3 ימי ניסיון כדי לבדוק את מסך הסליקה.`;
+      sandboxModeText.textContent = `מחובר למסופי טרנזילה (${sub.checkoutTerminalName || 'shaher1'} / ${sub.stoTerminalName || 'shaher1tok'}). ניתן לדמות סיום 3 ימי ניסיון כדי לבדוק את מסך הסליקה.`;
     } else {
       sandboxModeText.textContent = 'ניתן לדמות סיום תקופת ניסיון ורכישת מנוי ללא חיוב אמיתי.';
     }
