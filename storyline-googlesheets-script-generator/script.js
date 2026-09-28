@@ -738,8 +738,8 @@ function renderAdminTable() {
         badgeClass = 'badge-trialing';
         badgeLabel = `בניסיון (${u.trialRemainingDays} ימים)`;
       } else if (u.subscriptionStatus === 'canceled') {
-        badgeClass = 'badge-canceled';
-        badgeLabel = 'בוטל (פעיל עד סוף תקופה)';
+        badgeClass = 'badge-canceled badge-stacked';
+        badgeLabel = '<span>בוטל</span><span>(פעיל עד סוף תקופה)</span>';
       }
 
       const accessText = u.hasAccess ? '✓ גישה פתוחה למחולל' : '✕ גישה חסומה (Paywall)';
