@@ -314,7 +314,7 @@ function populateManageModal(sub) {
 
   const statusLabels = {
     trialing: `תקופת ניסיון חינמית (נותרו ${sub.trialRemainingDays} ימים) • מחיר מנוי: ${priceIls} ₪/חודש${discountSuffix}`,
-    active: `מנוי חודשי פעיל (${priceIls} ₪ לחודש${discountSuffix})`,
+    active: `מנוי חודשי פעיל\n(${priceIls} ₪ לחודש${discountSuffix})`,
     canceled: 'בוטל (גישה פעילה עד סוף התקופה ששולמה)',
     past_due: 'חיוב חודשי נכשל – ממתין לעדכון אשראי',
     expired: `לא פעיל (תקופת הניסיון הסתיימה) • מחיר מנוי: ${priceIls} ₪/חודש${discountSuffix}`

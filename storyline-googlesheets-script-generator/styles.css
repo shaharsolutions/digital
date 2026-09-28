@@ -1066,6 +1066,7 @@ textarea:focus {
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   word-break: break-word;
+  white-space: pre-line;
 }
 
 .invoice-box {
