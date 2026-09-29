@@ -35,6 +35,9 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.ico': 'image/x-icon'
@@ -114,8 +117,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Serve static files
+  // Serve static files (support both root and /storyline-googlesheets-script-generator/ prefix)
   let relPath = decodeURIComponent(parsedUrl.pathname);
+  if (relPath.startsWith('/storyline-googlesheets-script-generator/')) {
+    const stripped = relPath.replace(/^\/storyline-googlesheets-script-generator/, '') || '/';
+    if (!fs.existsSync(path.join(ROOT_DIR, relPath))) {
+      relPath = stripped;
+    }
+  }
   if (relPath.endsWith('/')) {
     relPath += 'index.html';
   }

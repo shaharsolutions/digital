@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="55%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="sheetGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+  <circle cx="1050" cy="110" r="260" fill="#2563eb" fill-opacity="0.15" />
+  <circle cx="160" cy="520" r="240" fill="#10b981" fill-opacity="0.12" />
+
+  <!-- Card Frame -->
+  <rect x="64" y="56" width="1072" height="518" rx="28" fill="#1e293b" fill-opacity="0.75" stroke="#334155" stroke-width="2" />
+
+  <!-- Icon Graphic -->
+  <g transform="translate(96, 110)">
+    <rect x="0" y="0" width="84" height="94" rx="16" fill="url(#sheetGrad)" />
+    <rect x="14" y="18" width="24" height="12" rx="3" fill="#ffffff" fill-opacity="0.9" />
+    <rect x="44" y="18" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.9" />
+    <rect x="14" y="38" width="24" height="12" rx="3" fill="#ffffff" fill-opacity="0.75" />
+    <rect x="44" y="38" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.75" />
+    <rect x="14" y="58" width="24" height="12" rx="3" fill="#ffffff" fill-opacity="0.75" />
+    <rect x="44" y="58" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.75" />
+    <rect x="40" y="48" width="76" height="64" rx="16" fill="#2563eb" stroke="#0f172a" stroke-width="6" />
+    <path d="M66 70L56 80L66 90" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M90 70L100 80L90 90" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M82 66L74 94" stroke="#93c5fd" stroke-width="5" stroke-linecap="round" />
+  </g>
+
+  <!-- English Title -->
+  <text x="96" y="290" fill="#ffffff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="42" font-weight="700">
+    Storyline 360 to Google Sheets Script Generator
+  </text>
+
+  <!-- Accent Divider -->
+  <rect x="96" y="318" width="420" height="5" rx="2.5" fill="url(#accentGrad)" />
+
+  <!-- Hebrew Subtitle -->
+  <text x="1104" y="388" text-anchor="end" direction="rtl" fill="#e2e8f0" font-family="'Rubik', system-ui, -apple-system, Arial, sans-serif" font-size="34" font-weight="600">
+    מחולל אוטומטי של קוד Google Apps Script וקוד JavaScript ל-Storyline 360
+  </text>
+
+  <text x="1104" y="440" text-anchor="end" direction="rtl" fill="#94a3b8" font-family="'Rubik', system-ui, -apple-system, Arial, sans-serif" font-size="25" font-weight="400">
+    ייצוא ושמירת משתנים, ציונים ונתוני לומדים מסטוריליין ישירות לגיליון גוגל שיטס ללא צורך בתכנות
+  </text>
+
+  <!-- Brand Pill -->
+  <rect x="824" y="484" width="280" height="48" rx="24" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5" />
+  <text x="964" y="515" text-anchor="middle" direction="rtl" fill="#60a5fa" font-family="'Rubik', system-ui, -apple-system, Arial, sans-serif" font-size="20" font-weight="600">
+    שחר פתרונות דיגיטליים
+  </text>
+</svg>

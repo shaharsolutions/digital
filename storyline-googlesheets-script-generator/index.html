@@ -1,15 +1,200 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNQ7DFRKJX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WNQ7DFRKJX');
+  </script>
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Storyline variables to Google Sheets Script Generator</title>
+  <title>מחולל סקריפטים Storyline ל-Google Sheets | ייצוא משתנים מסטוריליין לגוגל שיטס (Storyline 360 Script Generator)</title>
+  <meta name="description" content="מחולל קוד אוטומטי לחיבור Articulate Storyline 360 ל-Google Sheets ללא צורך בידע בתכנות. הפקת קוד Google Apps Script וקוד JavaScript לייצוא ושמירת משתנים, ציונים ונתוני לומדים מסטוריליין ישירות לגוגל שיטס. מבית שחר פתרונות דיגיטליים.">
+  <meta name="keywords" content="Storyline to Google Sheets, Articulate Storyline 360, Google Apps Script, Storyline JavaScript, סטוריליין לגוגל שיטס, חיבור סטוריליין לגוגל שיטס, ייצוא משתנים מסטוריליין, שמירת נתונים מסטוריליין, מחולל סקריפטים לסטוריליין, פיתוח הדרכה, למידה דיגיטלית, שחר פתרונות דיגיטליים, Storyline variables to Google Sheets Script Generator">
+  <meta name="author" content="שחר פתרונות דיגיטליים | Shahar Digital Solutions">
+  <meta name="application-name" content="Storyline to Google Sheets Script Generator">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Canonical & Language Alternates -->
+  <link rel="canonical" href="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/">
+  <link rel="alternate" hreflang="he" href="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/">
+  <link rel="alternate" hreflang="he-IL" href="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/">
+  <link rel="alternate" hreflang="x-default" href="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/">
+
+  <!-- Icons & Web App Manifest -->
   <link rel="icon" type="image/svg+xml" href="/storyline-googlesheets-script-generator/favicon.svg">
+  <link rel="apple-touch-icon" href="/storyline-googlesheets-script-generator/favicon.svg">
+  <link rel="manifest" href="/storyline-googlesheets-script-generator/site.webmanifest">
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="he_IL">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:site_name" content="שחר פתרונות דיגיטליים | Shahar Digital Solutions">
+  <meta property="og:url" content="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/">
+  <meta property="og:title" content="מחולל סקריפטים Storyline 360 ל-Google Sheets | ייצוא משתנים מסטוריליין לגוגל שיטס">
+  <meta property="og:description" content="ייצוא משתנים, ציונים ונתוני לומדים מ-Articulate Storyline 360 ישירות ל-Google Sheets בקלות וללא ידע בתכנות. מחולל אוטומטי לקוד Google Apps Script וקוד JavaScript.">
+  <meta property="og:image" content="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="מחולל סקריפטים לחיבור Storyline 360 ל-Google Sheets - שחר פתרונות דיגיטליים">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="מחולל סקריפטים Storyline 360 ל-Google Sheets | ייצוא משתנים מסטוריליין">
+  <meta name="twitter:description" content="ייצוא משתנים מ-Articulate Storyline 360 ישירות ל-Google Sheets בקלות וללא ידע בתכנות. מחולל אוטומטי לקוד Google Apps Script וקוד JavaScript.">
+  <meta name="twitter:image" content="https://www.shaharsolutions.com/storyline-googlesheets-script-generator/og-image.svg">
+
+  <!-- Fonts & Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/storyline-googlesheets-script-generator/styles.css">
+
+  <!-- Structured Data (Schema.org JSON-LD) for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/#webapp",
+        "name": "Storyline variables to Google Sheets Script Generator - מחולל סקריפטים מסטוריליין לגוגל שיטס",
+        "alternateName": [
+          "מחולל סקריפטים Storyline ל-Google Sheets",
+          "חיבור סטוריליין לגוגל שיטס",
+          "ייצוא משתנים מ-Storyline 360 ל-Google Sheets",
+          "Articulate Storyline 360 to Google Sheets Script Generator"
+        ],
+        "url": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/",
+        "image": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/og-image.svg",
+        "description": "מחולל קוד אוטומטי של Google Apps Script וקוד JavaScript לחיבור וייצוא משתנים מ-Articulate Storyline 360 ישירות לגיליון Google Sheets ללא צורך בידע בתכנות.",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "E-Learning & Instructional Design Tool",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": ["he", "en"],
+        "featureList": [
+          "הפקה אוטומטית של קוד Google Apps Script מותאם אישית",
+          "הפקה אוטומטית של קוד JavaScript לטריגר Execute JavaScript ב-Storyline 360",
+          "תמיכה בעד 50 משתנים בכל פרויקט או לומדה",
+          "הוספת חותמת זמן (Timestamp) אוטומטית לכל שורת נתונים ב-Google Sheets",
+          "3 ימי ניסיון חינם למשתמשים חדשים"
+        ],
+        "creator": {
+          "@type": "Organization",
+          "name": "שחר פתרונות דיגיטליים - Shahar Digital Solutions",
+          "url": "https://www.shaharsolutions.com"
+        },
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "תקופת ניסיון חינם ל-3 ימים",
+            "price": "0",
+            "priceCurrency": "ILS",
+            "availability": "https://schema.org/InStock"
+          },
+          {
+            "@type": "Offer",
+            "name": "מנוי חודשי מלא למחולל הסקריפטים",
+            "price": "39",
+            "priceCurrency": "ILS",
+            "availability": "https://schema.org/InStock"
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/#howto",
+        "name": "איך לייצא משתנים מ-Articulate Storyline 360 ל-Google Sheets",
+        "description": "מדריך בשלושה שלבים פשוטים לחיבור לומדה ב-Storyline 360 לגיליון Google Sheets באמצעות מחולל הסקריפטים האוטומטי.",
+        "inLanguage": "he",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "הזנת שמות המשתנים מ-Storyline",
+            "text": "בוחרים את מספר המשתנים ומזינים את שמות המשתנים בדיוק כפי שהם מופיעים ב-Articulate Storyline 360 (תוך הקפדה על אותיות גדולות וקטנות - Case Sensitive)."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "הטמעת קוד Google Apps Script ופרסום כ-Web App",
+            "text": "מעתיקים את קוד ה-Google Apps Script שנוצר אוטומטית, מדביקים אותו בגיליון ה-Google Sheets תחת Extensions > Apps Script, ומבצעים Deploy > New deployment מסוג Web app עם הרשאת גישה ל-Anyone."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "העתקת קוד ה-JavaScript ל-Storyline 360",
+            "text": "מדביקים את כתובת ה-URL של ה-Web App במחולל, מעתיקים את קוד ה-JavaScript שנוצר ומדביקים אותו בתוך טריגר Execute JavaScript ב-Storyline 360."
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "איך מחברים את Articulate Storyline 360 ל-Google Sheets?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "באמצעות מחולל הסקריפטים מזינים את שמות המשתנים מתוך Storyline, מקבלים קוד Google Apps Script מוכן להדבקה בגיליון ה-Google Sheets (שמפורסם כ-Web App), ומקבלים קוד JavaScript מוכן להטמעה בטריגר Execute JavaScript בתוך Storyline 360."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "האם צריך ידע בתכנות או ב-JavaScript כדי להשתמש במחולל?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "לא נדרש שום ידע מוקדם בתכנות. המחולל כותב עבורכם באופן אוטומטי לחלוטין הן את קוד ה-Google Apps Script והן את קוד ה-JavaScript המדויק לשליפת המשתנים מ-Storyline (player.GetVar) ושליחתם לגיליון."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "למה מתאימה שליחת נתונים מסטוריליין לגוגל שיטס?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "הכלי אידיאלי למפתחי הדרכה ולמידה דיגיטלית שרוצים לאסוף ציוני מבחנים, תשובות לשאלות פתוחות, משובי לומדים, מעקב התקדמות או לידים מתוך לומדות שפורסמו ל-Web או ל-LMS, ישירות לתוך טבלת Google Sheets מרוכזת בזמן אמת."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "כמה משתנים ניתן לייצא מ-Storyline ל-Google Sheets?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "המחולל תומך בייצוא של עד 50 משתנים מותאמים אישית (טקסט, מספרים או בוליאניים) בכל פרויקט, ומוסיף אוטומטית עמודת תאריך ושעה (Timestamp) לכל רשומה שמתקבלת בגיליון."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "שחר פתרונות דיגיטליים",
+            "item": "https://www.shaharsolutions.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "מחולל סקריפטים Storyline ל-Google Sheets",
+            "item": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <main class="page-wrapper">
@@ -240,8 +425,86 @@
         </div>
       </div>
 
+      <!-- Indexable SEO Guide, Features & FAQ Section (Always visible to users and search engines) -->
+      <section class="seo-content-section" aria-labelledby="seo-guide-heading">
+        <div class="seo-intro-block">
+          <h2 id="seo-guide-heading">חיבור Articulate Storyline 360 ל-Google Sheets בקלות וללא ידע בתכנות</h2>
+          <p>
+            <strong>מחולל הסקריפטים לסטוריליין (Storyline to Google Sheets Script Generator)</strong> מאפשר למפתחי הדרכה, מעצבי למידה דיגיטלית וארגונים לייצא ולשמור משתנים מתוך לומדות וקורסים שפותחו ב-<strong>Articulate Storyline 360</strong> ישירות לתוך גיליון <strong>Google Sheets</strong> בזמן אמת – ללא צורך בכתיבת קוד ידנית או במערכת LMS מורכבת.
+          </p>
+        </div>
+
+        <div class="seo-steps-block">
+          <h3>איך מייצאים משתנים מסטוריליין לגוגל שיטס ב-3 שלבים פשוטים?</h3>
+          <ol class="seo-steps-grid">
+            <li class="seo-step-card">
+              <span class="seo-step-number" aria-hidden="true">1</span>
+              <div class="seo-step-body">
+                <h4>הגדרת שמות המשתנים מ-Storyline</h4>
+                <p>בוחרים את מספר המשתנים (עד 50 משתנים בפרויקט) ומזינים את שמותיהם בדיוק כפי שהוגדרו ב-Storyline 360 (<span dir="ltr">Case Sensitive</span>).</p>
+              </div>
+            </li>
+            <li class="seo-step-card">
+              <span class="seo-step-number" aria-hidden="true">2</span>
+              <div class="seo-step-body">
+                <h4>הטמעת קוד Google Apps Script</h4>
+                <p>מעתיקים את קוד ה-Apps Script שנוצר אוטומטית, מדביקים בגיליון ה-Google Sheets תחת <span dir="ltr">Extensions &gt; Apps Script</span> ומפרסמים כ-<span dir="ltr">Web App</span>.</p>
+              </div>
+            </li>
+            <li class="seo-step-card">
+              <span class="seo-step-number" aria-hidden="true">3</span>
+              <div class="seo-step-body">
+                <h4>הדבקת קוד ה-JavaScript בלומדה</h4>
+                <p>מזינים את כתובת ה-<span dir="ltr">Web App URL</span> במחולל, מעתיקים את קוד ה-JavaScript המוכן ומדביקים אותו בטריגר <span dir="ltr">Execute JavaScript</span> ב-Storyline.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <div class="seo-faq-block">
+          <h3>שאלות נפוצות (FAQ) – ייצוא נתונים מ-Storyline ל-Google Sheets</h3>
+          <div class="seo-faq-list">
+            <details class="seo-faq-item">
+              <summary>למה כדאי לחבר לומדה ב-Storyline 360 ל-Google Sheets?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  חיבור סטוריליין לגוגל שיטס מאפשר לאסוף נתוני לומדים בזמן אמת גם כאשר הלומדה מופצת כקישור Web רגיל (ללא מערכת LMS) או כאשר רוצים לשמור מידע שמערכות LMS לא תמיד מציגות בנוחות – כגון תשובות לשאלות פתוחות, משובים, ציוני ביניים, זמני למידה, פרטי התקשרות וניסיונות מענה.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>האם נדרש ידע מוקדם ב-JavaScript או ב-Google Apps Script?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  לא נדרש שום ידע בתכנות. המחולל מייצר עבורכם באופן אוטומטי את שני הסקריפטים המתאימים בדיוק למשתנים שלכם: קוד צד-שרת ל-Google Apps Script (כולל יצירת כותרות עמודות וחותמת זמן Timestamp אוטומטית) וקוד צד-לקוח ב-JavaScript המשתמש בפקודת <code dir="ltr">GetPlayer().GetVar()</code> לשליחת הנתונים מהלומדה.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>אילו סוגי משתנים ניתן לשלוח מסטוריליין לגוגל שיטס?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  ניתן לייצא את כל סוגי המשתנים ב-Articulate Storyline 360: משתני טקסט (<span dir="ltr">Text</span>), משתני מספר (<span dir="ltr">Number</span>) ומשתני אמת/שקר (<span dir="ltr">True/False</span>). בנוסף, הסקריפט מוסיף אוטומטית עמודת תאריך ושעה לכל שורה שמתווספת לגיליון.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>איך מגדירים נכון את הרשאות ה-Web App ב-Google Apps Script?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  בחלון ה-Apps Script של הגיליון לוחצים על <strong dir="ltr">Deploy &gt; New deployment</strong>, בוחרים בסוג <strong dir="ltr">Web app</strong>, מגדירים תחת <em dir="ltr">Execute as</em> את החשבון שלכם (<strong dir="ltr">Me</strong>), ותחת <em dir="ltr">Who has access</em> בוחרים <strong dir="ltr">Anyone</strong> כדי שהלומדה תוכל לשלוח נתונים מכל מכשיר או דפדפן ללא חסימת הרשאות.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
       <footer class="app-footer">
-        פותח על-ידי <a href="https://www.shaharsolutions.com" target="_blank" rel="noopener noreferrer">שחר פתרונות דיגיטליים</a>
+        פותח על-ידי <a href="https://www.shaharsolutions.com" target="_blank" rel="noopener noreferrer">שחר פתרונות דיגיטליים</a> • פתרונות טכנולוגיים ופיתוח כלי למידה והדרכה מתקדמים
       </footer>
     </div>
   </main>

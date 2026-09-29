@@ -1,0 +1,20 @@
+{
+  "name": "מחולל סקריפטים Storyline ל-Google Sheets | שחר פתרונות דיגיטליים",
+  "short_name": "Storyline Sheets",
+  "description": "מחולל קוד אוטומטי של Google Apps Script ו-JavaScript לייצוא משתנים מ-Articulate Storyline 360 ישירות ל-Google Sheets",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/storyline-googlesheets-script-generator/",
+  "scope": "/storyline-googlesheets-script-generator/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/storyline-googlesheets-script-generator/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

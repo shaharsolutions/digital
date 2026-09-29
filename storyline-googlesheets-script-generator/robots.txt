@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://www.shaharsolutions.com/storyline-googlesheets-script-generator/sitemap.xml
