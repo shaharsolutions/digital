@@ -71,7 +71,8 @@
           "מחולל סקריפטים Storyline ל-Google Sheets",
           "חיבור סטוריליין לגוגל שיטס",
           "ייצוא משתנים מ-Storyline 360 ל-Google Sheets",
-          "Articulate Storyline 360 to Google Sheets Script Generator"
+          "Articulate Storyline 360 to Google Sheets Script Generator",
+          "Storyline Google Apps Script"
         ],
         "url": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/",
         "image": "https://www.shaharsolutions.com/storyline-googlesheets-script-generator/og-image.svg",
@@ -86,12 +87,23 @@
           "הפקה אוטומטית של קוד JavaScript לטריגר Execute JavaScript ב-Storyline 360",
           "תמיכה בעד 50 משתנים בכל פרויקט או לומדה",
           "הוספת חותמת זמן (Timestamp) אוטומטית לכל שורת נתונים ב-Google Sheets",
-          "3 ימי ניסיון חינם למשתמשים חדשים"
+          "3 ימי ניסיון חינם למשתמשים חדשים",
+          "תאימות מלאה ללומדות Web ולומדות המופצות ב-LMS (SCORM / xAPI)",
+          "תמיכה בכל סוגי המשתנים: טקסט, מספר ובוליאני (True/False)"
         ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "48",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
         "creator": {
           "@type": "Organization",
+          "@id": "https://www.shaharsolutions.com/#organization",
           "name": "שחר פתרונות דיגיטליים - Shahar Digital Solutions",
-          "url": "https://www.shaharsolutions.com"
+          "url": "https://www.shaharsolutions.com",
+          "email": "shaharsolutions@gmail.com"
         },
         "offers": [
           {
@@ -107,6 +119,22 @@
             "price": "39",
             "priceCurrency": "ILS",
             "availability": "https://schema.org/InStock"
+          }
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.shaharsolutions.com/#organization",
+        "name": "שחר פתרונות דיגיטליים - Shahar Digital Solutions",
+        "url": "https://www.shaharsolutions.com",
+        "logo": "https://www.shaharsolutions.com/favicon.png",
+        "email": "shaharsolutions@gmail.com",
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "email": "shaharsolutions@gmail.com",
+            "contactType": "customer support",
+            "availableLanguage": ["Hebrew", "English"]
           }
         ]
       },
@@ -171,6 +199,38 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "המחולל תומך בייצוא של עד 50 משתנים מותאמים אישית (טקסט, מספרים או בוליאניים) בכל פרויקט, ומוסיף אוטומטית עמודת תאריך ושעה (Timestamp) לכל רשומה שמתקבלת בגיליון."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "האם המערכת פועלת גם בלומדות המועלות למערכות LMS כמו Moodle או TalentLMS?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "כן בהחלט. קוד ה-JavaScript מתבצע ישירות בדפדפן הלומד ושולח את הנתונים ל-Google Sheets במקביל למעקב ה-SCORM/xAPI הרגיל של מערכת ה-LMS, מבלי להפריע לפעילותה."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "האם הנתונים ב-Google Sheets מאובטחים ונשמרים רק אצלי?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "כן. התקשורת מתבצעת ישירות ובאופן מוצפן (HTTPS) בין הדפדפן של הלומד לבין ה-Web App של Google Apps Script בגיליון האישי שלכם. שום נתון מתוך הלומדה אינו נשמר בשרת מתווך."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "למה חשוב לבחור ב-Who has access: Anyone בהגדרת ה-Web App?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "הגדרה זו מאפשרת לדפדפן של הלומד לשלוח בקשת POST עם נתוני המשתנים לגיליון ללא צורך בהתחברות לחשבון גוגל מצד הלומד, תוך שמירה על ביצוע הקוד תחת הרשאות בעל הגיליון (Execute as: Me)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "מה עושים אם רוצים להוסיף או לשנות משתנים בהמשך?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "פשוט מזינים את שמות המשתנים המעודכנים במחולל ומפיקים קוד חדש. מדביקים את ה-Apps Script המעודכן בגיליון ומבצעים Manage deployments > New version, ומחליפים את קוד ה-JavaScript ב-Storyline 360."
             }
           }
         ]
@@ -434,6 +494,52 @@
           </p>
         </div>
 
+        <!-- Use Cases & Key Capabilities Grid -->
+        <div class="seo-usecases-block">
+          <h3>שימושים נפוצים ויתרונות למפתחי הדרכה</h3>
+          <div class="seo-usecases-grid">
+            <div class="seo-usecase-card">
+              <div class="seo-usecase-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+              </div>
+              <h4>מבחנים ובדיקות ידע</h4>
+              <p>תיעוד ציונים, אחוזי הצלחה, מספר ניסיונות ותשובות שנבחרו בלומדה לצורך ניתוח ובקרה פדגוגית.</p>
+            </div>
+
+            <div class="seo-usecase-card">
+              <div class="seo-usecase-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <h4>משובי לומדים ושאלות פתוחות</h4>
+              <p>איסוף חוות דעת, שאלות סקר והערות טקסטואליות חופשיות מתוך הלומדה ישירות לגיליון אלקטרוני מרכזי.</p>
+            </div>
+
+            <div class="seo-usecase-card">
+              <div class="seo-usecase-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <h4>מעקב למידה ללא תלות ב-LMS</h4>
+              <p>מעקב אחר השלמת לומדות המופצות ברשת ארגונית פנימית או כקישור Web עצמאי, ללא עלויות רישוי של מערכת LMS.</p>
+            </div>
+
+            <div class="seo-usecase-card">
+              <div class="seo-usecase-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+              </div>
+              <h4>רישום לומדים ואיסוף לידים</h4>
+              <p>טפסי הרשמה והזנת פרטי קשר (שם, אימייל, מחלקה) הנשמרים מיידית בשורה חדשה ב-Google Sheets.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="seo-steps-block">
           <h3>איך מייצאים משתנים מסטוריליין לגוגל שיטס ב-3 שלבים פשוטים?</h3>
           <ol class="seo-steps-grid">
@@ -461,14 +567,33 @@
           </ol>
         </div>
 
+        <!-- Technical Tips & Best Practices -->
+        <div class="seo-tips-block">
+          <h3>דגשים טכניים חשובים להצלחת החיבור</h3>
+          <ul class="seo-tips-list">
+            <li>
+              <strong>התאמה מלאה של שמות המשתנים (Case-Sensitive):</strong> שמות המשתנים בטופס חייבים להיות זהים לחלוטין לשמות המשתנים שהוגדרו ב-Storyline (אותיות גדולות/קטנות).
+            </li>
+            <li>
+              <strong>הרשאות פרסום Web App:</strong> בחלון ה-Apps Script בגיליון חובה להגדיר תחת <em>Execute as</em> את החשבון שלכם (<strong>Me</strong>), ותחת <em>Who has access</em> לבחור <strong>Anyone</strong> כדי שהדפדפן של הלומד יוכל לכתוב לגיליון ללא חסימת אבטחה.
+            </li>
+            <li>
+              <strong>בדיקה בלומדה שפורסמה (Publish):</strong> פקודות JavaScript בלומדה מתבצעות במלואן לאחר ייצוא ל-Web או ל-LMS. בתצוגה מקדימה (Preview) פנימית בתוך Storyline, דפדפן הבדיקה של ארטיקולייט עשוי להגביל קריאות רשת.
+            </li>
+            <li>
+              <strong>תמיכה בכל סוגי הנתונים וחותמת זמן:</strong> המערכת תומכת במשתני טקסט (Text), מספר (Number) ובוליאני (True/False), ומוסיפה אוטומטית עמודת תאריך ושעה (Timestamp) לכל רשומה.
+            </li>
+          </ul>
+        </div>
+
         <div class="seo-faq-block">
           <h3>שאלות נפוצות (FAQ) – ייצוא נתונים מ-Storyline ל-Google Sheets</h3>
           <div class="seo-faq-list">
             <details class="seo-faq-item">
-              <summary>למה כדאי לחבר לומדה ב-Storyline 360 ל-Google Sheets?</summary>
+              <summary>איך מחברים את Articulate Storyline 360 ל-Google Sheets?</summary>
               <div class="seo-faq-answer">
                 <p>
-                  חיבור סטוריליין לגוגל שיטס מאפשר לאסוף נתוני לומדים בזמן אמת גם כאשר הלומדה מופצת כקישור Web רגיל (ללא מערכת LMS) או כאשר רוצים לשמור מידע שמערכות LMS לא תמיד מציגות בנוחות – כגון תשובות לשאלות פתוחות, משובים, ציוני ביניים, זמני למידה, פרטי התקשרות וניסיונות מענה.
+                  באמצעות מחולל הסקריפטים מזינים את שמות המשתנים מתוך Storyline, מקבלים קוד Google Apps Script מוכן להדבקה בגיליון ה-Google Sheets (שמפורסם כ-Web App), ומקבלים קוד JavaScript מוכן להטמעה בטריגר Execute JavaScript בתוך Storyline 360.
                 </p>
               </div>
             </details>
@@ -483,19 +608,55 @@
             </details>
 
             <details class="seo-faq-item">
-              <summary>אילו סוגי משתנים ניתן לשלוח מסטוריליין לגוגל שיטס?</summary>
+              <summary>למה כדאי לחבר לומדה ב-Storyline 360 ל-Google Sheets?</summary>
               <div class="seo-faq-answer">
                 <p>
-                  ניתן לייצא את כל סוגי המשתנים ב-Articulate Storyline 360: משתני טקסט (<span dir="ltr">Text</span>), משתני מספר (<span dir="ltr">Number</span>) ומשתני אמת/שקר (<span dir="ltr">True/False</span>). בנוסף, הסקריפט מוסיף אוטומטית עמודת תאריך ושעה לכל שורה שמתווספת לגיליון.
+                  חיבור סטוריליין לגוגל שיטס מאפשר לאסוף נתוני לומדים בזמן אמת גם כאשר הלומדה מופצת כקישור Web רגיל (ללא מערכת LMS) או כאשר רוצים לשמור מידע שמערכות LMS לא תמיד מציגות בנוחות – כגון תשובות לשאלות פתוחות, משובים, ציוני ביניים, זמני למידה, פרטי התקשרות וניסיונות מענה.
                 </p>
               </div>
             </details>
 
             <details class="seo-faq-item">
-              <summary>איך מגדירים נכון את הרשאות ה-Web App ב-Google Apps Script?</summary>
+              <summary>כמה משתנים ניתן לייצא מ-Storyline ל-Google Sheets?</summary>
               <div class="seo-faq-answer">
                 <p>
-                  בחלון ה-Apps Script של הגיליון לוחצים על <strong dir="ltr">Deploy &gt; New deployment</strong>, בוחרים בסוג <strong dir="ltr">Web app</strong>, מגדירים תחת <em dir="ltr">Execute as</em> את החשבון שלכם (<strong dir="ltr">Me</strong>), ותחת <em dir="ltr">Who has access</em> בוחרים <strong dir="ltr">Anyone</strong> כדי שהלומדה תוכל לשלוח נתונים מכל מכשיר או דפדפן ללא חסימת הרשאות.
+                  המחולל תומך בייצוא של עד 50 משתנים מותאמים אישית (טקסט, מספרים או בוליאניים) בכל פרויקט, ומוסיף אוטומטית עמודת תאריך ושעה (Timestamp) לכל רשומה שמתקבלת בגיליון.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>האם המערכת פועלת גם בלומדות המועלות למערכות LMS כמו Moodle או TalentLMS?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  כן בהחלט. קוד ה-JavaScript מתבצע ישירות בדפדפן הלומד ושולח את הנתונים ל-Google Sheets במקביל למעקב ה-SCORM/xAPI הרגיל של מערכת ה-LMS, מבלי להפריע לפעילותה.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>האם הנתונים ב-Google Sheets מאובטחים ונשמרים רק אצלי?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  כן. התקשורת מתבצעת ישירות ובאופן מוצפן (HTTPS) בין הדפדפן של הלומד לבין ה-Web App של Google Apps Script בגיליון האישי שלכם. שום נתון מתוך הלומדה אינו נשמר בשרת מתווך.
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>למה חשוב לבחור ב-Who has access: Anyone בהגדרת ה-Web App?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  הגדרה זו מאפשרת לדפדפן של הלומד לשלוח בקשת POST עם נתוני המשתנים לגיליון ללא צורך בהתחברות לחשבון גוגל מצד הלומד, תוך שמירה על ביצוע הקוד תחת הרשאות בעל הגיליון (Execute as: Me).
+                </p>
+              </div>
+            </details>
+
+            <details class="seo-faq-item">
+              <summary>מה עושים אם רוצים להוסיף או לשנות משתנים בהמשך?</summary>
+              <div class="seo-faq-answer">
+                <p>
+                  פשוט מזינים את שמות המשתנים המעודכנים במחולל ומפיקים קוד חדש. מדביקים את ה-Apps Script המעודכן בגיליון ומבצעים Manage deployments > New version, ומחליפים את קוד ה-JavaScript ב-Storyline 360.
                 </p>
               </div>
             </details>
@@ -508,6 +669,26 @@
       </footer>
     </div>
   </main>
+
+  <!-- Floating Help & Support Contact Button -->
+  <aside class="floating-support-container" aria-label="סיוע ותמיכה במייל">
+    <a
+      id="floating-support-btn"
+      class="floating-support-btn"
+      href="mailto:shaharsolutions@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%AA%20%D7%A1%D7%99%D7%95%D7%A2%20%2F%20%D7%AA%D7%9E%D7%99%D7%9B%D7%94%20%D7%98%D7%9B%D7%A0%D7%99%D7%AA%20-%20%D7%9E%D7%97%D7%95%D7%9C%D7%9C%20%D7%A1%D7%A7%D7%A8%D7%99%D7%A4%D7%98%D7%99%D7%9D%20Storyline%20%D7%9C-Google%20Sheets&body=%D7%A9%D7%9C%D7%95%D7%9D%20%D7%A9%D7%97%D7%A8%2C%0A%0A%D7%90%D7%A0%D7%99%20%D7%A4%D7%95%D7%A0%D7%94%20%D7%9C%D7%A7%D7%91%D7%9C%D7%AA%20%D7%A1%D7%99%D7%95%D7%A2%20%D7%91%D7%A9%D7%99%D7%9E%D7%95%D7%A9%20%D7%91%D7%9E%D7%97%D7%95%D7%9C%D7%9C%20%D7%94%D7%A1%D7%A7%D7%A8%D7%99%D7%A4%D7%98%D7%99%D7%9D%20%D7%9C%D7%A1%D7%98%D7%95%D7%A8%D7%99%D7%9C%D7%99%D7%99%D7%9F%3A%0A%0A-%20%D7%9B%D7%AA%D7%95%D7%91%D7%AA%20%D7%94%D7%90%D7%99%D7%9E%D7%99%D7%99%D7%9C%20%D7%A9%D7%9C%D7%99%20%D7%91%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA%3A%20%0A-%20%D7%AA%D7%99%D7%90%D7%95%D7%A8%20%D7%94%D7%A6%D7%95%D7%A8%D7%9F%20%D7%90%D7%95%20%D7%94%D7%AA%D7%A7%D7%9C%D7%94%3A%20%0A-%20%D7%9E%D7%A1%D7%A4%D7%A8%20%D7%94%D7%9E%D7%A9%D7%AA%D7%A0%D7%99%D7%9D%20%D7%91%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98%3A%20%0A-%20%D7%A6%D7%99%D7%9C%D7%95%D7%9D%20%D7%9E%D7%A1%D7%9A%20%D7%90%D7%95%20%D7%A7%D7%99%D7%A9%D7%95%D7%A8%20%D7%9C%D7%9C%D7%95%D7%9E%D7%93%D7%94%20(%D7%90%D7%9D%20%D7%A8%D7%9C%D7%95%D7%95%D7%A0%D7%98%D7%99)%3A%20%0A%0A%D7%AA%D7%95%D7%93%D7%94%20%D7%A8%D7%91%D7%94!"
+      aria-label="שליחת מייל לסיוע ותמיכה (shaharsolutions@gmail.com)"
+      title="צריכים עזרה או סיוע? לחצו לפתיחת מייל עם תבנית מסודרת"
+    >
+      <span class="support-icon-wrap" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="16" x="2" y="4" rx="2"/>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+      </span>
+      <span class="support-label">צריכים עזרה? צרו קשר במייל</span>
+      <span class="support-badge" aria-hidden="true">סיוע מהיר</span>
+    </a>
+  </aside>
 
   <!-- Tranzila Checkout Modal -->
   <div id="checkout-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title" hidden>

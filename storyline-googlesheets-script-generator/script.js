@@ -1429,9 +1429,22 @@ window.addEventListener('message', async (event) => {
   }, 1100);
 });
 
+// Support Mailto Template Helper
+function updateSupportMailto(email = '') {
+  const floatingBtn = document.getElementById('floating-support-btn');
+  if (!floatingBtn) return;
+  const userEmailText = (email || '').trim() || '[נא לציין אימייל]';
+  const subject = encodeURIComponent('בקשת סיוע / תמיכה טכנית - מחולל סקריפטים Storyline ל-Google Sheets');
+  const body = encodeURIComponent(
+    `שלום שחר,\n\nאני פונה לקבלת סיוע בשימוש במחולל הסקריפטים לסטוריליין:\n\n- כתובת האימייל שלי במערכת: ${userEmailText}\n- תיאור הצורך או התקלה: \n- מספר המשתנים בפרויקט: \n- צילום מסך או קישור ללומדה (אם רלוונטי): \n\nתודה רבה!`
+  );
+  floatingBtn.href = `mailto:shaharsolutions@gmail.com?subject=${subject}&body=${body}`;
+}
+
 // Observe Firebase Authentication State
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
+  updateSupportMailto(user ? user.email : '');
   if (user) {
     await fetchSubscriptionStatus();
   } else {
@@ -1447,4 +1460,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+updateSupportMailto('');
 updateVariableNames();
+

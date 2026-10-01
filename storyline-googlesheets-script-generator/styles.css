@@ -1633,7 +1633,10 @@ textarea:focus {
   text-wrap: pretty;
 }
 
+/* SEO Use Cases & Capabilities Grid */
+.seo-usecases-block h3,
 .seo-steps-block h3,
+.seo-tips-block h3,
 .seo-faq-block h3 {
   margin: 0 0 14px;
   font-size: 1.02rem;
@@ -1642,6 +1645,60 @@ textarea:focus {
   text-wrap: balance;
 }
 
+.seo-usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.seo-usecase-card {
+  padding: 16px 18px;
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inner);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition-property: border-color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.seo-usecase-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px oklch(0 0 0 / 0.05);
+}
+
+.seo-usecase-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-control);
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.seo-usecase-card h4 {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.seo-usecase-card p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+/* SEO Steps Block */
 .seo-steps-grid {
   list-style: none;
   margin: 0;
@@ -1690,6 +1747,34 @@ textarea:focus {
   line-height: 1.55;
   color: var(--text-secondary);
   text-wrap: pretty;
+}
+
+/* Technical Tips List */
+.seo-tips-block {
+  padding: 18px 20px;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--radius-inner);
+}
+
+.seo-tips-list {
+  margin: 0;
+  padding-right: 20px;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seo-tips-list li {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.seo-tips-list strong {
+  color: var(--text-primary);
 }
 
 .seo-faq-list {
@@ -1785,11 +1870,93 @@ textarea:focus {
   color: #0f172a;
 }
 
+/* Floating Help & Support Contact Button */
+.floating-support-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 90;
+}
+
+.floating-support-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow:
+    0 4px 14px -2px oklch(0.4 0.2 260 / 0.42),
+    0 2px 6px -1px oklch(0 0 0 / 0.12),
+    0 0 0 1px oklch(1 1 1 / 0.18) inset;
+  transition-property: transform, box-shadow, background;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  direction: rtl;
+}
+
+.floating-support-btn:hover {
+  transform: translateY(-2px);
+  color: #ffffff;
+  box-shadow:
+    0 8px 22px -2px oklch(0.4 0.2 260 / 0.52),
+    0 4px 10px -1px oklch(0 0 0 / 0.18),
+    0 0 0 1px oklch(1 1 1 / 0.28) inset;
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+}
+
+.floating-support-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.floating-support-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.45),
+    0 6px 18px -2px oklch(0.4 0.2 260 / 0.45);
+}
+
+.support-icon-wrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.support-icon-wrap svg {
+  stroke-width: 2.2;
+}
+
+.support-label {
+  white-space: nowrap;
+}
+
+.support-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #dcfce7;
+  color: #166534;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media (max-width: 820px) {
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .seo-usecases-grid,
   .seo-steps-grid {
     grid-template-columns: 1fr;
   }
@@ -1824,5 +1991,21 @@ textarea:focus {
 
   .user-actions {
     justify-content: flex-start;
+  }
+
+  .floating-support-container {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .floating-support-btn {
+    min-height: 42px;
+    padding: 7px 13px 7px 10px;
+    font-size: 0.82rem;
+    gap: 8px;
+  }
+
+  .floating-support-btn .support-badge {
+    display: none;
   }
 }
