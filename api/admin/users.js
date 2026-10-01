@@ -323,15 +323,17 @@ module.exports = async function handler(req, res) {
         }
         updatedUser = {
           ...targetUser,
-          tranzilaStoId: stoIdToCancel || targetUser.tranzilaStoId,
+          tranzilaStoId: null,
+          cardLast4: null,
+          cardExp: null,
           subscriptionStatus: 'canceled',
           cancelAtPeriodEnd: true,
           updatedAt: nowIso
         };
         await setDocument('users', targetUid, updatedUser);
         message = stoIdToCancel
-          ? `הוראת הקבע (#${stoIdToCancel}) בטרנזילה בוטלה והמנוי של ${targetUser.email} הועבר לסטטוס "בוטל".`
-          : `המנוי של ${targetUser.email} הועבר לסטטוס "בוטל".`;
+          ? `הוראת הקבע (#${stoIdToCancel}) והכרטיס השמור של ${targetUser.email} בוטלו והוסרו, והמנוי הועבר לסטטוס "בוטל".`
+          : `הוראת הקבע והכרטיס השמור של ${targetUser.email} הוסרו והמנוי הועבר לסטטוס "בוטל".`;
       } else if (action === 'delete_user') {
         if (targetUid === authUser.uid) {
           return res.status(400).json({

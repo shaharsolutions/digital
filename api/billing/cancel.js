@@ -49,7 +49,9 @@ module.exports = async function handler(req, res) {
     const nowIso = new Date().toISOString();
     const updatedUser = {
       ...userDoc,
-      tranzilaStoId: stoIdToCancel || userDoc.tranzilaStoId,
+      tranzilaStoId: null,
+      cardLast4: null,
+      cardExp: null,
       subscriptionStatus: 'canceled',
       cancelAtPeriodEnd: true,
       updatedAt: nowIso
@@ -62,7 +64,7 @@ module.exports = async function handler(req, res) {
     await setDocument('payment_events', cancelEventId, {
       eventId: cancelEventId,
       uid: authUser.uid,
-      stoId: userDoc.tranzilaStoId || '',
+      stoId: stoIdToCancel || userDoc.tranzilaStoId || '',
       amount: 39,
       currency: 'ILS',
       responseCode: '000',

@@ -53,9 +53,11 @@ const authTitle = document.getElementById('auth-title');
 const googleLoginBtn = document.getElementById('google-login-btn');
 const emailAuthForm = document.getElementById('email-auth-form');
 const registerNameGroup = document.getElementById('register-name-group');
+const registerConfirmPasswordGroup = document.getElementById('register-confirm-password-group');
 const authNameInput = document.getElementById('auth-name');
 const authEmailInput = document.getElementById('auth-email');
 const authPasswordInput = document.getElementById('auth-password');
+const authConfirmPasswordInput = document.getElementById('auth-confirm-password');
 const forgotPasswordBtn = document.getElementById('forgot-password-btn');
 const authErrorBox = document.getElementById('auth-error');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
@@ -1083,6 +1085,8 @@ function setAuthTab(mode) {
     tabLogin.setAttribute('aria-selected', 'false');
     authTitle.textContent = 'הרשמה וקבלת 3 ימי ניסיון חינם';
     registerNameGroup.hidden = false;
+    if (registerConfirmPasswordGroup) registerConfirmPasswordGroup.hidden = false;
+    if (authConfirmPasswordInput) authConfirmPasswordInput.required = true;
     forgotPasswordBtn.hidden = true;
     authSubmitBtn.textContent = 'צור חשבון והתחל 3 ימי ניסיון חינם';
     authPasswordInput.setAttribute('autocomplete', 'new-password');
@@ -1093,6 +1097,11 @@ function setAuthTab(mode) {
     tabRegister.setAttribute('aria-selected', 'false');
     authTitle.textContent = 'התחברות למחולל הסקריפטים';
     registerNameGroup.hidden = true;
+    if (registerConfirmPasswordGroup) registerConfirmPasswordGroup.hidden = true;
+    if (authConfirmPasswordInput) {
+      authConfirmPasswordInput.required = false;
+      authConfirmPasswordInput.value = '';
+    }
     forgotPasswordBtn.hidden = false;
     authSubmitBtn.textContent = 'התחברות למערכת';
     authPasswordInput.setAttribute('autocomplete', 'current-password');
@@ -1127,6 +1136,25 @@ emailAuthForm.addEventListener('submit', async (e) => {
     authErrorBox.textContent = 'נא להזין כתובת אימייל וסיסמה.';
     authErrorBox.hidden = false;
     return;
+  }
+
+  if (authMode === 'register') {
+    const confirmPassword = authConfirmPasswordInput ? authConfirmPasswordInput.value : '';
+    if (!confirmPassword) {
+      authErrorBox.textContent = 'נא לאמת את הסיסמה בשדה אימות סיסמה.';
+      authErrorBox.hidden = false;
+      return;
+    }
+    if (password !== confirmPassword) {
+      authErrorBox.textContent = 'הסיסמאות אינן תואמות.';
+      authErrorBox.hidden = false;
+      return;
+    }
+    if (password.length < 6) {
+      authErrorBox.textContent = 'הסיסמה חלשה מדי – יש לבחור סיסמה באורך 6 תווים לפחות.';
+      authErrorBox.hidden = false;
+      return;
+    }
   }
 
   authSubmitBtn.disabled = true;

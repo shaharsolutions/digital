@@ -395,7 +395,12 @@ function prepareForAdminWrite(data) {
   const admin = require('firebase-admin');
   const out = {};
   for (const [k, v] of Object.entries(data)) {
-    if (v === undefined || v === null) continue;
+    if (v === undefined || v === null) {
+      if (admin.firestore && admin.firestore.FieldValue) {
+        out[k] = admin.firestore.FieldValue.delete();
+      }
+      continue;
+    }
     if (TIMESTAMP_FIELDS.has(k) && typeof v === 'string') {
       out[k] = admin.firestore.Timestamp.fromDate(new Date(v));
     } else {
@@ -433,13 +438,19 @@ async function setDocument(collectionName, docId, data) {
   // Always mirror in local store for instant consistency during local dev
   const store = readLocalStore();
   if (!store[collectionName]) store[collectionName] = {};
-  store[collectionName][docId] = { ...data };
+  const cleanData = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (v !== undefined && v !== null) {
+      cleanData[k] = v;
+    }
+  }
+  store[collectionName][docId] = cleanData;
   writeLocalStore(store);
 
   const { firestoreDb: db } = initFirebaseAdmin();
   if (db) {
     await db.collection(collectionName).doc(docId).set(prepareForAdminWrite(data), { merge: true });
-    return data;
+    return cleanData;
   }
 
   const cliToken = await getFirestoreAccessToken();
