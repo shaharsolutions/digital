@@ -61,7 +61,7 @@
                     אנחנו בונים לעסקים מערכות פשוטות שמרכזות לקוחות, פניות, משימות ותהליכים במקום אחד, במקום לנהל הכל בוואטסאפ, אקסל וזיכרון.
                 </p>
                 <div class="hero-cta fade-in-up delay-2">
-                    <a href="#diagnosis" class="btn btn-primary btn-lg pulse" aria-label="התחילו באבחון דיגיטלי קצר">התחילו באבחון קצר</a>
+                    <a href="#diagnosis" class="btn btn-primary btn-lg pulse">השאירו פרטים</a>
                     <a href="https://wa.me/972528366744?text=%D7%94%D7%99%D7%99%20%D7%A9%D7%97%D7%A8%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%A4%D7%AA%D7%A8%D7%95%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C%D7%99%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" class="btn btn-outline btn-lg" aria-label="שלחו הודעה בוואטסאפ לשחר">
                         <i class="fa-brands fa-whatsapp"></i> שלחו הודעה בוואטסאפ
                     </a>
@@ -195,9 +195,9 @@
     <section class="section diagnosis-section" id="diagnosis">
         <div class="container">
             <div class="diagnosis-header reveal">
-                <h2 class="section-title">איפה העסק שלך מאבד זמן?</h2>
-                <p class="diagnosis-intro">ענו על כמה שאלות קצרות ונבדוק האם יש תהליך בעסק שאפשר להפוך למערכת פשוטה, מסודרת וחוסכת זמן.</p>
-                <p class="diagnosis-subtext">בלי התחייבות, בלי טופס ארוך ובלי מילים מסובכות.</p>
+                <h2 class="section-title">בואו נעשה סדר בעסק</h2>
+                <p class="diagnosis-intro">השאירו פרטים ונחזור אליכם לשיחה על הצרכים של העסק.</p>
+                <p class="diagnosis-subtext">אחרי השליחה אפשר להמשיך לאבחון קצר, ללא התחייבות.</p>
             </div>
             
             <div class="diagnosis-wrapper reveal delay-1">
@@ -230,18 +230,18 @@
                 <div class="diagnosis-card-wrapper">
                     <form id="diagnosisForm" class="diagnosis-card">
                         <!-- Progress Bar -->
-                        <div class="diagnosis-progress-container">
+                        <div class="diagnosis-progress-container hidden">
                             <div class="diagnosis-progress-text">
                                 <span>אבחון דיגיטלי לעסק</span>
-                                <span class="step-indicator">שלב 1 מתוך 6</span>
+                                <span class="step-indicator">שלב 1 מתוך 5</span>
                             </div>
                             <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" style="width: 16.66%;"></div>
+                                <div class="progress-bar-fill" style="width: 20%;"></div>
                             </div>
                         </div>
 
                         <!-- Step 1 -->
-                        <div class="diagnosis-step active" data-step="1">
+                        <div class="diagnosis-step" data-step="1">
                             <h3 class="step-question">איזה תהליך בעסק הכי גוזל לך זמן או יוצר בלאגן?</h3>
                             <div class="form-group">
                                 <textarea name="timeWaster" id="diag_timeWaster" rows="4" placeholder="לדוגמה: ניהול לקוחות, הזמנות, הצעות מחיר, פניות מוואטסאפ, תשלומים, משימות..."></textarea>
@@ -302,12 +302,12 @@
                         </div>
 
                         <!-- Step 6 -->
-                        <div class="diagnosis-step" data-step="6">
-                            <h3 class="step-question">מעולה, לאן לחזור אליך?</h3>
+                        <div class="diagnosis-step active" data-step="0">
+                            <h3 class="step-question">לאן לחזור אליך?</h3>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="diag_fullName">שם מלא *</label>
-                                    <input type="text" id="diag_fullName" name="fullName" placeholder="השם שלך">
+                                    <input type="text" id="diag_fullName" name="fullName" placeholder="השם שלך" autocomplete="name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="diag_businessName">שם העסק</label>
@@ -315,7 +315,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="diag_phone">טלפון / וואטסאפ *</label>
-                                    <input type="tel" id="diag_phone" name="phone" placeholder="050-0000000">
+                                    <input type="tel" id="diag_phone" name="phone" placeholder="050-0000000" autocomplete="tel" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="diag_email">אימייל</label>
@@ -327,22 +327,23 @@
                         <!-- Step Controls -->
                         <div class="diagnosis-controls">
                             <button type="button" class="btn btn-outline diag-prev-btn hidden">חזרה</button>
-                            <button type="button" class="btn btn-primary diag-next-btn">הבא</button>
-                            <button type="submit" class="btn btn-primary diag-submit-btn hidden">
-                                <span class="btn-text">שלחו לי כיוון ראשוני לפתרון</span>
+                            <button type="button" class="btn btn-primary diag-next-btn hidden">הבא</button>
+                            <button type="submit" class="btn btn-primary diag-submit-btn">
+                                <span class="btn-text">שליחת פרטים</span>
                                 <span class="loader hidden"></span>
                             </button>
                         </div>
 
                         <!-- Validation & Messages inside the card -->
-                        <div id="diagMessage" class="form-message hidden"></div>
+                        <div id="diagMessage" class="form-message hidden" role="status" aria-live="polite"></div>
                     </form>
 
                     <!-- Success Screen (Initially Hidden) -->
                     <div id="diagSuccess" class="diagnosis-success-card hidden">
                         <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
                         <h2>תודה, הפרטים התקבלו!</h2>
-                        <p>נעבור על התשובות ונחזור אליך עם כיוון ראשוני לפתרון שיכול לעשות סדר בעסק.</p>
+                        <p id="diagSuccessText">נחזור אליך בהקדם. אפשר גם להמשיך לאבחון קצר שיעזור לנו להבין טוב יותר מה העסק צריך.</p>
+                        <button type="button" id="continueDiagnosis" class="btn btn-primary">המשך לאבחון קצר</button>
                     </div>
                 </div>
             </div>
@@ -381,56 +382,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Project: Groopy Catalog System -->
-                <div class="project-card reveal">
-                    <div class="project-image">
-                        <img src="groopy-system.png" alt="מערכת קטלוג מוצרים חכמה, Groopy">
-                        <div class="project-overlay">
-                            <span class="project-tag">מערכת קטלוג</span>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>מערכת קטלוג (Groopy)</h3>
-                        <div class="project-meta">
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-user-tag"></i>
-                                <div><strong>למי מיועד:</strong> ספקי מוצרים וסוכני שטח</div>
-                            </div>
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-circle-check"></i>
-                                <div><strong>הבעיה שפתרנו:</strong> אפשרות ללקוחות לשלוח הזמנות ישירות מתוך הקטלוג לסוכן המכירות שלהם. כך תהליך ההזמנה פשוט יותר, העבודה יעילה יותר ונחסך זמן יקר לכל הצדדים.</div>
-                            </div>
-                        </div>
-                        <div class="project-cta">
-                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Project: TikTak Task Management -->
-                <div class="project-card reveal">
-                    <div class="project-image">
-                        <img src="tiktak-system.png" alt="מערכת TikTak למעקב פרויקטים ומשימות">
-                        <div class="project-overlay">
-                            <span class="project-tag">ניהול משימות ופרויקטים</span>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>מערכת ניהול משימות ופרויקטים (TikTak)</h3>
-                        <div class="project-meta">
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-user-tag"></i>
-                                <div><strong>למי מיועד:</strong> מנהלי פרויקטים, מעצבים, ספקים וצוותים בעסק</div>
-                            </div>
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-circle-check"></i>
-                                <div><strong>הבעיה שפתרנו:</strong> ניהול ומעקב משימות מול ספקים ואנשי קשר, שליטה בסטטוסי עבודה, שיתוף מידע וייעול התקשורת למניעת כפילויות ואיבוד מידע.</div>
-                            </div>
-                        </div>
-                        <div class="project-cta">
-                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
-                        </div>
-                    </div>
-                </div>
                 <!-- Project 1: Dog Pension System -->
                 <div class="project-card reveal">
                     <div class="project-image">
@@ -456,33 +407,8 @@
                         </div>
                     </div>
                 </div>
-                <!-- Project 2: CRM System -->
-                <div class="project-card reveal delay-1 project-collapsed">
-                    <div class="project-image">
-                        <img src="crm-system.png" alt="מערכת CRM לסיטונאים ועסקי ייבוא">
-                        <div class="project-overlay">
-                            <span class="project-tag">מערכת CRM</span>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>מערכת CRM לסיטונאים ויבואנים</h3>
-                        <div class="project-meta">
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-user-tag"></i>
-                                <div><strong>למי מיועד:</strong> סיטונאים ועסקי ייבוא</div>
-                            </div>
-                            <div class="project-meta-item">
-                                <i class="fa-solid fa-circle-check"></i>
-                                <div><strong>הבעיה שפתרנו:</strong> ריכוז לקוחות, ספקים, הזמנות יבוא וסטטוסי משלוח במקום אחד, כדי לצמצם כפילויות, לזהות עיכובים ולהפיק דוחות רכש בלי עבודה ידנית.</div>
-                            </div>
-                        </div>
-                        <div class="project-cta">
-                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
-                        </div>
-                    </div>
-                </div>
                 <!-- Project: Photography Business Management -->
-                <div class="project-card reveal delay-2 project-collapsed">
+                <div class="project-card reveal">
                     <div class="project-image">
                         <img src="photographer-system.png" alt="מערכת ניהול עסק לצילום">
                         <div class="project-overlay">
@@ -507,7 +433,7 @@
                     </div>
                 </div>
                 <!-- Project: Shithead Game -->
-                <div class="project-card reveal delay-3 project-collapsed">
+                <div class="project-card reveal">
                     <div class="project-image">
                         <img src="shithead-game.png" alt="משחק קלפים שיטהד אונליין">
                         <div class="project-overlay">
@@ -528,6 +454,81 @@
                         </div>
                         <div class="project-cta">
                             <a href="https://shithead-d1aad.web.app/" target="_blank" rel="noopener" class="btn btn-primary" aria-label="כניסה למשחק שיטהד אונליין">כניסה למשחק</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project: Groopy Catalog System -->
+                <div class="project-card reveal delay-1 project-collapsed">
+                    <div class="project-image">
+                        <img src="groopy-system.png" alt="מערכת קטלוג מוצרים חכמה, Groopy">
+                        <div class="project-overlay">
+                            <span class="project-tag">מערכת קטלוג</span>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>מערכת קטלוג (Groopy)</h3>
+                        <div class="project-meta">
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-user-tag"></i>
+                                <div><strong>למי מיועד:</strong> ספקי מוצרים וסוכני שטח</div>
+                            </div>
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div><strong>הבעיה שפתרנו:</strong> אפשרות ללקוחות לשלוח הזמנות ישירות מתוך הקטלוג לסוכן המכירות שלהם. כך תהליך ההזמנה פשוט יותר, העבודה יעילה יותר ונחסך זמן יקר לכל הצדדים.</div>
+                            </div>
+                        </div>
+                        <div class="project-cta">
+                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project: TikTak Task Management -->
+                <div class="project-card reveal delay-2 project-collapsed">
+                    <div class="project-image">
+                        <img src="tiktak-system.png" alt="מערכת TikTak למעקב פרויקטים ומשימות">
+                        <div class="project-overlay">
+                            <span class="project-tag">ניהול משימות ופרויקטים</span>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>מערכת ניהול משימות ופרויקטים (TikTak)</h3>
+                        <div class="project-meta">
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-user-tag"></i>
+                                <div><strong>למי מיועד:</strong> מנהלי פרויקטים, מעצבים, ספקים וצוותים בעסק</div>
+                            </div>
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div><strong>הבעיה שפתרנו:</strong> ניהול ומעקב משימות מול ספקים ואנשי קשר, שליטה בסטטוסי עבודה, שיתוף מידע וייעול התקשורת למניעת כפילויות ואיבוד מידע.</div>
+                            </div>
+                        </div>
+                        <div class="project-cta">
+                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project 2: CRM System -->
+                <div class="project-card reveal delay-3 project-collapsed">
+                    <div class="project-image">
+                        <img src="crm-system.png" alt="מערכת CRM לסיטונאים ועסקי ייבוא">
+                        <div class="project-overlay">
+                            <span class="project-tag">מערכת CRM</span>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>מערכת CRM לסיטונאים ויבואנים</h3>
+                        <div class="project-meta">
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-user-tag"></i>
+                                <div><strong>למי מיועד:</strong> סיטונאים ועסקי ייבוא</div>
+                            </div>
+                            <div class="project-meta-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div><strong>הבעיה שפתרנו:</strong> ריכוז לקוחות, ספקים, הזמנות יבוא וסטטוסי משלוח במקום אחד, כדי לצמצם כפילויות, לזהות עיכובים ולהפיק דוחות רכש בלי עבודה ידנית.</div>
+                            </div>
+                        </div>
+                        <div class="project-cta">
+                            <a href="#diagnosis" class="btn btn-primary" aria-label="אני רוצה מערכת דומה לעסק שלי">אני רוצה מערכת כזו</a>
                         </div>
                     </div>
                 </div>
@@ -602,10 +603,10 @@
     <footer class="footer" id="contact">
         <div class="container center-text">
             <h3>רוצה לבדוק אם זה מתאים לעסק שלך?</h3>
-            <p>אפשר למלא את האבחון הדיגיטלי הקצר ולקבל כיוון ראשוני, או לשלוח לנו הודעה קצרה בוואטסאפ אם נוח לך להתחיל משיחה.</p>
+            <p>אפשר להשאיר פרטים ונחזור אליך, או לשלוח לנו הודעה קצרה בוואטסאפ אם נוח לך להתחיל משיחה.</p>
             <div class="footer-cta">
                 <div class="cta-buttons-container">
-                    <a href="#diagnosis" class="btn btn-primary cta-diag-btn" aria-label="מעבר למילוי אבחון דיגיטלי קצר">מלאו אבחון קצר</a>
+                    <a href="#diagnosis" class="btn btn-primary cta-diag-btn">השאירו פרטים</a>
                     <a href="https://wa.me/972528366744?text=%D7%94%D7%99%D7%99%20%D7%A9%D7%97%D7%A8%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%A4%D7%AA%D7%A8%D7%95%D7%A0%D7%95%D7%AA%20%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C%D7%99%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" class="btn btn-whatsapp cta-wa-btn" aria-label="שלחו הודעה בוואטסאפ לשחר">
                         <i class="fa-brands fa-whatsapp"></i> שלחו הודעה בוואטסאפ
                     </a>

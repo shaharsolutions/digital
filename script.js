@@ -120,14 +120,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitDiagBtn = diagForm.querySelector('.diag-submit-btn');
         const diagMessage = diagForm.querySelector('#diagMessage');
         const diagSuccess = document.querySelector('#diagSuccess');
+        const continueDiagnosis = document.querySelector('#continueDiagnosis');
+        const successText = document.querySelector('#diagSuccessText');
+        const progressContainer = diagForm.querySelector('.diagnosis-progress-container');
         
-        let diagCurrentStep = 1;
-        const diagTotalSteps = 6;
+        let diagCurrentStep = 0;
+        const diagTotalSteps = 5;
+        let isSubmitting = false;
+
+        continueDiagnosis.addEventListener('click', () => {
+            diagSuccess.classList.add('hidden');
+            diagForm.classList.remove('hidden');
+            diagCurrentStep = 1;
+            updateDiagProgress();
+            diagForm.querySelector('.diagnosis-step.active textarea').focus();
+        });
         
         function updateDiagProgress() {
             // Update Progress Bar
             const percent = (diagCurrentStep / diagTotalSteps) * 100;
             progressFill.style.width = `${percent}%`;
+            progressContainer.classList.toggle('hidden', diagCurrentStep === 0);
             
             // Update Step Text
             stepIndicator.textContent = `שלב ${diagCurrentStep} מתוך ${diagTotalSteps}`;
@@ -141,19 +154,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             // Update navigation buttons
-            if (diagCurrentStep === 1) {
+            if (diagCurrentStep <= 1) {
                 prevBtn.classList.add('hidden');
             } else {
                 prevBtn.classList.remove('hidden');
             }
             
-            if (diagCurrentStep === diagTotalSteps) {
+            if (diagCurrentStep === 0 || diagCurrentStep === diagTotalSteps) {
                 nextBtn.classList.add('hidden');
                 submitDiagBtn.classList.remove('hidden');
             } else {
                 nextBtn.classList.remove('hidden');
                 submitDiagBtn.classList.add('hidden');
             }
+            submitDiagBtn.querySelector('.btn-text').textContent = diagCurrentStep === 0
+                ? 'שליחת פרטים' : 'שליחת האבחון';
             
             // Clear inline messages on step change
             diagMessage.textContent = '';
@@ -212,6 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Submit Handler
         diagForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            if (isSubmitting) return;
+            if (diagCurrentStep > 0 && diagCurrentStep < diagTotalSteps) {
+                diagCurrentStep++;
+                updateDiagProgress();
+                return;
+            }
+            const isContactSubmission = diagCurrentStep === 0;
             
             // Final Step Validation
             const fullName = diagForm.fullName.value.trim();
@@ -224,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Show loading state
+            isSubmitting = true;
             submitDiagBtn.disabled = true;
             const diagBtnText = submitDiagBtn.querySelector('.btn-text');
             const diagLoader = submitDiagBtn.querySelector('.loader');
@@ -234,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Prepare FormData
             const formData = new FormData(diagForm);
-            formData.append('formType', 'אבחון דיגיטלי');
+            formData.append('formType', isContactSubmission ? 'השארת פרטים' : 'אבחון דיגיטלי');
             
             // Build a formatted summary of the Q&A for the 'improvement' field (e.g. to automatically show in the email)
             const timeWaster = diagForm.timeWaster.value.trim() || "לא צוין";
@@ -256,7 +279,7 @@ ${desiredFeatures}<br><br>
 <b>כמה חשוב לפתור את זה בתקופה הקרובה?</b><br>
 ${priority}`;
 
-            formData.append('improvement', formattedImprovement);
+            formData.append('improvement', isContactSubmission ? 'השארת פרטים ליצירת קשר' : formattedImprovement);
             
             // Submit using fetch
             fetch(SCRIPT_URL, {
@@ -268,12 +291,10 @@ ${priority}`;
                 // Success
                 diagForm.classList.add('hidden');
                 diagSuccess.classList.remove('hidden');
-                diagForm.reset();
-                
-                // Clear chips selected state
-                chips.forEach(c => c.classList.remove('selected'));
-                diagForm.querySelectorAll('input[type="hidden"]').forEach(h => h.value = '');
-                openSegmentModal();
+                continueDiagnosis.classList.toggle('hidden', !isContactSubmission);
+                successText.textContent = isContactSubmission
+                    ? 'נחזור אליך בהקדם. אפשר גם להמשיך לאבחון קצר שיעזור לנו להבין טוב יותר מה העסק צריך.'
+                    : 'תודה על התשובות. נעבור עליהן ונחזור אליך עם כיוון ראשוני לפתרון שיכול לעשות סדר בעסק.';
             })
             .catch(error => {
                 console.error('Diagnosis submission error:', error);
@@ -281,6 +302,7 @@ ${priority}`;
                 diagMessage.className = 'form-message error';
             })
             .finally(() => {
+                isSubmitting = false;
                 submitDiagBtn.disabled = false;
                 diagBtnText.classList.remove('hidden');
                 diagLoader.classList.add('hidden');
