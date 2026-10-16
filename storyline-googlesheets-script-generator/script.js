@@ -1491,3 +1491,365 @@ onAuthStateChanged(auth, async (user) => {
 updateSupportMailto('');
 updateVariableNames();
 
+// ===============================================================
+// Interactive Hebrew Video Tutorial Player Controller
+// ===============================================================
+
+const TUTORIAL_SCENES_META = [
+  {
+    idx: 0,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene1.mp3',
+    duration: 40.3,
+    badge: 'שלב 1 מתוך 6 • Storyline 360',
+    caption:
+      'פתיחת חלון המשתנים (Manage Project Variables) ב-Storyline 360 ובדיקת האיות המדויק של שמות המשתנים: LearnerName, QuizScore, Department.'
+  },
+  {
+    idx: 1,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene2.mp3',
+    duration: 32.14,
+    badge: 'שלב 2 מתוך 6 • מחולל הסקריפטים',
+    caption:
+      'בחירת מספר המשתנים (3), הקלדת השמות המדויקים (Case-Sensitive) והעתקת קוד ה-Google Apps Script שנוצר אוטומטית.'
+  },
+  {
+    idx: 2,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene3.mp3',
+    duration: 26.16,
+    badge: 'שלב 3 מתוך 6 • Google Sheets',
+    caption:
+      'פתיחת Extensions > Apps Script בגיליון ה-Google Sheets, הדבקת הקוד מהמחולל ושמירת הפרויקט (Ctrl+S).'
+  },
+  {
+    idx: 3,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene4.mp3',
+    duration: 36.58,
+    badge: 'שלב 4 מתוך 6 • פרסום Web App',
+    caption:
+      'לחיצה על Deploy > New deployment מסוג Web app, הגדרת Who has access: Anyone, והעתקת כתובת ה-Web App URL.'
+  },
+  {
+    idx: 4,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene5.mp3',
+    duration: 26.21,
+    badge: 'שלב 5 מתוך 6 • קוד JavaScript',
+    caption:
+      'הדבקת כתובת ה-Web App URL במחולל והעתקת קוד ה-JavaScript המוכן עבור Storyline 360.'
+  },
+  {
+    idx: 5,
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene6.mp3',
+    duration: 45.07,
+    badge: 'שלב 6 מתוך 6 • טריגר ובדיקת אמת',
+    caption:
+      'יצירת טריגר Execute JavaScript ב-Storyline, פרסום הלומדה (Publish), וצפייה בנתונים מתעדכנים בזמן אמת ב-Google Sheets!'
+  }
+];
+
+(function initTutorialPlayer() {
+  const audioEl = document.getElementById('tutorial-audio-el');
+  if (!audioEl) return;
+
+  const startOverlay = document.getElementById('tutorial-start-overlay');
+  const bigPlayBtn = document.getElementById('tutorial-big-play-btn');
+  const playPauseBtn = document.getElementById('tut-play-pause-btn');
+  const iconPlay = document.getElementById('tut-icon-play');
+  const iconPause = document.getElementById('tut-icon-pause');
+  const playLabel = document.getElementById('tut-play-label');
+  const prevBtn = document.getElementById('tut-prev-btn');
+  const nextBtn = document.getElementById('tut-next-btn');
+  const seekSlider = document.getElementById('tut-seek-slider');
+  const curTimeEl = document.getElementById('tut-current-time');
+  const totTimeEl = document.getElementById('tut-total-time');
+  const speedBtn = document.getElementById('tut-speed-btn');
+  const muteBtn = document.getElementById('tut-mute-btn');
+  const iconVol = document.getElementById('tut-icon-vol');
+  const iconMuted = document.getElementById('tut-icon-muted');
+  const stepBadgeEl = document.getElementById('tutorial-step-badge');
+  const captionTextEl = document.getElementById('tutorial-caption-text');
+  const fillDemoBtn = document.getElementById('tut-fill-demo-btn');
+  const scrollToTutorialBtn = document.getElementById('scroll-to-tutorial-btn');
+  const toggleCollapseBtn = document.getElementById('toggle-tutorial-collapse');
+  const toggleCollapseLabel = document.getElementById('toggle-tutorial-label');
+  const playerBody = document.getElementById('tutorial-player-body');
+
+  const stepTabs = Array.from(document.querySelectorAll('.tutorial-step-tab'));
+  const sceneEls = Array.from(document.querySelectorAll('.tutorial-scene'));
+
+  let currentSceneIdx = 0;
+  let playbackSpeedIdx = 0;
+  const SPEEDS = [1, 1.25, 1.5];
+
+  function formatMmSs(seconds) {
+    const s = Math.max(0, Math.floor(Number(seconds) || 0));
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }
+
+  function setElHidden(el, shouldHide) {
+    if (!el) return;
+    if (shouldHide) {
+      el.setAttribute('hidden', '');
+      el.style.display = 'none';
+    } else {
+      el.removeAttribute('hidden');
+      el.style.display = '';
+    }
+  }
+
+  function updatePlayPauseUI(isPlaying) {
+    setElHidden(iconPlay, isPlaying);
+    setElHidden(iconPause, !isPlaying);
+    if (playPauseBtn) {
+      playPauseBtn.classList.toggle('is-playing', isPlaying);
+    }
+    if (playLabel) {
+      if (isPlaying) {
+        playLabel.textContent = 'השהה';
+      } else {
+        playLabel.textContent =
+          audioEl.currentTime > 0 && !audioEl.ended ? 'המשך ניגון' : 'הפעל קריינות';
+      }
+    }
+    if (isPlaying && startOverlay) {
+      setElHidden(startOverlay, true);
+    }
+  }
+
+  function updateTimeDrivenMicroAnimations(sceneIdx, currentTime) {
+    if (sceneIdx === 0) {
+      const rows = document.querySelectorAll('.sl-var-row');
+      rows.forEach((r, i) => {
+        const active =
+          (i === 0 && currentTime >= 22 && currentTime < 28) ||
+          (i === 1 && currentTime >= 26 && currentTime < 32) ||
+          (i === 2 && currentTime >= 30);
+        r.classList.toggle('highlight-active', active);
+      });
+    } else if (sceneIdx === 1) {
+      const copyBtn = document.getElementById('anim-copy-gas-btn');
+      const copyText = document.getElementById('anim-copy-gas-text');
+      if (copyBtn && copyText) {
+        const isCopied = currentTime >= 27;
+        copyBtn.classList.toggle('copied-flash', isCopied);
+        copyText.textContent = isCopied ? 'הועתק ללוח! ✓' : 'העתק קוד';
+      }
+    } else if (sceneIdx === 4) {
+      const copyJsBtn = document.getElementById('anim-copy-js-btn');
+      const copyJsText = document.getElementById('anim-copy-js-text');
+      if (copyJsBtn && copyJsText) {
+        const isCopied = currentTime >= 20;
+        copyJsBtn.classList.toggle('copied-flash', isCopied);
+        copyJsText.textContent = isCopied ? 'הועתק ללוח! ✓' : 'העתק קוד';
+      }
+    }
+  }
+
+  function selectScene(idx, autoPlay = false) {
+    const safeIdx = Math.max(0, Math.min(TUTORIAL_SCENES_META.length - 1, idx));
+    currentSceneIdx = safeIdx;
+    const meta = TUTORIAL_SCENES_META[safeIdx];
+
+    stepTabs.forEach((tab, i) => {
+      const isAct = i === safeIdx;
+      tab.classList.toggle('active', isAct);
+      tab.setAttribute('aria-selected', isAct ? 'true' : 'false');
+    });
+
+    sceneEls.forEach((sc, i) => {
+      sc.classList.toggle('active', i === safeIdx);
+    });
+
+    if (stepBadgeEl) stepBadgeEl.textContent = meta.badge;
+    if (captionTextEl) captionTextEl.textContent = meta.caption;
+    if (curTimeEl) curTimeEl.textContent = '00:00';
+    if (totTimeEl) totTimeEl.textContent = formatMmSs(meta.duration);
+    if (seekSlider) seekSlider.value = '0';
+
+    audioEl.pause();
+    audioEl.src = meta.audio;
+    const targetRate = SPEEDS[playbackSpeedIdx];
+    audioEl.defaultPlaybackRate = targetRate;
+    audioEl.load();
+    audioEl.playbackRate = targetRate;
+
+    if (autoPlay) {
+      setElHidden(startOverlay, true);
+      audioEl.play().then(() => {
+        audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
+      }).catch(() => {
+        updatePlayPauseUI(false);
+      });
+    } else {
+      updatePlayPauseUI(false);
+    }
+  }
+
+  function togglePlayPause() {
+    setElHidden(startOverlay, true);
+    if (audioEl.paused) {
+      audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
+      audioEl.play().catch(() => {});
+    } else {
+      audioEl.pause();
+    }
+  }
+
+  if (bigPlayBtn) {
+    bigPlayBtn.addEventListener('click', () => {
+      setElHidden(startOverlay, true);
+      selectScene(currentSceneIdx, true);
+    });
+  }
+
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', togglePlayPause);
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const wasPlaying = !audioEl.paused;
+      selectScene(currentSceneIdx - 1, wasPlaying);
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const wasPlaying = !audioEl.paused;
+      selectScene(currentSceneIdx + 1, wasPlaying);
+    });
+  }
+
+  stepTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const idx = parseInt(tab.getAttribute('data-scene-idx'), 10) || 0;
+      setElHidden(startOverlay, true);
+      selectScene(idx, true);
+    });
+  });
+
+  audioEl.addEventListener('play', () => {
+    audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
+    updatePlayPauseUI(true);
+  });
+  audioEl.addEventListener('pause', () => updatePlayPauseUI(false));
+
+  audioEl.addEventListener('loadedmetadata', () => {
+    audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
+    if (audioEl.duration && isFinite(audioEl.duration) && totTimeEl) {
+      totTimeEl.textContent = formatMmSs(audioEl.duration);
+    }
+  });
+
+  audioEl.addEventListener('timeupdate', () => {
+    const dur =
+      audioEl.duration && isFinite(audioEl.duration)
+        ? audioEl.duration
+        : TUTORIAL_SCENES_META[currentSceneIdx].duration;
+    const cur = audioEl.currentTime || 0;
+    if (curTimeEl) curTimeEl.textContent = formatMmSs(cur);
+    if (seekSlider && dur > 0) {
+      seekSlider.value = String(Math.min(100, (cur / dur) * 100));
+    }
+    updateTimeDrivenMicroAnimations(currentSceneIdx, cur);
+  });
+
+  audioEl.addEventListener('ended', () => {
+    if (currentSceneIdx < TUTORIAL_SCENES_META.length - 1) {
+      selectScene(currentSceneIdx + 1, true);
+    } else {
+      updatePlayPauseUI(false);
+    }
+  });
+
+  if (seekSlider) {
+    seekSlider.addEventListener('input', () => {
+      const dur =
+        audioEl.duration && isFinite(audioEl.duration)
+          ? audioEl.duration
+          : TUTORIAL_SCENES_META[currentSceneIdx].duration;
+      const pct = Number(seekSlider.value) || 0;
+      audioEl.currentTime = (pct / 100) * dur;
+    });
+  }
+
+  if (speedBtn) {
+    speedBtn.addEventListener('click', () => {
+      playbackSpeedIdx = (playbackSpeedIdx + 1) % SPEEDS.length;
+      const rate = SPEEDS[playbackSpeedIdx];
+      audioEl.defaultPlaybackRate = rate;
+      audioEl.playbackRate = rate;
+      speedBtn.textContent = `${rate}x`;
+    });
+  }
+
+  if (muteBtn) {
+    muteBtn.addEventListener('click', () => {
+      audioEl.muted = !audioEl.muted;
+      setElHidden(iconVol, audioEl.muted);
+      setElHidden(iconMuted, !audioEl.muted);
+    });
+  }
+
+  if (toggleCollapseBtn && playerBody) {
+    const collapsePlaySvg = toggleCollapseBtn.querySelector('svg');
+    toggleCollapseBtn.addEventListener('click', () => {
+      const isHidden = !playerBody.hidden;
+      playerBody.hidden = isHidden;
+      toggleCollapseBtn.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
+      toggleCollapseBtn.className = isHidden
+        ? 'btn-secondary btn-sm tutorial-collapse-btn'
+        : 'btn-ghost btn-sm tutorial-collapse-btn';
+      setElHidden(collapsePlaySvg, !isHidden);
+      if (toggleCollapseLabel) {
+        toggleCollapseLabel.textContent = isHidden ? 'פתח נגן הדרכה' : 'מזער נגן';
+      }
+      if (isHidden) {
+        audioEl.pause();
+      }
+    });
+  }
+
+  if (scrollToTutorialBtn) {
+    scrollToTutorialBtn.addEventListener('click', () => {
+      const tutSec = document.getElementById('tutorial-section');
+      if (playerBody && playerBody.hidden && toggleCollapseBtn) {
+        toggleCollapseBtn.click();
+      }
+      if (tutSec) {
+        tutSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      selectScene(0, true);
+    });
+  }
+
+  if (fillDemoBtn) {
+    fillDemoBtn.addEventListener('click', () => {
+      if (generatorWorkspace && !generatorWorkspace.hidden) {
+        variableCount = 3;
+        variableCountInput.value = '3';
+        variableNames = ['LearnerName', 'QuizScore', 'Department'];
+        updateVariableNames();
+        if (!webAppUrlInput.value.trim()) {
+          webAppUrlInput.value =
+            'https://script.google.com/macros/s/AKfycbx9_Storyline_Sheets_2026/exec';
+        }
+        scheduleServerScriptGeneration();
+        generatorWorkspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showGlobalBanner(
+          'משתני הדוגמה (LearnerName, QuizScore, Department) הוזנו במחולל והקוד הופק אוטומטית!',
+          'success'
+        );
+      } else {
+        authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showGlobalBanner(
+          'התחבר או הירשם (3 ימים חינם) כדי למלא את משתני הדוגמה ולהפיק את הקוד במחולל.',
+          'success'
+        );
+      }
+    });
+  }
+})();
+
+
