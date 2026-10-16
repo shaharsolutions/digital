@@ -1546,11 +1546,59 @@ const TUTORIAL_SCENES_META = [
   }
 ];
 
+const TUTORIAL_SUBTITLE_CUES = {
+  0: [
+    { start: 0.1, end: 6.54, text: "שלום וברוכים הבאים להדרכה על מחולל הסקריפטים לסטוריליין, מבית שחר פתרונות דיגיטליים." },
+    { start: 6.49, end: 16.84, text: "במדריך זה נלמד איך לחבר לומדה בארטיקולייט סטוריליין 360 ישירות לגיליון Google Sheets, ולשמור נתוני לומדים בזמן אמת וללא צורך בידע בתכנות." },
+    { start: 16.84, end: 25.73, text: "לפני שנתחיל בעבודה עם מחולל הסקריפטים, ניכנס לפרויקט שלנו בתוך סטוריליין ונפתח את חלון ניהול המשתנים, Project Variables." },
+    { start: 25.73, end: 35.74, text: "בדוגמה שלנו יצרנו שלושה משתנים שאנחנו רוצים לייצא: LearnerName לשם הלומד, QuizScore לציון המבחן, ולבסוף Department למחלקה בארגון." },
+    { start: 35.74, end: 40.27, text: "שימו לב היטב לאותיות הגדולות והקטנות בשמות של המשתנים." }
+  ],
+  1: [
+    { start: 0.1, end: 3.42, text: "כעת נעבור אל מחולל הסקריפטים באתר." },
+    { start: 3.37, end: 8.99, text: "בשדה מספר המשתנים נזין שלוש, ומיד ייפתחו לנו שלוש תיבות טקסט." },
+    { start: 8.99, end: 18.98, text: "נקליד בכל תיבה את שם המשתנה בדיוק כפי שהוא מופיע בתוך סטורי-ליין, כולל אותיות גדולות וקטנות: LearnerName, אחריו QuizScore, ולבסוף Department." },
+    { start: 18.98, end: 28.13, text: "ברגע שהקלדנו את השמות, מחולל הסקריפטים מייצר עבורנו באופן אוטומטי בתיבה הראשונה את קוד Google Apps Script המותאם למשתנים שלנו." },
+    { start: 28.13, end: 32.09, text: "נלחץ על כפתור העתק קוד כדי להעתיק אותו ללוח." }
+  ],
+  2: [
+    { start: 0.1, end: 4.87, text: "נעבור לגיליון Google Sheets שבו נרצה לאסוף את נתוני הלומדים." },
+    { start: 4.82, end: 9.77, text: "מומלץ לרשום בשורה הראשונה כותרות לעמודות לפי סדר המשתנים שלנו." },
+    { start: 9.77, end: 16.01, text: "בתפריט העליון נלחץ על Extensions, או הרחבות, ונבחר באפשרות Apps Script." },
+    { start: 16.01, end: 26.14, text: "בחלון עורך הקוד שנפתח, נמחק את הקוד הקיים, נדביק את הקוד שהעתקנו ממחולל הסקריפטים, ונלחץ על סמל הדיסקט או קונטרול S כדי לשמור את הפרויקט." }
+  ],
+  3: [
+    { start: 0.1, end: 6.09, text: "כדי שהלומדה תוכל לשלוח נתונים לגיליון, נפרסם את הסקריפט כיישום אינטרנט." },
+    { start: 6.04, end: 11.36, text: "נלחץ למעלה על הכפתור הכחול Deploy, ונבחר באפשרות New deployment." },
+    { start: 11.37, end: 15.09, text: "נלחץ על גלגל השיניים ונבחר בסוג Web app." },
+    { start: 15.08, end: 20.87, text: "בשדה ההרצה, Execute, נוודא שמוגדר Me, כלומר החשבון שלנו." },
+    { start: 20.87, end: 29.72, text: "חשוב מאוד: תחת ההגדרה Who has access נבחר באפשרות Anyone, כדי שכל לומד יוכל לשלוח נתונים מהדפדפן שלו ללא חסימה." },
+    { start: 29.72, end: 36.52, text: "נלחץ על Deploy, נאשר את ההרשאות בחשבון Google, ובסיום נעתיק את הכתובת Web app URL שנוצרה." }
+  ],
+  4: [
+    { start: 0.1, end: 7.03, text: "נחזור אל מחולל הסקריפטים שלנו, ונדביק בתיבה המתאימה את הכתובת של Web app שהעתקנו בשלב הקודם." },
+    { start: 6.98, end: 13.41, text: "מיד עם הדבקת הקישור, מחולל הסקריפטים משלים אוטומטית את קוד JavaScript בתיבה השנייה." },
+    { start: 13.4, end: 22.01, text: "הקוד הזה שולף את ערכי המשתנים מתוך הנגן של סטורי-ליין באמצעות פקודת GetVar, ושולח אותם ברקע ישירות לכתובת הגיליון שלנו." },
+    { start: 22.01, end: 26.14, text: "נלחץ על כפתור העתק קוד בתיבת הקוד של JavaScript." }
+  ],
+  5: [
+    { start: 0.1, end: 8.25, text: "נחזור אל ארטיקולייט סטורי-ליין 360, לשקופית שבה נרצה לשלוח את הנתונים – למשל שקופית הסיום או כפתור הגשה." },
+    { start: 8.2, end: 12.69, text: "ניצור טריגר חדש ונבחר באפשרות Execute JavaScript." },
+    { start: 12.69, end: 19.16, text: "נלחץ על הקישור האדום של JavaScript, נדביק את הקוד שהעתקנו ממחולל הסקריפטים ונלחץ על אוקיי." },
+    { start: 19.16, end: 25.02, text: "נגדיר שהטריגר יפעל למשל בעת לחיצה על כפתור השליחה, או כשציר הזמן מתחיל." },
+    { start: 25.01, end: 34.07, text: "שימו לב: כדי לבדוק שהכול עובד, יש לבצע Publish לפורמט Web או למערכת LMS, ולא להסתפק בתצוגה מקדימה, Preview." },
+    { start: 34.07, end: 41.13, text: "ברגע שהלומד מסיים ולוחץ על הכפתור – הנתונים מופיעים מיד בתוך שורה חדשה בגיליון Google Sheets שלנו!" },
+    { start: 41.14, end: 45.05, text: "בהצלחה, ואנחנו כאן לרשותכם בכל שאלה." }
+  ]
+};
+
 (function initTutorialPlayer() {
   const audioEl = document.getElementById('tutorial-audio-el');
   if (!audioEl) return;
 
   const startOverlay = document.getElementById('tutorial-start-overlay');
+  const subtitlesOverlayEl = document.getElementById('tutorial-subtitles-overlay');
+  const subtitlesTextEl = document.getElementById('tutorial-subtitles-text');
   const bigPlayBtn = document.getElementById('tutorial-big-play-btn');
   const playPauseBtn = document.getElementById('tut-play-pause-btn');
   const iconPlay = document.getElementById('tut-icon-play');
@@ -1567,6 +1615,7 @@ const TUTORIAL_SCENES_META = [
   const iconMuted = document.getElementById('tut-icon-muted');
   const stepBadgeEl = document.getElementById('tutorial-step-badge');
   const captionTextEl = document.getElementById('tutorial-caption-text');
+  const captionsBtn = document.getElementById('tut-cc-btn');
   const fillDemoBtn = document.getElementById('tut-fill-demo-btn');
   const scrollToTutorialBtn = document.getElementById('scroll-to-tutorial-btn');
   const toggleCollapseBtn = document.getElementById('toggle-tutorial-collapse');
@@ -1578,6 +1627,7 @@ const TUTORIAL_SCENES_META = [
 
   let currentSceneIdx = 0;
   let playbackSpeedIdx = 0;
+  let captionsEnabled = true; // Captions enabled by default
   const SPEEDS = [1, 1.25, 1.5];
 
   function formatMmSs(seconds) {
@@ -1646,6 +1696,42 @@ const TUTORIAL_SCENES_META = [
     }
   }
 
+  function updateSubtitles(sceneIdx, currentTime) {
+    if (!subtitlesOverlayEl || !subtitlesTextEl) return;
+    if (!captionsEnabled) {
+      setElHidden(subtitlesOverlayEl, true);
+      subtitlesTextEl.textContent = '';
+      return;
+    }
+    if (audioEl.paused && (!currentTime || currentTime <= 0.05)) {
+      setElHidden(subtitlesOverlayEl, true);
+      subtitlesTextEl.textContent = '';
+      return;
+    }
+    const cues = TUTORIAL_SUBTITLE_CUES[sceneIdx] || [];
+    let activeCue = null;
+    for (let i = cues.length - 1; i >= 0; i--) {
+      const c = cues[i];
+      const start = i === 0 ? 0 : c.start;
+      const nextStart = i < cues.length - 1 ? cues[i + 1].start : Infinity;
+      const end = Math.min(nextStart, c.end + 0.35);
+      if (currentTime >= start && currentTime <= end) {
+        activeCue = c;
+        break;
+      }
+    }
+
+    if (activeCue && activeCue.text) {
+      if (subtitlesTextEl.textContent !== activeCue.text) {
+        subtitlesTextEl.textContent = activeCue.text;
+      }
+      setElHidden(subtitlesOverlayEl, false);
+    } else {
+      setElHidden(subtitlesOverlayEl, true);
+      subtitlesTextEl.textContent = '';
+    }
+  }
+
   function selectScene(idx, autoPlay = false) {
     const safeIdx = Math.max(0, Math.min(TUTORIAL_SCENES_META.length - 1, idx));
     currentSceneIdx = safeIdx;
@@ -1674,10 +1760,13 @@ const TUTORIAL_SCENES_META = [
     audioEl.load();
     audioEl.playbackRate = targetRate;
 
+    updateSubtitles(safeIdx, 0);
+
     if (autoPlay) {
       setElHidden(startOverlay, true);
       audioEl.play().then(() => {
         audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
+        updateSubtitles(safeIdx, audioEl.currentTime || 0);
       }).catch(() => {
         updatePlayPauseUI(false);
       });
@@ -1732,8 +1821,12 @@ const TUTORIAL_SCENES_META = [
   audioEl.addEventListener('play', () => {
     audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
     updatePlayPauseUI(true);
+    updateSubtitles(currentSceneIdx, audioEl.currentTime || 0);
   });
-  audioEl.addEventListener('pause', () => updatePlayPauseUI(false));
+  audioEl.addEventListener('pause', () => {
+    updatePlayPauseUI(false);
+    updateSubtitles(currentSceneIdx, audioEl.currentTime || 0);
+  });
 
   audioEl.addEventListener('loadedmetadata', () => {
     audioEl.playbackRate = SPEEDS[playbackSpeedIdx];
@@ -1753,9 +1846,11 @@ const TUTORIAL_SCENES_META = [
       seekSlider.value = String(Math.min(100, (cur / dur) * 100));
     }
     updateTimeDrivenMicroAnimations(currentSceneIdx, cur);
+    updateSubtitles(currentSceneIdx, cur);
   });
 
   audioEl.addEventListener('ended', () => {
+    updateSubtitles(currentSceneIdx, -1);
     if (currentSceneIdx < TUTORIAL_SCENES_META.length - 1) {
       selectScene(currentSceneIdx + 1, true);
     } else {
@@ -1770,7 +1865,9 @@ const TUTORIAL_SCENES_META = [
           ? audioEl.duration
           : TUTORIAL_SCENES_META[currentSceneIdx].duration;
       const pct = Number(seekSlider.value) || 0;
-      audioEl.currentTime = (pct / 100) * dur;
+      const targetTime = (pct / 100) * dur;
+      audioEl.currentTime = targetTime;
+      updateSubtitles(currentSceneIdx, targetTime);
     });
   }
 
@@ -1789,6 +1886,22 @@ const TUTORIAL_SCENES_META = [
       audioEl.muted = !audioEl.muted;
       setElHidden(iconVol, audioEl.muted);
       setElHidden(iconMuted, !audioEl.muted);
+    });
+  }
+
+  function setCaptionsState(enabled) {
+    captionsEnabled = Boolean(enabled);
+    if (captionsBtn) {
+      captionsBtn.classList.toggle('active', captionsEnabled);
+      captionsBtn.setAttribute('aria-pressed', captionsEnabled ? 'true' : 'false');
+      captionsBtn.title = captionsEnabled ? 'הסתר כתוביות' : 'הצג כתוביות';
+    }
+    updateSubtitles(currentSceneIdx, audioEl.currentTime || 0);
+  }
+
+  if (captionsBtn) {
+    captionsBtn.addEventListener('click', () => {
+      setCaptionsState(!captionsEnabled);
     });
   }
 
@@ -1850,6 +1963,9 @@ const TUTORIAL_SCENES_META = [
       }
     });
   }
+
+  // Initialize captions state (enabled by default)
+  setCaptionsState(true);
 })();
 
 

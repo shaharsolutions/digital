@@ -2203,6 +2203,58 @@ textarea:focus {
   justify-content: center;
 }
 
+/* Real-time Video Subtitles (Closed Captions) Overlay */
+.tutorial-subtitles-overlay {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 90%;
+  z-index: 30;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 160ms cubic-bezier(0.2, 0, 0, 1), transform 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.tutorial-subtitles-overlay[hidden] {
+  display: none !important;
+}
+
+.tutorial-subtitles-text:empty {
+  display: none !important;
+}
+
+.tutorial-subtitles-text {
+  display: inline-block;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-family: 'Rubik', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  direction: rtl;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .tutorial-subtitles-overlay {
+    bottom: 8px;
+    max-width: 95%;
+  }
+  .tutorial-subtitles-text {
+    font-size: 0.82rem;
+    padding: 6px 12px;
+  }
+}
+
 .tutorial-start-overlay {
   position: absolute;
   inset: 0;
@@ -3100,7 +3152,8 @@ textarea:focus {
 }
 
 .tut-ctrl-btn,
-.tut-speed-btn {
+.tut-speed-btn,
+.tut-cc-btn {
   min-width: 34px;
   min-height: 34px;
   padding: 4px 8px;
@@ -3114,15 +3167,45 @@ textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
 
 .tut-ctrl-btn:hover,
-.tut-speed-btn:hover {
+.tut-speed-btn:hover,
+.tut-cc-btn:hover {
   background-color: #eff6ff;
   border-color: #93c5fd;
   color: #1d4ed8;
+}
+
+.tut-cc-btn {
+  padding: 4px 10px;
+}
+
+.tut-cc-btn.active {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  box-shadow: inset 0 0 0 1px #3b82f6;
+}
+
+.tut-cc-btn:not(.active) {
+  opacity: 0.62;
+  text-decoration: line-through;
+  text-decoration-color: #94a3b8;
+}
+
+.tut-cc-btn:not(.active) svg {
+  opacity: 0.65;
+}
+
+.cc-label {
+  font-size: 0.76rem;
+  font-weight: 600;
 }
 
 .tutorial-timeline-wrap {
