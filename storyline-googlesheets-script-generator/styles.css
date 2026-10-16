@@ -3124,11 +3124,13 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .tut-play-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   min-height: 36px;
   padding: 6px 14px;
@@ -3140,6 +3142,8 @@ textarea:focus {
   font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background 150ms ease, transform 150ms ease;
 }
 
@@ -3169,6 +3173,8 @@ textarea:focus {
   justify-content: center;
   gap: 5px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition-property: background-color, color, border-color, box-shadow;
   transition-duration: 150ms;
   transition-timing-function: ease;
@@ -3209,8 +3215,8 @@ textarea:focus {
 }
 
 .tutorial-timeline-wrap {
-  flex: 1;
-  min-width: 160px;
+  flex: 1 1 120px;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3221,10 +3227,14 @@ textarea:focus {
   font-size: 0.75rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tut-seek-slider {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   accent-color: #2563eb;
   cursor: pointer;
   height: 5px;
@@ -3234,6 +3244,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .tut-demo-btn {
@@ -3251,6 +3262,24 @@ textarea:focus {
   .final-split-grid {
     grid-template-columns: 1fr;
   }
+
+  .tutorial-controls-bar {
+    gap: 10px;
+  }
+
+  .tutorial-timeline-wrap {
+    order: -1;
+    width: 100%;
+    flex: 1 0 100%;
+  }
+
+  .transport-buttons {
+    order: 1;
+  }
+
+  .tutorial-extra-actions {
+    order: 2;
+  }
 }
 
 @media (max-width: 520px) {
@@ -3261,6 +3290,21 @@ textarea:focus {
   .tutorial-caption-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .tutorial-controls-bar {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .tut-play-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .tut-demo-btn {
+    padding: 4px 8px;
+    font-size: 0.74rem;
   }
 }
 
