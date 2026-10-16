@@ -869,22 +869,128 @@
                   </div>
                 </div>
 
-                <!-- Dates + Automatic Nights Counter -->
-                <div class="form-row-two">
-                  <div class="form-group">
-                    <label for="checkInDate">מתאריך (כניסה)</label>
-                    <input type="date" id="checkInDate" name="checkInDate" class="tabular-nums" />
+                <!-- Custom Hebrew Date Range Picker + Automatic Nights Counter -->
+                <div class="date-picker-wrapper" id="datePickerWrapper">
+                  <div class="form-row-two date-triggers-row">
+                    <div class="form-group">
+                      <label for="checkInTrigger">מתאריך (כניסה)</label>
+                      <input type="hidden" id="checkInDate" name="checkInDate" />
+                      <button
+                        type="button"
+                        class="date-trigger-btn"
+                        id="checkInTrigger"
+                        aria-haspopup="dialog"
+                        aria-expanded="false"
+                      >
+                        <span class="date-trigger-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="3" ry="3"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                        </span>
+                        <span class="date-trigger-text">
+                          <strong class="date-main-label tabular-nums" id="checkInDisplay">בחרו תאריך כניסה</strong>
+                          <small class="date-sub-label" id="checkInSub">לחיצה לבחירה ביומן</small>
+                        </span>
+                      </button>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="checkOutTrigger">עד תאריך (יציאה)</label>
+                      <input type="hidden" id="checkOutDate" name="checkOutDate" />
+                      <button
+                        type="button"
+                        class="date-trigger-btn"
+                        id="checkOutTrigger"
+                        aria-haspopup="dialog"
+                        aria-expanded="false"
+                      >
+                        <span class="date-trigger-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="3" ry="3"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                        </span>
+                        <span class="date-trigger-text">
+                          <strong class="date-main-label tabular-nums" id="checkOutDisplay">בחרו תאריך יציאה</strong>
+                          <small class="date-sub-label" id="checkOutSub">לחיצה לבחירה ביומן</small>
+                        </span>
+                      </button>
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label for="checkOutDate">עד תאריך (יציאה)</label>
-                    <input type="date" id="checkOutDate" name="checkOutDate" class="tabular-nums" />
+
+                  <!-- Custom Watercolor Hebrew Calendar Popover -->
+                  <div class="hebrew-calendar-popover" id="hebrewCalendarPopover" role="dialog" aria-label="בחירת תאריכי שהייה" hidden>
+                    <div class="cal-popover-inner">
+                      <!-- Mode Switcher (Check-in vs Check-out) -->
+                      <div class="cal-mode-tabs">
+                        <button type="button" class="cal-mode-tab active" data-cal-mode="checkin" id="calTabCheckIn">
+                          <span>1. תאריך כניסה</span>
+                          <strong class="tabular-nums" id="calTabCheckInVal">טרם נבחר</strong>
+                        </button>
+                        <button type="button" class="cal-mode-tab" data-cal-mode="checkout" id="calTabCheckOut">
+                          <span>2. תאריך יציאה</span>
+                          <strong class="tabular-nums" id="calTabCheckOutVal">טרם נבחר</strong>
+                        </button>
+                      </div>
+
+                      <!-- Quick Presets Row -->
+                      <div class="cal-presets-row">
+                        <button type="button" class="cal-preset-chip" data-preset="weekend">סופ״ש הקרוב</button>
+                        <button type="button" class="cal-preset-chip" data-preset="3nights">3 לילות</button>
+                        <button type="button" class="cal-preset-chip" data-preset="7nights">שבוע (7 לילות)</button>
+                      </div>
+
+                      <!-- Month & Year Navigation -->
+                      <div class="cal-header">
+                        <button type="button" class="cal-nav-btn" id="calPrevMonthBtn" aria-label="חודש קודם">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m9 18 6-6-6-6"/>
+                          </svg>
+                        </button>
+                        <div class="cal-month-title" id="calMonthYearTitle">אוקטובר 2026</div>
+                        <button type="button" class="cal-nav-btn" id="calNextMonthBtn" aria-label="חודש הבא">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m15 18-6-6 6-6"/>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <!-- Hebrew Weekdays Header -->
+                      <div class="cal-weekdays" aria-hidden="true">
+                        <span>א׳</span>
+                        <span>ב׳</span>
+                        <span>ג׳</span>
+                        <span>ד׳</span>
+                        <span>ה׳</span>
+                        <span>ו׳</span>
+                        <span>ש׳</span>
+                      </div>
+
+                      <!-- Calendar Days Grid -->
+                      <div class="cal-days-grid tabular-nums" id="calDaysGrid"></div>
+
+                      <!-- Calendar Footer Actions -->
+                      <div class="cal-footer">
+                        <button type="button" class="cal-clear-btn" id="calClearBtn">ניקוי תאריכים</button>
+                        <div class="cal-footer-status" id="calFooterStatus">בחרו תאריך כניסה</div>
+                        <button type="button" class="cal-done-btn" id="calDoneBtn">אישור</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Dynamic Nights Calculation Pill -->
                 <div class="nights-summary-pill" id="nightsSummaryPill" hidden>
-                  <span>משך הנופש המבוקש:</span>
-                  <strong class="tabular-nums" id="nightsCountText">0 לילות</strong>
+                  <div class="nights-summary-info">
+                    <span class="nights-icon" aria-hidden="true">🐾</span>
+                    <span>משך הנופש שנבחר: <strong class="tabular-nums" id="nightsCountText">0 לילות</strong></span>
+                  </div>
+                  <span class="nights-range-text tabular-nums" id="nightsRangeText"></span>
                 </div>
 
                 <!-- Operational Pre-Qualification Tags (Multi-select) -->
