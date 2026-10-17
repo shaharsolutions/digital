@@ -4,41 +4,41 @@
     "title": "פתיחה והכרת המשתנים ב-Storyline 360",
     "subtitle": "פתיחת חלון המשתנים (Manage Project Variables) ב-Storyline 360 ובדיקת האיות המדויק של שמות המשתנים: LearnerName, QuizScore, Department.",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene1.mp3",
-    "duration": 40.3
+    "duration": 43.28
   },
   {
     "id": "scene2",
     "title": "שלב 1: הזנת המשתנים במחולל והפקת קוד Apps Script",
     "subtitle": "בחירת מספר המשתנים (3), הקלדת השמות המדויקים (Case-Sensitive) והעתקת קוד ה-Google Apps Script שנוצר אוטומטית.",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene2.mp3",
-    "duration": 32.06
+    "duration": 33.08
   },
   {
     "id": "scene3",
     "title": "שלב 2: הדבקת הקוד ב-Google Sheets",
     "subtitle": "פתיחת Extensions > Apps Script בגיליון ה-Google Sheets, הדבקת הקוד מהמחולל ושמירת הפרויקט.",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene3.mp3",
-    "duration": 26.16
+    "duration": 27.23
   },
   {
     "id": "scene4",
     "title": "שלב 3: פרסום כ-Web App והגדרת הרשאות",
     "subtitle": "לחיצה על Deploy > New deployment מסוג Web app, הגדרת Who has access: Anyone, והעתקת כתובת ה-Web App URL.",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene4.mp3",
-    "duration": 35.83
+    "duration": 38.06
   },
   {
     "id": "scene5",
     "title": "שלב 4: הפקת קוד ה-JavaScript ל-Storyline",
     "subtitle": "הדבקת ה-Web App URL במחולל והעתקת קוד ה-JavaScript המוכן עבור Storyline 360.",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene5.mp3",
-    "duration": 24.77
+    "duration": 26.13
   },
   {
     "id": "scene6",
     "title": "שלב 5: הטמעת הקוד בטריגר ב-Storyline ובדיקת אמת!",
     "subtitle": "יצירת טריגר Execute JavaScript ב-Storyline, פרסום הלומדה (Publish), וצפייה בנתונים מתעדכנים בזמן אמת ב-Google Sheets!",
     "audio": "/storyline-googlesheets-script-generator/tutorial-audio/scene6.mp3",
-    "duration": 44.47
+    "duration": 47.3
   }
 ]
