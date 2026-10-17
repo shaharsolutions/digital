@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/roam",
+      "destination": "https://roam-server.shaharsolutions.com/roam"
+    },
+    {
+      "source": "/roam/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/roam/:path*"
+    }
+  ]
+}
