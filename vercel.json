@@ -3,7 +3,11 @@
   "rewrites": [
     {
       "source": "/roam",
-      "destination": "https://roam-server.shaharsolutions.com/roam"
+      "destination": "https://roam-server.shaharsolutions.com/roam/"
+    },
+    {
+      "source": "/roam/",
+      "destination": "https://roam-server.shaharsolutions.com/roam/"
     },
     {
       "source": "/roam/:path*",
