@@ -12,6 +12,18 @@
     {
       "source": "/roam/:path*",
       "destination": "https://roam-server.shaharsolutions.com/roam/:path*"
+    },
+    {
+      "source": "/finance",
+      "destination": "https://roam-server.shaharsolutions.com/finance"
+    },
+    {
+      "source": "/finance/",
+      "destination": "https://roam-server.shaharsolutions.com/finance/"
+    },
+    {
+      "source": "/finance/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/finance/:path*"
     }
   ]
 }
