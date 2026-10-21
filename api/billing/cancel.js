@@ -1,7 +1,8 @@
 const {
   verifyFirebaseIdToken,
   getOrCreateUser,
-  setDocument
+  setDocument,
+  logActivity
 } = require('../_lib/firebaseAdmin');
 const { cancelStandingOrder, findStandingOrder } = require('../_lib/tranzila');
 
@@ -70,6 +71,20 @@ module.exports = async function handler(req, res) {
       responseCode: '000',
       eventType: 'subscription_canceled',
       createdAt: nowIso
+    });
+
+    await logActivity({
+      uid: authUser.uid,
+      email: userDoc.email,
+      displayName: userDoc.displayName,
+      action: 'subscription_canceled',
+      category: 'billing',
+      description: 'ביטל/ה את המנוי החודשי והוראת הקבע',
+      details: {
+        stoId: stoIdToCancel || userDoc.tranzilaStoId || '',
+        currentPeriodEnd: updatedUser.currentPeriodEnd
+      },
+      req
     });
 
     return res.status(200).json({

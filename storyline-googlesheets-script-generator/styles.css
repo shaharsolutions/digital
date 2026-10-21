@@ -1606,6 +1606,320 @@ textarea:focus {
   flex-wrap: wrap;
 }
 
+/* Admin Tabs Navigation */
+.admin-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--surface-subtle);
+}
+
+.admin-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.admin-tab-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.admin-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background-color: #ffffff;
+}
+
+.admin-tab-icon {
+  flex-shrink: 0;
+}
+
+.admin-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background-color: #e2e8f0;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-tab-btn.active .admin-tab-badge {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.admin-tab-pane {
+  display: block;
+}
+
+.admin-tab-pane[hidden] {
+  display: none !important;
+}
+
+.admin-stat-card.admin-stat-billing {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+}
+
+.admin-stat-card.admin-stat-billing .admin-stat-sub {
+  color: #b45309;
+}
+
+/* User Activity Cell in Users Table */
+.admin-user-activity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.78rem;
+  min-width: 130px;
+}
+
+.admin-activity-time-main {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-activity-count-sub {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  font-size: 0.74rem;
+}
+
+.btn-user-view-logs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc;
+  color: #334155;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: fit-content;
+}
+
+.btn-user-view-logs:hover {
+  background-color: #ede9fe;
+  border-color: #c4b5fd;
+  color: #5b21b6;
+}
+
+/* Activity Log Toolbar & Filters */
+.admin-activity-toolbar {
+  gap: 10px;
+}
+
+.admin-activity-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 12px;
+}
+
+.btn-pill-clear {
+  border: none;
+  background: transparent;
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-pill-clear:hover {
+  color: #1d4ed8;
+}
+
+/* Activity Feed / Table Styles */
+.admin-activity-table th,
+.admin-activity-table td {
+  padding: 10px 12px;
+}
+
+.act-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.act-badge-auth {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.act-badge-script {
+  background-color: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  color: #5b21b6;
+}
+
+.act-badge-billing {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.act-badge-admin {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.act-badge-general {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.act-badge-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.act-time-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.act-time-main {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.act-time-sub {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.act-user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.act-user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.83rem;
+}
+
+.act-user-email {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+  text-align: right;
+}
+
+.act-desc-cell {
+  font-size: 0.83rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+  max-width: 380px;
+}
+
+.act-meta-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+}
+
+.act-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.act-meta-ip {
+  font-family: 'JetBrains Mono', monospace;
+  color: #334155;
+  direction: ltr;
+}
+
+.act-meta-var-list {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #334155;
+  font-size: 0.71rem;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  direction: ltr;
+}
+
+.btn-filter-user-cell {
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-filter-user-cell:hover {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
 /* SEO Content, How-To Steps & FAQ Section */
 .seo-content-section {
   margin-top: 36px;

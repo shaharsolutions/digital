@@ -51,6 +51,21 @@ rules_version = '2';
 //   - invoiceUrl: string (optional, 0..500 chars)
 //   - createdAt: timestamp (required, immutable)
 //
+// Collection: activity_logs
+// Document ID: {logId}
+// Fields:
+//   - id: string
+//   - uid: string
+//   - email: string
+//   - displayName: string
+//   - action: string
+//   - category: string
+//   - description: string
+//   - details: map
+//   - ip: string
+//   - userAgent: string
+//   - createdAt: timestamp (required, immutable)
+//
 // ===============================================================
 
 service cloud.firestore {
@@ -260,6 +275,10 @@ service cloud.firestore {
                        areImmutableFieldsUnchanged(['eventId', 'uid', 'amount', 'currency', 'responseCode', 'eventType', 'createdAt']) &&
                        isValidPaymentEvent(request.resource.data);
       allow delete: if false;
+    }
+
+    match /activity_logs/{logId} {
+      allow read, write: if false; // Managed exclusively via trusted server API endpoints
     }
 
     match /_server_vault/{vaultId} {

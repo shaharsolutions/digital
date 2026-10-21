@@ -40,7 +40,8 @@ const MIME_TYPES = {
   '.txt': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg'
 };
 
 const apiRoutes = {
@@ -49,7 +50,9 @@ const apiRoutes = {
   '/api/billing/create-checkout': require('./api/billing/create-checkout'),
   '/api/billing/cancel': require('./api/billing/cancel'),
   '/api/webhooks/tranzila': require('./api/webhooks/tranzila'),
-  '/api/admin/users': require('./api/admin/users')
+  '/api/admin/users': require('./api/admin/users'),
+  '/api/activity': require('./api/activity'),
+  '/api/admin/activity': require('./api/admin/activity')
 };
 
 function readRequestBody(req) {

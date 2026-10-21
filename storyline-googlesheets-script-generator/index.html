@@ -1287,106 +1287,237 @@ xhr.send(new FormData(form));</code></pre>
     <div class="modal-card modal-xl">
       <div class="modal-header">
         <div>
-          <h2 id="admin-modal-title">פאנל ניהול מערכת • ניהול משתמשים, מחירים והנחות</h2>
-          <p class="modal-subtitle">צפייה בכל המשתמשים הרשומים, קביעת מחיר מנוי או אחוז הנחה (גורף או אישי), וביצוע פעולות על חשבונות</p>
+          <h2 id="admin-modal-title">פאנל ניהול מערכת • משתמשים, יומן פעילות ותמחור</h2>
+          <p class="modal-subtitle">מעקב אחר פעילות משתמשים והתחברויות, ניהול מנויים והרשאות, וקביעת מחירי מערכת</p>
         </div>
         <button id="close-admin-modal" class="modal-close-btn" type="button" aria-label="סגור פאנל ניהול">✕</button>
       </div>
 
+      <!-- Admin Modal Navigation Tabs -->
+      <div class="admin-tabs-nav" role="tablist" aria-label="לשוניות פאנל ניהול">
+        <button
+          type="button"
+          id="admin-tab-users-btn"
+          class="admin-tab-btn active"
+          role="tab"
+          aria-selected="true"
+          aria-controls="admin-tab-users-pane"
+        >
+          <svg class="admin-tab-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>ניהול משתמשים ומחירים</span>
+          <span id="admin-users-counter-badge" class="admin-tab-badge">0</span>
+        </button>
+        <button
+          type="button"
+          id="admin-tab-activity-btn"
+          class="admin-tab-btn"
+          role="tab"
+          aria-selected="false"
+          aria-controls="admin-tab-activity-pane"
+        >
+          <svg class="admin-tab-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span>יומן פעילות משתמשים</span>
+          <span id="admin-activity-counter-badge" class="admin-tab-badge">0</span>
+        </button>
+      </div>
+
       <div class="modal-body">
-        <!-- Admin Summary KPI Cards -->
-        <div class="admin-stats-grid">
-          <div class="admin-stat-card">
-            <span class="admin-stat-label">סה״כ משתמשים רשומים</span>
-            <strong id="admin-stat-total" class="admin-stat-value">0</strong>
-          </div>
-          <div class="admin-stat-card admin-stat-active">
-            <span class="admin-stat-label">מנויים משלמים פעילים</span>
-            <strong id="admin-stat-active" class="admin-stat-value">0</strong>
-            <span id="admin-stat-mrr" class="admin-stat-sub">MRR: 0 ₪</span>
-          </div>
-          <div class="admin-stat-card admin-stat-trial">
-            <span class="admin-stat-label">בתקופת ניסיון (3 ימים)</span>
-            <strong id="admin-stat-trialing" class="admin-stat-value">0</strong>
-          </div>
-          <div class="admin-stat-card admin-stat-expired">
-            <span class="admin-stat-label">בוטלו / פג תוקף</span>
-            <strong id="admin-stat-expired" class="admin-stat-value">0</strong>
-          </div>
-        </div>
-
-        <!-- Global System Pricing & Discount Configuration Bar -->
-        <div class="admin-pricing-bar">
-          <div class="admin-pricing-info">
-            <strong>תמחור מערכת ברירת מחדל (לכלל המשתמשים):</strong>
-            <span>קבע את מחיר הבסיס, תן הנחה גורפת באחוזים או הזן ישירות את המחיר החודשי לתשלום בשקלים.</span>
-          </div>
-          <div class="admin-pricing-controls">
-            <div class="admin-pricing-field">
-              <label for="admin-global-base-price">מחיר בסיס (₪)</label>
-              <input type="number" id="admin-global-base-price" min="1" max="9999" step="0.5" value="39">
-            </div>
-            <div class="admin-pricing-field">
-              <label for="admin-global-discount">הנחה גורפת (%)</label>
-              <input type="number" id="admin-global-discount" min="0" max="100" step="1" value="0">
-            </div>
-            <div class="admin-pricing-field">
-              <label for="admin-global-final-price">מחיר לתשלום (₪)</label>
-              <input type="number" id="admin-global-final-price" min="1" max="9999" step="0.5" value="39">
-            </div>
-            <button id="admin-save-global-pricing-btn" class="btn-primary btn-sm" type="button">
-              שמור תמחור מערכת
-            </button>
-          </div>
-        </div>
-
-        <!-- Search, Filter & Refresh Toolbar -->
-        <div class="admin-toolbar">
-          <div class="admin-search-wrap">
-            <input
-              type="search"
-              id="admin-search-input"
-              class="admin-search-input"
-              placeholder="חיפוש לפי אימייל, שם, או מזהה הוראת קבע..."
-            >
-          </div>
-          <div class="admin-filter-wrap">
-            <select id="admin-status-filter" class="admin-filter-select" aria-label="סינון לפי סטטוס מנוי">
-              <option value="all">כל הסטטוסים</option>
-              <option value="active">מנוי פעיל (Active)</option>
-              <option value="trialing">בתקופת ניסיון (Trialing)</option>
-              <option value="canceled">בוטל (Canceled)</option>
-              <option value="expired">פג תוקף / חסום (Expired)</option>
-            </select>
-            <button id="admin-refresh-btn" class="btn-secondary btn-sm" type="button">
-              <span>↻ רענן נתונים</span>
-            </button>
-          </div>
-        </div>
-
         <div id="admin-feedback" class="global-banner" role="status" aria-live="polite" hidden></div>
 
-        <div id="admin-loading" class="loading-card" hidden>
-          <div class="spinner" aria-hidden="true"></div>
-          <p>טוען רשימת משתמשים מ-Cloud Firestore...</p>
+        <!-- TAB 1: USERS AND PRICING MANAGEMENT -->
+        <div id="admin-tab-users-pane" class="admin-tab-pane active" role="tabpanel" aria-labelledby="admin-tab-users-btn">
+          <!-- Admin Summary KPI Cards -->
+          <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+              <span class="admin-stat-label">סה״כ משתמשים רשומים</span>
+              <strong id="admin-stat-total" class="admin-stat-value">0</strong>
+            </div>
+            <div class="admin-stat-card admin-stat-active">
+              <span class="admin-stat-label">מנויים משלמים פעילים</span>
+              <strong id="admin-stat-active" class="admin-stat-value">0</strong>
+              <span id="admin-stat-mrr" class="admin-stat-sub">MRR: 0 ₪</span>
+            </div>
+            <div class="admin-stat-card admin-stat-trial">
+              <span class="admin-stat-label">בתקופת ניסיון (3 ימים)</span>
+              <strong id="admin-stat-trialing" class="admin-stat-value">0</strong>
+            </div>
+            <div class="admin-stat-card admin-stat-expired">
+              <span class="admin-stat-label">בוטלו / פג תוקף</span>
+              <strong id="admin-stat-expired" class="admin-stat-value">0</strong>
+            </div>
+          </div>
+
+          <!-- Global System Pricing & Discount Configuration Bar -->
+          <div class="admin-pricing-bar">
+            <div class="admin-pricing-info">
+              <strong>תמחור מערכת ברירת מחדל (לכלל המשתמשים):</strong>
+              <span>קבע את מחיר הבסיס, תן הנחה גורפת באחוזים או הזן ישירות את המחיר החודשי לתשלום בשקלים.</span>
+            </div>
+            <div class="admin-pricing-controls">
+              <div class="admin-pricing-field">
+                <label for="admin-global-base-price">מחיר בסיס (₪)</label>
+                <input type="number" id="admin-global-base-price" min="1" max="9999" step="0.5" value="39">
+              </div>
+              <div class="admin-pricing-field">
+                <label for="admin-global-discount">הנחה גורפת (%)</label>
+                <input type="number" id="admin-global-discount" min="0" max="100" step="1" value="0">
+              </div>
+              <div class="admin-pricing-field">
+                <label for="admin-global-final-price">מחיר לתשלום (₪)</label>
+                <input type="number" id="admin-global-final-price" min="1" max="9999" step="0.5" value="39">
+              </div>
+              <button id="admin-save-global-pricing-btn" class="btn-primary btn-sm" type="button">
+                שמור תמחור מערכת
+              </button>
+            </div>
+          </div>
+
+          <!-- Search, Filter & Refresh Toolbar -->
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <input
+                type="search"
+                id="admin-search-input"
+                class="admin-search-input"
+                placeholder="חיפוש לפי אימייל, שם, או מזהה הוראת קבע..."
+              >
+            </div>
+            <div class="admin-filter-wrap">
+              <select id="admin-status-filter" class="admin-filter-select" aria-label="סינון לפי סטטוס מנוי">
+                <option value="all">כל הסטטוסים</option>
+                <option value="active">מנוי פעיל (Active)</option>
+                <option value="trialing">בתקופת ניסיון (Trialing)</option>
+                <option value="canceled">בוטל (Canceled)</option>
+                <option value="expired">פג תוקף / חסום (Expired)</option>
+              </select>
+              <button id="admin-refresh-btn" class="btn-secondary btn-sm" type="button">
+                <span>↻ רענן נתונים</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="admin-loading" class="loading-card" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p>טוען רשימת משתמשים מ-Cloud Firestore...</p>
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>משתמש ואימייל</th>
+                  <th>התחברות ופעילות</th>
+                  <th>סטטוס וגישה</th>
+                  <th>תוקף / חיוב הבא</th>
+                  <th>מחיר לתשלום והנחה (%)</th>
+                  <th>הוראת קבע וכרטיס</th>
+                  <th>פעולות ניהול על החשבון</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="admin-table-wrapper">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>משתמש ואימייל</th>
-                <th>סטטוס וגישה</th>
-                <th>תוקף / חיוב הבא</th>
-                <th>מחיר לתשלום והנחה (%)</th>
-                <th>הוראת קבע וכרטיס</th>
-                <th>פעולות ניהול על החשבון</th>
-              </tr>
-            </thead>
-            <tbody id="admin-users-tbody"></tbody>
-          </table>
+        <!-- TAB 2: SYSTEM USER ACTIVITY AUDIT LOG -->
+        <div id="admin-tab-activity-pane" class="admin-tab-pane" role="tabpanel" aria-labelledby="admin-tab-activity-btn" hidden>
+          <!-- Activity KPI Mini-Cards -->
+          <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+              <span class="admin-stat-label">סה״כ פעולות שנרשמו ביומן</span>
+              <strong id="admin-act-stat-total" class="admin-stat-value">0</strong>
+            </div>
+            <div class="admin-stat-card admin-stat-active">
+              <span class="admin-stat-label">התחברויות ואימות (Auth)</span>
+              <strong id="admin-act-stat-logins" class="admin-stat-value">0</strong>
+              <span class="admin-stat-sub">כניסות והרשמות</span>
+            </div>
+            <div class="admin-stat-card admin-stat-trial">
+              <span class="admin-stat-label">הפקת סקריפטים וקוד</span>
+              <strong id="admin-act-stat-scripts" class="admin-stat-value">0</strong>
+              <span class="admin-stat-sub">שימוש פעיל במחולל</span>
+            </div>
+            <div class="admin-stat-card admin-stat-billing">
+              <span class="admin-stat-label">אירועי סליקה ומנויים</span>
+              <strong id="admin-act-stat-billing" class="admin-stat-value">0</strong>
+              <span class="admin-stat-sub">תשלומים, הו״ק וביטולים</span>
+            </div>
+          </div>
+
+          <!-- Activity Search & Filters Toolbar -->
+          <div class="admin-toolbar admin-activity-toolbar">
+            <div class="admin-search-wrap">
+              <input
+                type="search"
+                id="admin-activity-search-input"
+                class="admin-search-input"
+                placeholder="חיפוש ביומן (אימייל, משתמש, תיאור, כתובת IP, פעולה...)"
+              >
+            </div>
+            <div class="admin-filter-wrap">
+              <select id="admin-activity-category-filter" class="admin-filter-select" aria-label="סינון לפי קטגוריה">
+                <option value="all">כל הקטגוריות</option>
+                <option value="auth">🔐 התחברויות ואימות (Auth)</option>
+                <option value="script">⚙️ הפקת סקריפטים ושימוש (Scripts)</option>
+                <option value="billing">💳 רכישות, מנויים וסליקה (Billing)</option>
+                <option value="admin">🛡️ פעולות מנהל מערכת (Admin)</option>
+              </select>
+              <select id="admin-activity-user-filter" class="admin-filter-select" aria-label="סינון לפי משתמש">
+                <option value="all">כל המשתמשים</option>
+              </select>
+              <select id="admin-activity-time-filter" class="admin-filter-select" aria-label="סינון לפי טווח זמנים">
+                <option value="all">כל הזמנים</option>
+                <option value="today">היום (24 שעות)</option>
+                <option value="7d">7 ימים אחרונים</option>
+                <option value="30d">30 ימים אחרונים</option>
+              </select>
+              <button id="admin-activity-refresh-btn" class="btn-secondary btn-sm" type="button" title="רענן יומן פעילות">
+                <span>↻ רענן</span>
+              </button>
+              <button id="admin-activity-export-btn" class="btn-secondary btn-sm" type="button" title="ייצוא יומן פעילות לקובץ CSV">
+                <span>📥 ייצוא CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active User Filter Pill (shows when focused on a single user) -->
+          <div id="admin-activity-filter-pill" class="admin-activity-filter-pill" hidden>
+            <span id="admin-activity-filter-pill-text"></span>
+            <button type="button" id="admin-activity-clear-filter-btn" class="btn-pill-clear" title="בטל סינון משתמש">✕ נקה סינון</button>
+          </div>
+
+          <div id="admin-activity-loading" class="loading-card" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p>טוען יומן פעילות משתמשים...</p>
+          </div>
+
+          <div class="admin-table-wrapper admin-activity-table-wrapper">
+            <table class="admin-table admin-activity-table">
+              <thead>
+                <tr>
+                  <th style="min-width:140px;">תאריך ושעה</th>
+                  <th style="min-width:190px;">משתמש במערכת</th>
+                  <th style="min-width:140px;">סוג פעולה</th>
+                  <th>פירוט הפעולה שבוצעה</th>
+                  <th style="min-width:210px;">פרטים טכניים ומטא-דאטה</th>
+                  <th style="min-width:85px; text-align:center;">סינון</th>
+                </tr>
+              </thead>
+              <tbody id="admin-activity-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 

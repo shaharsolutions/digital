@@ -299,10 +299,12 @@ const LOCAL_STORE_PATH = path.join('/tmp', 'storyline-saas-firestore-cache.json'
 function readLocalStore() {
   try {
     if (fs.existsSync(LOCAL_STORE_PATH)) {
-      return JSON.parse(fs.readFileSync(LOCAL_STORE_PATH, 'utf8'));
+      const parsed = JSON.parse(fs.readFileSync(LOCAL_STORE_PATH, 'utf8'));
+      if (!parsed.activity_logs) parsed.activity_logs = {};
+      return parsed;
     }
   } catch (_) {}
-  return { users: {}, checkout_sessions: {}, payment_events: {}, normalized_emails: {} };
+  return { users: {}, checkout_sessions: {}, payment_events: {}, normalized_emails: {}, activity_logs: {} };
 }
 
 function writeLocalStore(store) {
@@ -341,7 +343,10 @@ const TIMESTAMP_FIELDS = new Set([
   'trialStartedAt',
   'trialEndsAt',
   'currentPeriodEnd',
-  'expiresAt'
+  'expiresAt',
+  'lastLoginAt',
+  'lastActiveAt',
+  'lastGeneratedAt'
 ]);
 
 function objToFirestoreFields(obj) {
@@ -709,6 +714,158 @@ async function getOrCreateUser(authUser) {
   return userDoc;
 }
 
+// ===============================================================
+// Activity Logging & Audit Trail
+// ===============================================================
+
+function extractClientIp(req) {
+  if (!req || !req.headers) return '';
+  const xForwardedFor = req.headers['x-forwarded-for'];
+  if (xForwardedFor) {
+    return String(xForwardedFor).split(',')[0].trim();
+  }
+  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || '';
+}
+
+function extractUserAgent(req) {
+  if (!req || !req.headers) return '';
+  return String(req.headers['user-agent'] || '').slice(0, 250);
+}
+
+async function logActivity({
+  uid = '',
+  email = '',
+  displayName = '',
+  targetUid = null,
+  targetEmail = null,
+  action = '',
+  category = 'system',
+  description = '',
+  details = null,
+  req = null
+} = {}) {
+  try {
+    const nowMs = Date.now();
+    const nowIso = new Date(nowMs).toISOString();
+    const randId = crypto.randomBytes(6).toString('hex');
+    const logId = `act_${nowMs}_${randId}`;
+
+    const ip = req ? extractClientIp(req) : '';
+    const userAgent = req ? extractUserAgent(req) : '';
+    const cleanDetails = details && typeof details === 'object' ? details : {};
+
+    const activityDoc = {
+      id: logId,
+      uid: String(uid || '').trim(),
+      email: String(email || '').trim(),
+      displayName: String(displayName || '').slice(0, 100),
+      targetUid: targetUid ? String(targetUid).trim() : null,
+      targetEmail: targetEmail ? String(targetEmail).trim() : null,
+      action: String(action || 'unknown').trim(),
+      category: String(category || 'general').trim(),
+      description: String(description || '').slice(0, 500),
+      details: cleanDetails,
+      ip: ip ? ip.slice(0, 64) : '',
+      userAgent: userAgent ? userAgent.slice(0, 250) : '',
+      createdAt: nowIso
+    };
+
+    await setDocument('activity_logs', logId, activityDoc);
+
+    // If uid belongs to a real user, update user activity metadata
+    if (uid && uid !== 'anonymous' && uid !== 'system') {
+      try {
+        const userDoc = await getDocument('users', uid);
+        if (userDoc) {
+          const updates = {
+            lastActiveAt: nowIso
+          };
+          if (action === 'user_login' || action === 'user_register') {
+            updates.lastLoginAt = nowIso;
+            updates.loginCount = (Number(userDoc.loginCount) || 0) + 1;
+            if (ip) updates.lastIp = ip;
+          } else if (action === 'generate_scripts') {
+            updates.lastGeneratedAt = nowIso;
+            updates.generationCount = (Number(userDoc.generationCount) || 0) + 1;
+          }
+          await setDocument('users', uid, { ...userDoc, ...updates, updatedAt: nowIso });
+        }
+      } catch (userUpdErr) {
+        console.warn('Could not update user activity metadata:', userUpdErr.message);
+      }
+    }
+
+    return activityDoc;
+  } catch (err) {
+    console.error('Failed to log activity:', err);
+    return null;
+  }
+}
+
+async function listActivityLogs({ limit = 300, uid = null, category = null, action = null } = {}) {
+  const maxLimit = Math.min(500, Math.max(1, limit));
+  const { firestoreDb: db } = initFirebaseAdmin();
+  if (db) {
+    try {
+      let query = db.collection('activity_logs');
+      if (uid) {
+        query = query.where('uid', '==', uid);
+      }
+      if (category) {
+        query = query.where('category', '==', category);
+      }
+      if (action) {
+        query = query.where('action', '==', action);
+      }
+      try {
+        const snap = await query.orderBy('createdAt', 'desc').limit(maxLimit).get();
+        return snap.docs.map((d) => normalizeAdminDoc({ id: d.id, ...d.data() }));
+      } catch (_) {
+        const snap = await query.limit(maxLimit * 2).get();
+        const logs = snap.docs.map((d) => normalizeAdminDoc({ id: d.id, ...d.data() }));
+        logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
+        return logs.slice(0, maxLimit);
+      }
+    } catch (err) {
+      console.warn('Firestore Admin SDK listActivityLogs failed, trying REST:', err.message);
+    }
+  }
+
+  const cliToken = await getFirestoreAccessToken();
+  if (cliToken) {
+    try {
+      const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/activity_logs?pageSize=${maxLimit}`;
+      const resp = await fetch(url, {
+        headers: { Authorization: `Bearer ${cliToken}` }
+      });
+      if (resp.ok) {
+        const json = await resp.json();
+        const docs = Array.isArray(json.documents) ? json.documents : [];
+        let logs = docs.map((d) => {
+          const docId = String(d.name || '').split('/').pop();
+          const obj = firestoreFieldsToObj(d.fields);
+          return { id: obj.id || docId, ...obj };
+        });
+        if (uid) logs = logs.filter((l) => l.uid === uid || l.targetUid === uid);
+        if (category) logs = logs.filter((l) => l.category === category);
+        if (action) logs = logs.filter((l) => l.action === action);
+        logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
+        return logs.slice(0, maxLimit);
+      }
+    } catch (restErr) {
+      console.warn('Firestore REST listActivityLogs failed:', restErr.message);
+    }
+  }
+
+  const store = readLocalStore();
+  let logs = Object.values(store.activity_logs || {});
+  if (uid) logs = logs.filter((l) => l.uid === uid || l.targetUid === uid);
+  if (category) logs = logs.filter((l) => l.category === category);
+  if (action) logs = logs.filter((l) => l.action === action);
+  logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
+  return logs.slice(0, maxLimit);
+}
+
 module.exports = {
   FIREBASE_PROJECT_ID,
   FIREBASE_API_KEY,
@@ -723,5 +880,9 @@ module.exports = {
   deleteFirebaseAuthUser,
   findUserByField,
   getOrCreateUser,
-  evaluateAccessState
+  evaluateAccessState,
+  logActivity,
+  listActivityLogs,
+  extractClientIp,
+  extractUserAgent
 };

@@ -1,7 +1,8 @@
 const {
   verifyFirebaseIdToken,
   getOrCreateUser,
-  evaluateAccessState
+  evaluateAccessState,
+  logActivity
 } = require('./_lib/firebaseAdmin');
 
 /**
@@ -99,6 +100,21 @@ module.exports = async function handler(req, res) {
 
     const appScriptCode = buildAppScriptCode(cleanNames);
     const storylineCode = buildStorylineCode(cleanNames, webAppUrl);
+
+    await logActivity({
+      uid: authUser.uid,
+      email: authUser.email,
+      displayName: authUser.displayName,
+      action: 'generate_scripts',
+      category: 'script',
+      description: `הפיק/ה סקריפטים עבור ${cleanNames.length} משתנים (${cleanNames.slice(0, 5).join(', ')}${cleanNames.length > 5 ? '...' : ''})`,
+      details: {
+        variableCount: cleanNames.length,
+        variableNames: cleanNames,
+        hasSpreadsheetUrl: Boolean(webAppUrl)
+      },
+      req
+    });
 
     return res.status(200).json({
       appScriptCode,

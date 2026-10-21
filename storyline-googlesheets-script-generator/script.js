@@ -105,9 +105,16 @@ const cancelConfirmBox = document.getElementById('cancel-confirm-box');
 const confirmCancelSubBtn = document.getElementById('confirm-cancel-sub-btn');
 const abortCancelSubBtn = document.getElementById('abort-cancel-sub-btn');
 
-// DOM Elements - Admin Panel Modal
+// DOM Elements - Admin Panel Modal & Tabs
 const adminModal = document.getElementById('admin-modal');
 const closeAdminModalBtn = document.getElementById('close-admin-modal');
+const adminTabUsersBtn = document.getElementById('admin-tab-users-btn');
+const adminTabActivityBtn = document.getElementById('admin-tab-activity-btn');
+const adminTabUsersPane = document.getElementById('admin-tab-users-pane');
+const adminTabActivityPane = document.getElementById('admin-tab-activity-pane');
+const adminUsersCounterBadge = document.getElementById('admin-users-counter-badge');
+const adminActivityCounterBadge = document.getElementById('admin-activity-counter-badge');
+
 const adminStatTotal = document.getElementById('admin-stat-total');
 const adminStatActive = document.getElementById('admin-stat-active');
 const adminStatMrr = document.getElementById('admin-stat-mrr');
@@ -124,16 +131,37 @@ const adminFeedback = document.getElementById('admin-feedback');
 const adminLoading = document.getElementById('admin-loading');
 const adminUsersTbody = document.getElementById('admin-users-tbody');
 
+// DOM Elements - Admin Activity Log
+const adminActStatTotal = document.getElementById('admin-act-stat-total');
+const adminActStatLogins = document.getElementById('admin-act-stat-logins');
+const adminActStatScripts = document.getElementById('admin-act-stat-scripts');
+const adminActStatBilling = document.getElementById('admin-act-stat-billing');
+const adminActivitySearchInput = document.getElementById('admin-activity-search-input');
+const adminActivityCategoryFilter = document.getElementById('admin-activity-category-filter');
+const adminActivityUserFilter = document.getElementById('admin-activity-user-filter');
+const adminActivityTimeFilter = document.getElementById('admin-activity-time-filter');
+const adminActivityRefreshBtn = document.getElementById('admin-activity-refresh-btn');
+const adminActivityExportBtn = document.getElementById('admin-activity-export-btn');
+const adminActivityFilterPill = document.getElementById('admin-activity-filter-pill');
+const adminActivityFilterPillText = document.getElementById('admin-activity-filter-pill-text');
+const adminActivityClearFilterBtn = document.getElementById('admin-activity-clear-filter-btn');
+const adminActivityLoading = document.getElementById('admin-activity-loading');
+const adminActivityTbody = document.getElementById('admin-activity-tbody');
+
 // Application State
 let authMode = 'login'; // 'login' | 'register'
 let currentUser = null;
 let currentSubState = null;
 let activeCheckoutSession = null;
 let adminUsersCache = [];
+let adminActivityCache = [];
 let adminGlobalPricingCache = { basePriceIls: 39, globalDiscountPercent: 0, effectivePriceIls: 39 };
+let adminActiveTab = 'users'; // 'users' | 'activity'
+let adminActivityFilterUser = null;
 let variableCount = 0;
 let variableNames = [];
 let generateDebounceTimer = null;
+let activityDebounceTimer = null;
 
 function formatDateHe(isoString) {
   if (!isoString) return '-';
@@ -145,6 +173,60 @@ function formatDateHe(isoString) {
     }).format(new Date(isoString));
   } catch (_) {
     return isoString;
+  }
+}
+
+function formatDateTimeHe(isoString) {
+  if (!isoString) return { formatted: '-', relative: '' };
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return { formatted: String(isoString), relative: '' };
+
+    const formatted = new Intl.DateTimeFormat('he-IL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(d);
+
+    const diffMs = Date.now() - d.getTime();
+    let relative = '';
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHr / 24);
+
+    if (diffSec < 45) {
+      relative = 'ממש עכשיו';
+    } else if (diffMin < 60) {
+      relative = `לפני ${diffMin} דק׳`;
+    } else if (diffHr < 24) {
+      relative = `לפני ${diffHr} שע׳`;
+    } else if (diffDays === 1) {
+      relative = 'אתמול';
+    } else if (diffDays < 30) {
+      relative = `לפני ${diffDays} ימים`;
+    } else {
+      relative = formatDateHe(isoString);
+    }
+
+    return { formatted, relative };
+  } catch (_) {
+    return { formatted: isoString, relative: '' };
+  }
+}
+
+async function logClientActivity(action, category = 'user', description = '', details = {}) {
+  if (!currentUser) return;
+  try {
+    await authorizedFetch('/api/activity', {
+      method: 'POST',
+      body: JSON.stringify({ action, category, description, details })
+    });
+  } catch (_) {
+    // Non-blocking background log
   }
 }
 
@@ -458,6 +540,19 @@ function copyToClipboard(textarea, notificationElement) {
   setTimeout(function () {
     notificationElement.style.display = 'none';
   }, 2500);
+
+  const isAppsScript = textarea === appScriptCodeTextarea;
+  logClientActivity(
+    'copy_code',
+    'script',
+    isAppsScript
+      ? 'העתיק/ה את קוד ה-Google Apps Script ללוח'
+      : 'העתיק/ה את קוד ה-Storyline JavaScript ללוח',
+    {
+      codeType: isAppsScript ? 'apps_script' : 'storyline',
+      charCount: textarea.value.length
+    }
+  );
 }
 
 // ===============================================================
@@ -656,6 +751,7 @@ async function openAdminModal() {
   if (!adminModal) return;
   adminModal.hidden = false;
   showAdminFeedback('');
+  setAdminTab('users');
   await loadAdminUsers();
 }
 
@@ -692,6 +788,18 @@ async function loadAdminUsers() {
     adminStatTrialing.textContent = String(stats.trialingCount || 0);
     adminStatExpired.textContent = String((stats.canceledCount || 0) + (stats.expiredCount || 0));
 
+    if (adminUsersCounterBadge) {
+      adminUsersCounterBadge.textContent = String(adminUsersCache.length);
+    }
+
+    if (Array.isArray(data.recentActivity)) {
+      adminActivityCache = data.recentActivity;
+      if (adminActivityCounterBadge) {
+        adminActivityCounterBadge.textContent = String(data.recentActivity.length);
+      }
+    }
+
+    populateActivityUserFilter();
     renderAdminTable();
   } catch (err) {
     showAdminFeedback(err.message, 'error');
@@ -721,7 +829,7 @@ function renderAdminTable() {
   if (filtered.length === 0) {
     adminUsersTbody.innerHTML = `
       <tr>
-        <td colspan="6" style="text-align:center;padding:28px;color:#64748b;">
+        <td colspan="7" style="text-align:center;padding:28px;color:#64748b;">
           לא נמצאו משתמשים התואמים לחיפוש או לסינון שנבחר.
         </td>
       </tr>
@@ -759,6 +867,8 @@ function renderAdminTable() {
       const effectivePrice = Number(u.effectivePriceIls) || 39;
       const discountPct = Number(u.discountPercent) || 0;
 
+      const loginDt = formatDateTimeHe(u.lastLoginAt);
+
       return `
         <tr data-uid="${escapeHtml(u.uid)}">
           <td>
@@ -769,6 +879,27 @@ function renderAdminTable() {
               </div>
               <span class="admin-user-email" dir="ltr">${escapeHtml(u.email)}</span>
               <span class="admin-user-joined">נרשם: ${formatDateHe(u.createdAt)}</span>
+            </div>
+          </td>
+          <td>
+            <div class="admin-user-activity-cell">
+              <span class="admin-activity-time-main" title="${escapeHtml(loginDt.formatted)}">
+                ${u.lastLoginAt ? `התחברות: ${escapeHtml(loginDt.relative || loginDt.formatted)}` : 'טרם התחבר/ה'}
+              </span>
+              <div class="admin-activity-count-sub">
+                <span>${Number(u.loginCount) || 0} כניסות</span>
+                <span>•</span>
+                <span>${Number(u.generationCount) || 0} סקריפטים</span>
+              </div>
+              <button
+                type="button"
+                class="btn-user-view-logs"
+                data-filter-user-email="${escapeHtml(u.email)}"
+                data-filter-user-uid="${escapeHtml(u.uid)}"
+                title="צפה ביומן הפעילות המלא של משתמש זה"
+              >
+                📜 יומן פעילות
+              </button>
             </div>
           </td>
           <td>
@@ -858,6 +989,312 @@ function renderAdminTable() {
       `;
     })
     .join('');
+}
+
+// ===============================================================
+// Admin Activity Log Functions
+// ===============================================================
+
+function populateActivityUserFilter() {
+  if (!adminActivityUserFilter) return;
+  const currentVal = adminActivityFilterUser || adminActivityUserFilter.value || 'all';
+  const optionsHtml = ['<option value="all">כל המשתמשים</option>'];
+  for (const u of adminUsersCache) {
+    if (!u.email && !u.uid) continue;
+    const label = u.displayName ? `${u.displayName} (${u.email})` : u.email;
+    optionsHtml.push(`<option value="${escapeHtml(u.uid)}">${escapeHtml(label)}</option>`);
+  }
+  adminActivityUserFilter.innerHTML = optionsHtml.join('');
+  adminActivityUserFilter.value = currentVal;
+}
+
+function getActivityBadgeInfo(action, category) {
+  switch (action) {
+    case 'user_login':
+      return { badgeClass: 'act-badge-auth', icon: '🟢', label: 'התחברות' };
+    case 'user_register':
+      return { badgeClass: 'act-badge-auth', icon: '✨', label: 'הרשמה חדשה' };
+    case 'user_logout':
+      return { badgeClass: 'act-badge-general', icon: '⚪', label: 'התנתקות' };
+    case 'generate_scripts':
+      return { badgeClass: 'act-badge-script', icon: '⚡', label: 'הפקת סקריפטים' };
+    case 'copy_code':
+      return { badgeClass: 'act-badge-script', icon: '📋', label: 'העתקת קוד' };
+    case 'start_checkout':
+      return { badgeClass: 'act-badge-billing', icon: '💳', label: 'מעבר לתשלום' };
+    case 'subscription_success':
+      return { badgeClass: 'act-badge-auth', icon: '🎉', label: 'מנוי הופעל' };
+    case 'subscription_renewed':
+      return { badgeClass: 'act-badge-auth', icon: '🔄', label: 'מנוי חודש' };
+    case 'subscription_canceled':
+      return { badgeClass: 'act-badge-danger', icon: '🛑', label: 'מנוי בוטל' };
+    case 'payment_failed':
+      return { badgeClass: 'act-badge-danger', icon: '⚠️', label: 'תשלום נכשל' };
+    case 'tutorial_interaction':
+    case 'tutorial_start':
+      return { badgeClass: 'act-badge-general', icon: '🎬', label: 'צפייה בהדרכה' };
+    default:
+      if (String(action).startsWith('admin_')) {
+        return { badgeClass: 'act-badge-admin', icon: '🛡️', label: 'פעולת מנהל' };
+      }
+      if (category === 'auth') return { badgeClass: 'act-badge-auth', icon: '🔐', label: 'אימות' };
+      if (category === 'script') return { badgeClass: 'act-badge-script', icon: '⚙️', label: 'סקריפט' };
+      if (category === 'billing') return { badgeClass: 'act-badge-billing', icon: '💳', label: 'חיוב' };
+      if (category === 'admin') return { badgeClass: 'act-badge-admin', icon: '🛡️', label: 'ניהול' };
+      return { badgeClass: 'act-badge-general', icon: '📌', label: action || 'פעילות' };
+  }
+}
+
+async function loadAdminActivity({ force = false } = {}) {
+  if (!adminActivityTbody) return;
+  adminActivityLoading.hidden = false;
+  if (adminActivityRefreshBtn) adminActivityRefreshBtn.disabled = true;
+
+  try {
+    const params = new URLSearchParams();
+    params.set('limit', '300');
+
+    const search = (adminActivitySearchInput?.value || '').trim();
+    if (search) params.set('search', search);
+
+    const category = adminActivityCategoryFilter?.value || 'all';
+    if (category !== 'all') params.set('category', category);
+
+    const timeRange = adminActivityTimeFilter?.value || 'all';
+    if (timeRange !== 'all') params.set('timeRange', timeRange);
+
+    if (adminActivityFilterUser) {
+      params.set('uid', adminActivityFilterUser);
+    } else {
+      const selectedUserUid = adminActivityUserFilter?.value || 'all';
+      if (selectedUserUid !== 'all') params.set('uid', selectedUserUid);
+    }
+
+    const resp = await authorizedFetch(`/api/admin/activity?${params.toString()}`);
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'שגיאה בטעינת יומן הפעילות');
+    }
+
+    adminActivityCache = Array.isArray(data.logs) ? data.logs : [];
+    const stats = data.stats || {};
+
+    if (adminActStatTotal) adminActStatTotal.textContent = String(stats.total || adminActivityCache.length);
+    if (adminActStatLogins) adminActStatLogins.textContent = String(stats.loginsToday || 0);
+    if (adminActStatScripts) adminActStatScripts.textContent = String(stats.scriptsGenerated || 0);
+    if (adminActStatBilling) adminActStatBilling.textContent = String(stats.billingEvents || 0);
+    if (adminActivityCounterBadge) {
+      adminActivityCounterBadge.textContent = String(stats.total || adminActivityCache.length);
+    }
+
+    renderAdminActivityTable();
+  } catch (err) {
+    showAdminFeedback(err.message, 'error');
+  } finally {
+    adminActivityLoading.hidden = true;
+    if (adminActivityRefreshBtn) adminActivityRefreshBtn.disabled = false;
+  }
+}
+
+function renderAdminActivityTable() {
+  if (!adminActivityTbody) return;
+
+  if (adminActivityCache.length === 0) {
+    adminActivityTbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;padding:36px;color:#64748b;">
+          אין עדיין רשומות ביומן הפעילות התואמות לחיפוש או לסינון הנוכחי.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  adminActivityTbody.innerHTML = adminActivityCache
+    .map((log) => {
+      const dt = formatDateTimeHe(log.createdAt);
+      const badge = getActivityBadgeInfo(log.action, log.category);
+      const isSystem = !log.uid || log.uid === 'system';
+
+      let detailsHtml = '';
+      if (log.details && typeof log.details === 'object') {
+        const d = log.details;
+        const detailsParts = [];
+        if (d.variableCount !== undefined) {
+          detailsParts.push(`<span>${d.variableCount} משתנים</span>`);
+        }
+        if (Array.isArray(d.variableNames) && d.variableNames.length > 0) {
+          detailsParts.push(
+            `<span class="act-meta-var-list" title="${escapeHtml(d.variableNames.join(', '))}">${escapeHtml(d.variableNames.slice(0, 4).join(', '))}${d.variableNames.length > 4 ? '...' : ''}</span>`
+          );
+        }
+        if (d.amount !== undefined) {
+          detailsParts.push(`<span>סכום: ₪${d.amount}</span>`);
+        }
+        if (d.stoId) {
+          detailsParts.push(`<span>הו״ק #${escapeHtml(d.stoId)}</span>`);
+        }
+        if (d.provider) {
+          detailsParts.push(`<span>ספק: ${escapeHtml(d.provider)}</span>`);
+        }
+        if (d.days) {
+          detailsParts.push(`<span>+${d.days} ימים</span>`);
+        }
+        if (log.targetEmail) {
+          detailsParts.push(`<span title="משתמש יעד">יעד: <span dir="ltr">${escapeHtml(log.targetEmail)}</span></span>`);
+        }
+        if (detailsParts.length > 0) {
+          detailsHtml = `<div class="act-meta-box">${detailsParts.join('')}</div>`;
+        }
+      }
+
+      const ipDisplay = log.ip ? `<span class="act-meta-ip" title="כתובת IP של המשתמש">🌐 ${escapeHtml(log.ip)}</span>` : '';
+
+      return `
+        <tr data-log-id="${escapeHtml(log.id || '')}">
+          <td>
+            <div class="act-time-cell">
+              <span class="act-time-main">${escapeHtml(dt.formatted)}</span>
+              <span class="act-time-sub">${escapeHtml(dt.relative)}</span>
+            </div>
+          </td>
+          <td>
+            <div class="act-user-cell">
+              <span class="act-user-name">${escapeHtml(log.displayName || (isSystem ? 'מערכת / אוטומטי' : 'משתמש'))}</span>
+              ${log.email ? `<span class="act-user-email">${escapeHtml(log.email)}</span>` : ''}
+            </div>
+          </td>
+          <td>
+            <span class="act-badge ${badge.badgeClass}">
+              <span>${badge.icon}</span>
+              <span>${badge.label}</span>
+            </span>
+          </td>
+          <td>
+            <div class="act-desc-cell">
+              ${escapeHtml(log.description || '-')}
+            </div>
+          </td>
+          <td>
+            <div class="act-meta-box">
+              ${ipDisplay}
+              ${detailsHtml}
+            </div>
+          </td>
+          <td style="text-align:center;">
+            ${
+              log.uid && log.uid !== 'system'
+                ? `<button type="button" class="btn-filter-user-cell" data-filter-activity-user="${escapeHtml(log.uid)}" data-filter-activity-email="${escapeHtml(log.email || '')}" title="סנן יומן לפי משתמש זה">סנן</button>`
+                : '-'
+            }
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+}
+
+function setAdminTab(tabName) {
+  adminActiveTab = tabName;
+  if (tabName === 'activity') {
+    if (adminTabActivityBtn) {
+      adminTabActivityBtn.classList.add('active');
+      adminTabActivityBtn.setAttribute('aria-selected', 'true');
+    }
+    if (adminTabUsersBtn) {
+      adminTabUsersBtn.classList.remove('active');
+      adminTabUsersBtn.setAttribute('aria-selected', 'false');
+    }
+
+    if (adminTabActivityPane) adminTabActivityPane.hidden = false;
+    if (adminTabUsersPane) adminTabUsersPane.hidden = true;
+
+    populateActivityUserFilter();
+    loadAdminActivity();
+  } else {
+    if (adminTabUsersBtn) {
+      adminTabUsersBtn.classList.add('active');
+      adminTabUsersBtn.setAttribute('aria-selected', 'true');
+    }
+    if (adminTabActivityBtn) {
+      adminTabActivityBtn.classList.remove('active');
+      adminTabActivityBtn.setAttribute('aria-selected', 'false');
+    }
+
+    if (adminTabUsersPane) adminTabUsersPane.hidden = false;
+    if (adminTabActivityPane) adminTabActivityPane.hidden = true;
+  }
+}
+
+function setActivityUserFilter(userObjOrUid) {
+  if (!userObjOrUid) {
+    adminActivityFilterUser = null;
+    if (adminActivityFilterPill) adminActivityFilterPill.hidden = true;
+    if (adminActivityUserFilter) adminActivityUserFilter.value = 'all';
+  } else {
+    const uid = typeof userObjOrUid === 'object' ? userObjOrUid.uid : userObjOrUid;
+    const email =
+      typeof userObjOrUid === 'object'
+        ? userObjOrUid.email
+        : (adminUsersCache.find((u) => u.uid === uid)?.email || uid);
+
+    adminActivityFilterUser = uid;
+    if (adminActivityFilterPill) {
+      if (adminActivityFilterPillText) {
+        adminActivityFilterPillText.textContent = `מסנן לפי משתמש: ${email}`;
+      }
+      adminActivityFilterPill.hidden = false;
+    }
+    if (adminActivityUserFilter) {
+      adminActivityUserFilter.value = uid;
+    }
+  }
+}
+
+function exportActivityToCsv() {
+  if (!adminActivityCache.length) {
+    showAdminFeedback('אין נתונים ביומן לייצוא.', 'error');
+    return;
+  }
+
+  const headers = [
+    'מזהה',
+    'תאריך ושעה',
+    'אימייל משתמש',
+    'שם משתמש',
+    'סוג פעולה',
+    'קטגוריה',
+    'פירוט פעולה',
+    'כתובת IP',
+    'דפדפן ומכשיר'
+  ];
+
+  const rows = adminActivityCache.map((l) => [
+    l.id || '',
+    l.createdAt || '',
+    l.email || '',
+    l.displayName || '',
+    l.action || '',
+    l.category || '',
+    (l.description || '').replace(/"/g, '""'),
+    l.ip || '',
+    (l.userAgent || '').replace(/"/g, '""')
+  ]);
+
+  const csvContent =
+    '\uFEFF' +
+    [headers.join(','), ...rows.map((r) => r.map((field) => `"${field}"`).join(','))].join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.download = `user-activity-log-${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 async function saveGlobalPricing() {
@@ -1115,7 +1552,16 @@ googleLoginBtn.addEventListener('click', async () => {
   authErrorBox.hidden = true;
   googleLoginBtn.disabled = true;
   try {
-    await signInWithPopup(auth, googleProvider);
+    const cred = await signInWithPopup(auth, googleProvider);
+    if (cred && cred.user) {
+      sessionStorage.setItem('session_logged_' + cred.user.uid, '1');
+      logClientActivity(
+        'user_login',
+        'auth',
+        'התחבר/ה למערכת באמצעות חשבון Google',
+        { provider: 'google.com' }
+      );
+    }
   } catch (err) {
     authErrorBox.textContent = translateFirebaseError(err);
     authErrorBox.hidden = false;
@@ -1164,8 +1610,26 @@ emailAuthForm.addEventListener('submit', async (e) => {
       if (fullName && cred.user) {
         await updateProfile(cred.user, { displayName: fullName });
       }
+      if (cred && cred.user) {
+        sessionStorage.setItem('session_logged_' + cred.user.uid, '1');
+        logClientActivity(
+          'user_register',
+          'auth',
+          'נרשם/ה למערכת באמצעות אימייל וסיסמה – החלה תקופת ניסיון ל-3 ימים',
+          { provider: 'password' }
+        );
+      }
     } else {
-      await signInWithEmailAndPassword(auth, email, password);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (cred && cred.user) {
+        sessionStorage.setItem('session_logged_' + cred.user.uid, '1');
+        logClientActivity(
+          'user_login',
+          'auth',
+          'התחבר/ה למערכת באמצעות אימייל וסיסמה',
+          { provider: 'password' }
+        );
+      }
     }
   } catch (err) {
     authErrorBox.textContent = translateFirebaseError(err);
@@ -1193,6 +1657,7 @@ forgotPasswordBtn.addEventListener('click', async () => {
 
 logoutBtn.addEventListener('click', async () => {
   showGlobalBanner('');
+  await logClientActivity('user_logout', 'auth', 'התנתק/ה מהמערכת');
   await signOut(auth);
 });
 
@@ -1279,6 +1744,15 @@ if (adminUsersTbody) {
   });
 
   adminUsersTbody.addEventListener('click', (e) => {
+    const viewLogsBtn = e.target.closest('.btn-user-view-logs');
+    if (viewLogsBtn) {
+      const uid = viewLogsBtn.getAttribute('data-filter-user-uid');
+      const email = viewLogsBtn.getAttribute('data-filter-user-email');
+      setActivityUserFilter({ uid, email });
+      setAdminTab('activity');
+      return;
+    }
+
     const savePriceBtn = e.target.closest('[data-save-pricing-uid]');
     if (savePriceBtn) {
       const targetUid = savePriceBtn.getAttribute('data-save-pricing-uid');
@@ -1315,6 +1789,78 @@ if (adminUsersTbody) {
     const selectEl = adminUsersTbody.querySelector(`select[data-select-uid="${CSS.escape(targetUid)}"]`);
     if (!selectEl) return;
     executeAdminUserAction(targetUid, email, selectEl.value, btn, false);
+  });
+}
+
+// Admin Navigation Tabs Listeners
+if (adminTabUsersBtn) {
+  adminTabUsersBtn.addEventListener('click', () => setAdminTab('users'));
+}
+if (adminTabActivityBtn) {
+  adminTabActivityBtn.addEventListener('click', () => setAdminTab('activity'));
+}
+
+// Admin Activity Log Toolbar Listeners
+if (adminActivityRefreshBtn) {
+  adminActivityRefreshBtn.addEventListener('click', () => loadAdminActivity({ force: true }));
+}
+
+if (adminActivityExportBtn) {
+  adminActivityExportBtn.addEventListener('click', exportActivityToCsv);
+}
+
+if (adminActivitySearchInput) {
+  adminActivitySearchInput.addEventListener('input', () => {
+    clearTimeout(activityDebounceTimer);
+    activityDebounceTimer = setTimeout(() => {
+      loadAdminActivity();
+    }, 280);
+  });
+}
+
+if (adminActivityCategoryFilter) {
+  adminActivityCategoryFilter.addEventListener('change', () => loadAdminActivity());
+}
+
+if (adminActivityUserFilter) {
+  adminActivityUserFilter.addEventListener('change', () => {
+    const val = adminActivityUserFilter.value;
+    adminActivityFilterUser = val === 'all' ? null : val;
+    if (adminActivityFilterPill) {
+      if (adminActivityFilterUser) {
+        const u = adminUsersCache.find((x) => x.uid === adminActivityFilterUser);
+        if (adminActivityFilterPillText) {
+          adminActivityFilterPillText.textContent = `מסנן לפי משתמש: ${u?.email || adminActivityFilterUser}`;
+        }
+        adminActivityFilterPill.hidden = false;
+      } else {
+        adminActivityFilterPill.hidden = true;
+      }
+    }
+    loadAdminActivity();
+  });
+}
+
+if (adminActivityTimeFilter) {
+  adminActivityTimeFilter.addEventListener('change', () => loadAdminActivity());
+}
+
+if (adminActivityClearFilterBtn) {
+  adminActivityClearFilterBtn.addEventListener('click', () => {
+    setActivityUserFilter(null);
+    loadAdminActivity();
+  });
+}
+
+if (adminActivityTbody) {
+  adminActivityTbody.addEventListener('click', (e) => {
+    const filterUserBtn = e.target.closest('.btn-filter-user-cell');
+    if (filterUserBtn) {
+      const uid = filterUserBtn.getAttribute('data-filter-activity-user');
+      const email = filterUserBtn.getAttribute('data-filter-activity-email');
+      setActivityUserFilter({ uid, email });
+      loadAdminActivity();
+    }
   });
 }
 
@@ -1474,6 +2020,15 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   updateSupportMailto(user ? user.email : '');
   if (user) {
+    if (!sessionStorage.getItem('session_logged_' + user.uid)) {
+      sessionStorage.setItem('session_logged_' + user.uid, '1');
+      logClientActivity(
+        'user_login',
+        'auth',
+        'חידוש חיבור למערכת (Session Restore)',
+        { provider: user.providerData?.[0]?.providerId || 'firebase' }
+      );
+    }
     await fetchSubscriptionStatus();
   } else {
     currentSubState = null;
@@ -1789,6 +2344,7 @@ const TUTORIAL_SUBTITLE_CUES = {
     bigPlayBtn.addEventListener('click', () => {
       setElHidden(startOverlay, true);
       selectScene(currentSceneIdx, true);
+      logClientActivity('tutorial_start', 'guide', 'הפעיל/ה את נגן ההדרכה האינטראקטיבית');
     });
   }
 

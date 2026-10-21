@@ -3,7 +3,8 @@ const {
   verifyFirebaseIdToken,
   getOrCreateUser,
   getDocument,
-  setDocument
+  setDocument,
+  logActivity
 } = require('../_lib/firebaseAdmin');
 const {
   resolveUserSubscriptionPrice,
@@ -72,6 +73,23 @@ module.exports = async function handler(req, res) {
     };
 
     await setDocument('checkout_sessions', sessionId, sessionDoc);
+
+    await logActivity({
+      uid: authUser.uid,
+      email: userDoc.email,
+      displayName: userDoc.displayName,
+      action: 'start_checkout',
+      category: 'billing',
+      description: `פתח/ה דף תשלום מאובטח בטרנזילה עבור מנוי (₪${checkoutAmount}/חודש)`,
+      details: {
+        amount: checkoutAmount,
+        basePriceIls: pricing.basePriceIls,
+        discountPercent: pricing.discountPercent,
+        sessionId,
+        mode: handshake.mode
+      },
+      req
+    });
 
     // 3. Build Tranzila iFrame form configuration
     const iframeConfig = buildIframeCheckoutConfig({

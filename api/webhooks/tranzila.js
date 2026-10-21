@@ -3,7 +3,8 @@ const {
   ensureRuntimeEnv,
   getDocument,
   setDocument,
-  findUserByField
+  findUserByField,
+  logActivity
 } = require('../_lib/firebaseAdmin');
 const {
   SUBSCRIPTION_PRICE_ILS,
@@ -416,6 +417,27 @@ module.exports = async function handler(req, res) {
       invoiceId: (invoiceResult && invoiceResult.documentId) || '',
       invoiceUrl: (invoiceResult && invoiceResult.documentUrl) || '',
       createdAt: nowIso
+    });
+
+    await logActivity({
+      uid: userDoc.uid,
+      email: userDoc.email,
+      displayName: userDoc.displayName,
+      action: isSuccess ? (isRecurringRenewal ? 'subscription_renewed' : 'subscription_success') : 'payment_failed',
+      category: 'billing',
+      description: isSuccess
+        ? (isRecurringRenewal
+            ? `חידוש מנוי חודשי אושר בהצלחה (₪${chargedSum || SUBSCRIPTION_PRICE_ILS})`
+            : `הפעלת מנוי חודשי אושרה בהצלחה (₪${chargedSum || SUBSCRIPTION_PRICE_ILS})`)
+        : `ניסיון חיוב מנוי נכשל מול חברת האשראי (קוד תגובה: ${rawResponse})`,
+      details: {
+        amount: chargedSum > 0 ? chargedSum : SUBSCRIPTION_PRICE_ILS,
+        stoId: resolvedStoId || '',
+        responseCode: rawResponse || 'ERR',
+        eventType,
+        isRecurringRenewal: Boolean(isRecurringRenewal)
+      },
+      req
     });
 
     if (callbackMode) {

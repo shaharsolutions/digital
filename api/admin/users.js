@@ -6,7 +6,9 @@ const {
   listDocuments,
   deleteDocument,
   deleteFirebaseAuthUser,
-  evaluateAccessState
+  evaluateAccessState,
+  logActivity,
+  listActivityLogs
 } = require('../_lib/firebaseAdmin');
 const {
   SUBSCRIPTION_PRICE_ILS,
@@ -83,7 +85,13 @@ function formatUserForAdmin(u, nowMs = Date.now(), globalPricing = null) {
     effectivePriceIls: pricing.effectivePriceIls,
     hasCustomPricing: pricing.hasCustomPricing,
     createdAt: u.createdAt || null,
-    updatedAt: u.updatedAt || null
+    updatedAt: u.updatedAt || null,
+    lastLoginAt: u.lastLoginAt || null,
+    lastActiveAt: u.lastActiveAt || null,
+    loginCount: Number(u.loginCount) || 0,
+    generationCount: Number(u.generationCount) || 0,
+    lastGeneratedAt: u.lastGeneratedAt || null,
+    lastIp: u.lastIp || null
   };
 }
 
@@ -127,6 +135,8 @@ module.exports = async function handler(req, res) {
             100
         ) / 100;
 
+      const recentActivity = await listActivityLogs({ limit: 60 });
+
       return res.status(200).json({
         ok: true,
         globalPricing,
@@ -138,7 +148,8 @@ module.exports = async function handler(req, res) {
           expiredCount,
           estimatedMrrIls
         },
-        users
+        users,
+        recentActivity
       });
     }
 
@@ -184,13 +195,26 @@ module.exports = async function handler(req, res) {
         await setDocument('system_settings', 'pricing', newPricingDoc);
         globalPricing = normalizeGlobalPricing(newPricingDoc);
 
+        const pricingMessage =
+          globalDiscountPercent > 0
+            ? `תמחור המערכת עודכן: מחיר בסיס ₪${basePriceIls}, הנחה גורפת ${globalDiscountPercent}% -> מחיר לתשלום ₪${effectivePriceIls}.`
+            : `תמחור המערכת עודכן: מחיר לתשלום ₪${effectivePriceIls} לחודש.`;
+
+        await logActivity({
+          uid: authUser.uid,
+          email: authUser.email,
+          displayName: authUser.displayName,
+          action: 'admin_update_global_pricing',
+          category: 'admin',
+          description: pricingMessage,
+          details: { basePriceIls, globalDiscountPercent, effectivePriceIls },
+          req
+        });
+
         return res.status(200).json({
           ok: true,
           globalPricing,
-          message:
-            globalDiscountPercent > 0
-              ? `תמחור המערכת עודכן: מחיר בסיס ₪${basePriceIls}, הנחה גורפת ${globalDiscountPercent}% -> מחיר לתשלום ₪${effectivePriceIls}.`
-              : `תמחור המערכת עודכן: מחיר לתשלום ₪${effectivePriceIls} לחודש.`
+          message: pricingMessage
         });
       }
 
@@ -357,6 +381,19 @@ module.exports = async function handler(req, res) {
         await deleteDocument('users', targetUid);
         await deleteFirebaseAuthUser(targetUid);
 
+        await logActivity({
+          uid: authUser.uid,
+          email: authUser.email,
+          displayName: authUser.displayName,
+          targetUid,
+          targetEmail: targetUser.email,
+          action: 'admin_delete_user',
+          category: 'admin',
+          description: `מנהל המערכת מחק את המשתמש ${targetUser.email} מהמערכת (Firestore + Firebase Auth)`,
+          details: { targetUid, targetEmail: targetUser.email },
+          req
+        });
+
         return res.status(200).json({
           ok: true,
           deletedUid: targetUid,
@@ -364,6 +401,28 @@ module.exports = async function handler(req, res) {
         });
       } else {
         return res.status(400).json({ error: `פעולת ניהול לא מוכרת: ${action}` });
+      }
+
+      if (message) {
+        await logActivity({
+          uid: authUser.uid,
+          email: authUser.email,
+          displayName: authUser.displayName,
+          targetUid,
+          targetEmail: targetUser.email,
+          action: `admin_${action}`,
+          category: 'admin',
+          description: message,
+          details: {
+            action,
+            targetUid,
+            targetEmail: targetUser.email,
+            days: body.days,
+            customPriceIls: body.customPriceIls,
+            discountPercent: body.discountPercent
+          },
+          req
+        });
       }
 
       return res.status(200).json({
