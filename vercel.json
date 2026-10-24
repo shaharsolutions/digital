@@ -22,6 +22,10 @@
       "destination": "https://roam-server.shaharsolutions.com/roam/"
     },
     {
+      "source": "/roam/beta-apply/",
+      "destination": "https://roam-server.shaharsolutions.com/roam/beta-apply/index.html"
+    },
+    {
       "source": "/roam/:path*",
       "destination": "https://roam-server.shaharsolutions.com/roam/:path*"
     },
