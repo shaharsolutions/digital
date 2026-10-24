@@ -2071,7 +2071,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 0,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene1.mp3',
-    duration: 43.28,
+    duration: 40.96,
     badge: 'שלב 1 מתוך 6 • Storyline 360',
     caption:
       'פתיחת חלון המשתנים (Manage Project Variables) ב-Storyline 360 ובדיקת האיות המדויק של שמות המשתנים: LearnerName, QuizScore, Department.'
@@ -2079,7 +2079,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 1,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene2.mp3',
-    duration: 33.08,
+    duration: 31.16,
     badge: 'שלב 2 מתוך 6 • מחולל הסקריפטים',
     caption:
       'בחירת מספר המשתנים (3), הקלדת השמות המדויקים (Case-Sensitive) והעתקת קוד ה-Google Apps Script שנוצר אוטומטית.'
@@ -2087,7 +2087,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 2,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene3.mp3',
-    duration: 27.23,
+    duration: 25.8,
     badge: 'שלב 3 מתוך 6 • Google Sheets',
     caption:
       'פתיחת Extensions > Apps Script בגיליון ה-Google Sheets, הדבקת הקוד מהמחולל ושמירת הפרויקט (Ctrl+S).'
@@ -2095,7 +2095,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 3,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene4.mp3',
-    duration: 38.06,
+    duration: 37.64,
     badge: 'שלב 4 מתוך 6 • פרסום Web App',
     caption:
       'לחיצה על Deploy > New deployment מסוג Web app, הגדרת Who has access: Anyone, והעתקת כתובת ה-Web App URL.'
@@ -2103,7 +2103,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 4,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene5.mp3',
-    duration: 26.13,
+    duration: 26.8,
     badge: 'שלב 5 מתוך 6 • קוד JavaScript',
     caption:
       'הדבקת כתובת ה-Web App URL במחולל והעתקת קוד ה-JavaScript המוכן עבור Storyline 360.'
@@ -2111,7 +2111,7 @@ const TUTORIAL_SCENES_META = [
   {
     idx: 5,
     audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene6.mp3',
-    duration: 47.3,
+    duration: 43.56,
     badge: 'שלב 6 מתוך 6 • טריגר ובדיקת אמת',
     caption:
       'יצירת טריגר Execute JavaScript ב-Storyline, פרסום הלומדה (Publish), וצפייה בנתונים מתעדכנים בזמן אמת ב-Google Sheets!'
@@ -2120,47 +2120,47 @@ const TUTORIAL_SCENES_META = [
 
 const TUTORIAL_SUBTITLE_CUES = {
   0: [
-    { start: 0.08, end: 6.02, text: "שלום וברוכים הבאים להדרכה על מחולל הסקריפטים לסטוריליין, מבית שחר פתרונות דיגיטליים." },
-    { start: 6.4, end: 17.24, text: "בהדרכה הזו נראה איך לחבר לומדה ב-Articulate Storyline 360 ישירות לגיליון Google Sheets, ולשמור נתוני לומדים בזמן אמת ובלי צורך בידע בתכנות." },
-    { start: 17.62, end: 27.29, text: "לפני שנתחיל בעבודה עם מחולל הסקריפטים, ניכנס לפרויקט שלנו בתוך Storyline 360 ונפתח את חלון ניהול המשתנים – Project Variables." },
-    { start: 27.67, end: 38.71, text: "בדוגמה שלנו יצרנו שלושה משתנים שאנחנו רוצים לייצא: LearnerName לשם הלומד, QuizScore לציון המבחן, ולבסוף Department למחלקה בארגון." },
-    { start: 39.09, end: 43.03, text: "שימו לב היטב לאותיות הגדולות והקטנות בשמות של המשתנים." }
+    { start: 0.05, end: 5.67, text: "שלום וברוכים הבאים להדרכה על מחולל הסקריפטים לסטוריליין, מבית שחר פתרונות דיגיטליים." },
+    { start: 6.49, end: 16.74, text: "בהדרכה הזו נראה איך לחבר לומדה ב-Articulate Storyline 360 ישירות לגיליון Google Sheets, ולשמור נתוני לומדים בזמן אמת ובלי צורך בידע בתכנות." },
+    { start: 17.79, end: 24.95, text: "לפני שנתחיל בעבודה עם מחולל הסקריפטים, ניכנס לפרויקט שלנו בתוך Storyline 360 ונפתח את חלון ניהול המשתנים – Project Variables." },
+    { start: 25.41, end: 36.61, text: "בדוגמה שלנו יצרנו שלושה משתנים שאנחנו רוצים לייצא: LearnerName לשם הלומד, QuizScore לציון המבחן, ולבסוף Department למחלקה בארגון." },
+    { start: 37.42, end: 40.5, text: "שימו לב היטב לאותיות הגדולות והקטנות בשמות המשתנים." }
   ],
   1: [
-    { start: 0.08, end: 2.75, text: "עכשיו נעבור אל מחולל הסקריפטים באתר." },
-    { start: 3.13, end: 8.77, text: "בתיבת מספר המשתנים נקליד 3, ומיד ייפתחו לנו שלוש תיבות טקסט." },
-    { start: 9.15, end: 19.95, text: "נקליד בכל תיבה את שם המשתנה בדיוק כפי שהוא מופיע ב-Storyline 360, כולל אותיות גדולות וקטנות: LearnerName, אחריו QuizScore, ולבסוף Department." },
-    { start: 20.33, end: 28.78, text: "ברגע שהקלדנו את השמות, מחולל הסקריפטים מייצר עבורנו באופן אוטומטי את הקוד של Google Apps Script המותאם למשתנים שלנו." },
-    { start: 29.16, end: 32.83, text: "נלחץ על הכפתור 'העתק קוד' כדי להעתיק אותו ללוח." }
+    { start: 0.26, end: 2.32, text: "עכשיו נעבור אל מחולל הסקריפטים באתר." },
+    { start: 3.11, end: 7.67, text: "בתיבת מספר המשתנים נקליד 3, ומיד ייפתחו לנו שלוש תיבות טקסט." },
+    { start: 8.25, end: 19.2, text: "נקליד בכל תיבה את שם המשתנה בדיוק כפי שהוא מופיע ב-Storyline 360, כולל אותיות גדולות וקטנות: LearnerName, אחריו QuizScore, ולבסוף Department." },
+    { start: 19.92, end: 27.03, text: "ברגע שהקלדנו את השמות, מחולל הסקריפטים מייצר עבורנו באופן אוטומטי את הקוד של Google Apps Script המותאם למשתנים שלנו." },
+    { start: 27.78, end: 31.0, text: "נלחץ על הכפתור 'העתק קוד' כדי להעתיק אותו ללוח." }
   ],
   2: [
-    { start: 0.08, end: 4.49, text: "כעת נעבור לגיליון Google Sheets שבו נאסוף את נתוני הלומדים." },
-    { start: 4.87, end: 9.8, text: "כדאי לרשום בשורה הראשונה כותרות לעמודות לפי סדר המשתנים שהגדרנו." },
-    { start: 10.18, end: 16.18, text: "בתפריט העליון נלחץ על Extensions (הרחבות), ונבחר באפשרות Apps Script." },
-    { start: 16.56, end: 26.98, text: "בחלון עורך הקוד שנפתח, נמחק את הקוד הקיים, נדביק את הקוד שהעתקנו ממחולל הסקריפטים, ונלחץ על סמל הדיסקט או Ctrl+S לשמירת הפרויקט." }
+    { start: 0.31, end: 4.02, text: "כעת נעבור לגיליון Google Sheets שבו נאסוף את נתוני הלומדים." },
+    { start: 4.83, end: 8.7, text: "כדאי לרשום בשורה הראשונה כותרות לעמודות לפי סדר המשתנים שהגדרנו." },
+    { start: 9.7, end: 14.79, text: "בתפריט העליון נלחץ על Extensions – כלומר הרחבות – ונבחר באפשרות Apps Script." },
+    { start: 15.98, end: 25.54, text: "בחלון עורך הקוד שנפתח, נמחק את הקוד הקיים, נדביק את הקוד שהעתקנו ממחולל הסקריפטים, ונלחץ על סמל הדיסקט או Ctrl+S לשמירת הפרויקט." }
   ],
   3: [
-    { start: 0.08, end: 5.75, text: "כדי שהלומדה תוכל לשלוח נתונים לגיליון, נפרסם כעת את הסקריפט כיישום אינטרנט." },
-    { start: 6.13, end: 11.03, text: "נלחץ למעלה על הכפתור הכחול Deploy, ונבחר באפשרות New deployment." },
-    { start: 11.41, end: 14.94, text: "נלחץ על גלגל השיניים ונבחר בסוג Web app." },
-    { start: 15.32, end: 20.98, text: "תחת ההגדרה Execute as, נוודא שמסומנת האפשרות Me, כלומר החשבון שלנו." },
-    { start: 21.36, end: 31.03, text: "נקודה חשובה מאוד: תחת ההגדרה Who has access נבחר באפשרות Anyone, כדי שכל לומד יוכל לשלוח נתונים מהדפדפן שלו ללא חסימה." },
-    { start: 31.41, end: 37.81, text: "נלחץ על Deploy, נאשר את ההרשאות בחשבון Google, ובסיום נעתיק את כתובת ה-Web App URL שנוצרה." }
+    { start: 0.29, end: 5.3, text: "כדי שהלומדה תוכל לשלוח נתונים לגיליון, נפרסם כעת את הסקריפט כיישום אינטרנט." },
+    { start: 5.55, end: 10.57, text: "נלחץ למעלה על הכפתור הכחול Deploy, ונבחר באפשרות New deployment." },
+    { start: 10.91, end: 14.23, text: "נלחץ על גלגל השיניים ונבחר בסוג Web app." },
+    { start: 14.51, end: 20.22, text: "תחת ההגדרה Execute as, נוודא שמסומנת האפשרות Me – כלומר החשבון שלנו." },
+    { start: 20.59, end: 29.67, text: "נקודה חשובה מאוד: תחת ההגדרה Who has access נבחר באפשרות Anyone, כדי שכל לומד יוכל לשלוח נתונים מהדפדפן שלו ללא חסימה." },
+    { start: 30.03, end: 37.33, text: "נלחץ על Deploy, נאשר את ההרשאות בחשבון Google, ובסיום נעתיק את כתובת ה-Web App URL שנוצרה." }
   ],
   4: [
-    { start: 0.08, end: 6.56, text: "נחזור אל מחולל הסקריפטים שלנו, ונדביק בתיבה המתאימה את כתובת ה-Web App שהעתקנו בשלב הקודם." },
-    { start: 6.94, end: 13.07, text: "מיד עם הדבקת הקישור, מחולל הסקריפטים משלים אוטומטית את קוד ה-JavaScript בתיבה השנייה." },
-    { start: 13.45, end: 21.47, text: "הקוד הזה שולף את ערכי המשתנים מתוך הנגן של Storyline באמצעות הפקודה GetVar, ושולח אותם ברקע ישירות לגיליון שלנו." },
-    { start: 21.85, end: 25.88, text: "נלחץ על הכפתור 'העתק קוד' בתיבת הקוד של JavaScript." }
+    { start: 0.26, end: 6.64, text: "נחזור אל מחולל הסקריפטים שלנו, ונדביק בתיבה המתאימה את כתובת ה-Web App שהעתקנו בשלב הקודם." },
+    { start: 7.6, end: 13.18, text: "מיד עם הדבקת הקישור, מחולל הסקריפטים משלים אוטומטית את קוד ה-JavaScript בתיבה השנייה." },
+    { start: 14.07, end: 22.47, text: "הקוד הזה שולף את ערכי המשתנים מתוך הנגן של Storyline באמצעות הפקודה GetVar, ושולח אותם ברקע ישירות לגיליון שלנו." },
+    { start: 23.45, end: 26.48, text: "נלחץ על הכפתור 'העתק קוד' בתיבת הקוד של JavaScript." }
   ],
   5: [
-    { start: 0.08, end: 7.66, text: "נחזור אל Articulate Storyline 360, לשקף הסיום בלומדה או לכל שקף אחר שבו נרצה לשלוח את הנתונים." },
-    { start: 8.04, end: 12.49, text: "ניצור טריגר חדש ונבחר באפשרות Execute JavaScript." },
-    { start: 12.87, end: 19.45, text: "נלחץ על הקישור האדום של JavaScript, נדביק את הקוד שהעתקנו ממחולל הסקריפטים ונלחץ על OK." },
-    { start: 19.83, end: 25.99, text: "נגדיר שהטריגר יפעל למשל בעת לחיצה על כפתור השליחה, או כשציר הזמן מתחיל." },
-    { start: 26.37, end: 36.04, text: "שימו לב: כדי לבדוק שהכול עובד, יש לבצע Publish לפורמט Web או למערכת LMS, ולא להסתפק בתצוגה מקדימה (Preview)." },
-    { start: 36.42, end: 43.04, text: "ברגע שהלומד מסיים ולוחץ על הכפתור – הנתונים מופיעים מיד בתוך שורה חדשה בגיליון ה-Google Sheets שלנו!" },
-    { start: 43.42, end: 47.05, text: "שיהיה בהצלחה, ואנחנו כאן לרשותכם בכל שאלה!" }
+    { start: 0.05, end: 6.91, text: "נחזור אל Articulate Storyline 360, לשקף הסיום בלומדה או לכל שקף אחר שבו נרצה לשלוח את הנתונים." },
+    { start: 7.81, end: 11.01, text: "ניצור טריגר חדש ונבחר באפשרות Execute JavaScript." },
+    { start: 11.78, end: 17.93, text: "נלחץ על הקישור האדום של JavaScript, נדביק את הקוד שהעתקנו ממחולל הסקריפטים ונלחץ על OK." },
+    { start: 19.53, end: 23.61, text: "נגדיר שהטריגר יפעל למשל בלחיצה על כפתור השליחה, או כשציר הזמן מתחיל." },
+    { start: 24.8, end: 31.93, text: "שימו לב: כדי לבדוק שהכול עובד, יש לבצע Publish לפורמט Web או למערכת LMS, ולא להסתפק בתצוגה מקדימה – Preview." },
+    { start: 33.32, end: 39.11, text: "ברגע שהלומד מסיים ולוחץ על הכפתור – הנתונים מופיעים מיד בתוך שורה חדשה בגיליון ה-Google Sheets שלנו!" },
+    { start: 40.36, end: 43.1, text: "שיהיה בהצלחה, ואנחנו כאן לרשותכם בכל שאלה!" }
   ]
 };
 
@@ -2244,16 +2244,16 @@ const TUTORIAL_SUBTITLE_CUES = {
       const rows = document.querySelectorAll('.sl-var-row');
       rows.forEach((r, i) => {
         const active =
-          (i === 0 && currentTime >= 30 && currentTime < 34) ||
-          (i === 1 && currentTime >= 33 && currentTime < 36.5) ||
-          (i === 2 && currentTime >= 35.5);
+          (i === 0 && currentTime >= 28.5 && currentTime < 31.6) ||
+          (i === 1 && currentTime >= 31.6 && currentTime < 34.0) ||
+          (i === 2 && currentTime >= 34.0);
         r.classList.toggle('highlight-active', active);
       });
     } else if (sceneIdx === 1) {
       const copyBtn = document.getElementById('anim-copy-gas-btn');
       const copyText = document.getElementById('anim-copy-gas-text');
       if (copyBtn && copyText) {
-        const isCopied = currentTime >= 29;
+        const isCopied = currentTime >= 27.5;
         copyBtn.classList.toggle('copied-flash', isCopied);
         copyText.textContent = isCopied ? 'הועתק ללוח! ✓' : 'העתק קוד';
       }
@@ -2261,7 +2261,7 @@ const TUTORIAL_SUBTITLE_CUES = {
       const copyJsBtn = document.getElementById('anim-copy-js-btn');
       const copyJsText = document.getElementById('anim-copy-js-text');
       if (copyJsBtn && copyJsText) {
-        const isCopied = currentTime >= 21.5;
+        const isCopied = currentTime >= 23.4;
         copyJsBtn.classList.toggle('copied-flash', isCopied);
         copyJsText.textContent = isCopied ? 'הועתק ללוח! ✓' : 'העתק קוד';
       }
