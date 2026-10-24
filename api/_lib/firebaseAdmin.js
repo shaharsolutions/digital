@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const postgresDb = require('./postgresDb');
 
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'shahar-storyline-saas';
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAtt8KrtnXH1S7tglh739Y2-YGO2xtvbpU';
@@ -416,165 +417,61 @@ function prepareForAdminWrite(data) {
 }
 
 async function getDocument(collectionName, docId) {
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    const snap = await db.collection(collectionName).doc(docId).get();
-    return snap.exists ? normalizeAdminDoc(snap.data()) : null;
+  try {
+    return await postgresDb.getDocument(collectionName, docId);
+  } catch (err) {
+    console.error(`Postgres getDocument error (${collectionName}/${docId}):`, err.message);
+    const store = readLocalStore();
+    return (store[collectionName] && store[collectionName][docId]) || null;
   }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}/${encodeURIComponent(docId)}`;
-    const resp = await fetch(url, {
-      headers: { Authorization: `Bearer ${cliToken}` }
-    });
-    if (resp.status === 404) return null;
-    if (resp.ok) {
-      const json = await resp.json();
-      return firestoreFieldsToObj(json.fields);
-    }
-  }
-
-  const store = readLocalStore();
-  return (store[collectionName] && store[collectionName][docId]) || null;
 }
 
 async function setDocument(collectionName, docId, data) {
-  // Always mirror in local store for instant consistency during local dev
-  const store = readLocalStore();
-  if (!store[collectionName]) store[collectionName] = {};
-  const cleanData = {};
-  for (const [k, v] of Object.entries(data)) {
-    if (v !== undefined && v !== null) {
-      cleanData[k] = v;
-    }
+  try {
+    return await postgresDb.setDocument(collectionName, docId, data);
+  } catch (err) {
+    console.error(`Postgres setDocument error (${collectionName}/${docId}):`, err.message);
+    const store = readLocalStore();
+    if (!store[collectionName]) store[collectionName] = {};
+    store[collectionName][docId] = data;
+    writeLocalStore(store);
+    return data;
   }
-  store[collectionName][docId] = cleanData;
-  writeLocalStore(store);
-
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    await db.collection(collectionName).doc(docId).set(prepareForAdminWrite(data), { merge: true });
-    return cleanData;
-  }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}/${encodeURIComponent(docId)}`;
-    const resp = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${cliToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ fields: objToFirestoreFields(data) })
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.warn(`Firestore REST write warning (${collectionName}/${docId}):`, errText);
-    }
-  }
-
-  return data;
 }
 
 async function findUserByField(fieldName, value) {
-  if (!value) return null;
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    const snap = await db.collection('users').where(fieldName, '==', value).limit(1).get();
-    if (!snap.empty) {
-      return normalizeAdminDoc(snap.docs[0].data());
-    }
+  try {
+    return await postgresDb.findUserByField(fieldName, value);
+  } catch (err) {
+    console.error(`Postgres findUserByField error (${fieldName}=${value}):`, err.message);
+    const store = readLocalStore();
+    const users = Object.values(store.users || {});
+    return users.find((u) => u && u[fieldName] === value) || null;
   }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`;
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${cliToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        structuredQuery: {
-          from: [{ collectionId: 'users' }],
-          where: {
-            fieldFilter: {
-              field: { fieldPath: fieldName },
-              op: 'EQUAL',
-              value: { stringValue: String(value) }
-            }
-          },
-          limit: 1
-        }
-      })
-    });
-    if (resp.ok) {
-      const rows = await resp.json();
-      const match = Array.isArray(rows) && rows.find((r) => r.document);
-      if (match && match.document) {
-        return firestoreFieldsToObj(match.document.fields);
-      }
-    }
-  }
-
-  const store = readLocalStore();
-  const users = Object.values(store.users || {});
-  return users.find((u) => u && u[fieldName] === value) || null;
 }
 
 async function listDocuments(collectionName, pageSize = 300) {
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    const snap = await db.collection(collectionName).limit(pageSize).get();
-    return snap.docs.map((d) => normalizeAdminDoc({ uid: d.id, ...d.data() }));
+  try {
+    return await postgresDb.listDocuments(collectionName, pageSize);
+  } catch (err) {
+    console.error(`Postgres listDocuments error (${collectionName}):`, err.message);
+    const store = readLocalStore();
+    return Object.values(store[collectionName] || {});
   }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}?pageSize=${pageSize}`;
-    const resp = await fetch(url, {
-      headers: { Authorization: `Bearer ${cliToken}` }
-    });
-    if (resp.ok) {
-      const json = await resp.json();
-      const docs = Array.isArray(json.documents) ? json.documents : [];
-      return docs.map((d) => {
-        const docId = String(d.name || '').split('/').pop();
-        const obj = firestoreFieldsToObj(d.fields);
-        return { uid: obj.uid || docId, ...obj };
-      });
-    }
-  }
-
-  const store = readLocalStore();
-  return Object.values(store[collectionName] || {});
 }
 
 async function deleteDocument(collectionName, docId) {
-  const store = readLocalStore();
-  if (store[collectionName] && store[collectionName][docId]) {
-    delete store[collectionName][docId];
-    writeLocalStore(store);
-  }
-
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    await db.collection(collectionName).doc(docId).delete();
+  try {
+    return await postgresDb.deleteDocument(collectionName, docId);
+  } catch (err) {
+    console.error(`Postgres deleteDocument error (${collectionName}/${docId}):`, err.message);
+    const store = readLocalStore();
+    if (store[collectionName] && store[collectionName][docId]) {
+      delete store[collectionName][docId];
+      writeLocalStore(store);
+    }
     return true;
   }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/${collectionName}/${encodeURIComponent(docId)}`;
-    await fetch(url, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${cliToken}` }
-    });
-  }
-  return true;
 }
 
 async function deleteFirebaseAuthUser(uid) {
@@ -803,67 +700,18 @@ async function logActivity({
 }
 
 async function listActivityLogs({ limit = 300, uid = null, category = null, action = null } = {}) {
-  const maxLimit = Math.min(500, Math.max(1, limit));
-  const { firestoreDb: db } = initFirebaseAdmin();
-  if (db) {
-    try {
-      let query = db.collection('activity_logs');
-      if (uid) {
-        query = query.where('uid', '==', uid);
-      }
-      if (category) {
-        query = query.where('category', '==', category);
-      }
-      if (action) {
-        query = query.where('action', '==', action);
-      }
-      try {
-        const snap = await query.orderBy('createdAt', 'desc').limit(maxLimit).get();
-        return snap.docs.map((d) => normalizeAdminDoc({ id: d.id, ...d.data() }));
-      } catch (_) {
-        const snap = await query.limit(maxLimit * 2).get();
-        const logs = snap.docs.map((d) => normalizeAdminDoc({ id: d.id, ...d.data() }));
-        logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
-        return logs.slice(0, maxLimit);
-      }
-    } catch (err) {
-      console.warn('Firestore Admin SDK listActivityLogs failed, trying REST:', err.message);
-    }
+  try {
+    return await postgresDb.listActivityLogs({ limit, uid, category, action });
+  } catch (err) {
+    console.error('Postgres listActivityLogs error:', err.message);
+    const store = readLocalStore();
+    let logs = Object.values(store.activity_logs || {});
+    if (uid) logs = logs.filter((l) => l.uid === uid || l.targetUid === uid);
+    if (category) logs = logs.filter((l) => l.category === category);
+    if (action) logs = logs.filter((l) => l.action === action);
+    logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
+    return logs.slice(0, Math.min(500, Math.max(1, limit)));
   }
-
-  const cliToken = await getFirestoreAccessToken();
-  if (cliToken) {
-    try {
-      const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/activity_logs?pageSize=${maxLimit}`;
-      const resp = await fetch(url, {
-        headers: { Authorization: `Bearer ${cliToken}` }
-      });
-      if (resp.ok) {
-        const json = await resp.json();
-        const docs = Array.isArray(json.documents) ? json.documents : [];
-        let logs = docs.map((d) => {
-          const docId = String(d.name || '').split('/').pop();
-          const obj = firestoreFieldsToObj(d.fields);
-          return { id: obj.id || docId, ...obj };
-        });
-        if (uid) logs = logs.filter((l) => l.uid === uid || l.targetUid === uid);
-        if (category) logs = logs.filter((l) => l.category === category);
-        if (action) logs = logs.filter((l) => l.action === action);
-        logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
-        return logs.slice(0, maxLimit);
-      }
-    } catch (restErr) {
-      console.warn('Firestore REST listActivityLogs failed:', restErr.message);
-    }
-  }
-
-  const store = readLocalStore();
-  let logs = Object.values(store.activity_logs || {});
-  if (uid) logs = logs.filter((l) => l.uid === uid || l.targetUid === uid);
-  if (category) logs = logs.filter((l) => l.category === category);
-  if (action) logs = logs.filter((l) => l.action === action);
-  logs.sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
-  return logs.slice(0, maxLimit);
 }
 
 module.exports = {
