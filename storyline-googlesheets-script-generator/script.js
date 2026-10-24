@@ -2070,7 +2070,7 @@ updateVariableNames();
 const TUTORIAL_SCENES_META = [
   {
     idx: 0,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene1.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene1.mp3?v=20261024',
     duration: 40.96,
     badge: 'שלב 1 מתוך 6 • Storyline 360',
     caption:
@@ -2078,7 +2078,7 @@ const TUTORIAL_SCENES_META = [
   },
   {
     idx: 1,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene2.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene2.mp3?v=20261024',
     duration: 31.16,
     badge: 'שלב 2 מתוך 6 • מחולל הסקריפטים',
     caption:
@@ -2086,7 +2086,7 @@ const TUTORIAL_SCENES_META = [
   },
   {
     idx: 2,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene3.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene3.mp3?v=20261024',
     duration: 25.8,
     badge: 'שלב 3 מתוך 6 • Google Sheets',
     caption:
@@ -2094,7 +2094,7 @@ const TUTORIAL_SCENES_META = [
   },
   {
     idx: 3,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene4.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene4.mp3?v=20261024',
     duration: 37.64,
     badge: 'שלב 4 מתוך 6 • פרסום Web App',
     caption:
@@ -2102,7 +2102,7 @@ const TUTORIAL_SCENES_META = [
   },
   {
     idx: 4,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene5.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene5.mp3?v=20261024',
     duration: 26.8,
     badge: 'שלב 5 מתוך 6 • קוד JavaScript',
     caption:
@@ -2110,7 +2110,7 @@ const TUTORIAL_SCENES_META = [
   },
   {
     idx: 5,
-    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene6.mp3',
+    audio: '/storyline-googlesheets-script-generator/tutorial-audio/scene6.mp3?v=20261024',
     duration: 43.56,
     badge: 'שלב 6 מתוך 6 • טריגר ובדיקת אמת',
     caption:
