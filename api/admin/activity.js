@@ -27,8 +27,19 @@ module.exports = async function handler(req, res) {
       const action = query.action && query.action !== 'all' ? String(query.action).trim() : null;
       const search = query.search ? String(query.search).trim().toLowerCase() : null;
       const timeRange = query.timeRange || 'all'; // 'all' | 'today' | '7d' | '30d'
+      const includeAdmin = query.includeAdmin === 'true' || query.includeAdmin === '1';
 
       let rawLogs = await listActivityLogs({ limit: 500, uid: targetUid, category, action });
+
+      // By default, hide system administrator activity unless explicitly requested (includeAdmin=true or category='admin')
+      if (!includeAdmin && category !== 'admin') {
+        rawLogs = rawLogs.filter((l) => {
+          if (l.category === 'admin') return false;
+          if (String(l.action || '').startsWith('admin_')) return false;
+          if (isAdminEmail(l.email)) return false;
+          return true;
+        });
+      }
 
       // Apply time filter
       const nowMs = Date.now();

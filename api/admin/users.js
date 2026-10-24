@@ -135,7 +135,11 @@ module.exports = async function handler(req, res) {
             100
         ) / 100;
 
-      const recentActivity = await listActivityLogs({ limit: 60 });
+      const allRecent = await listActivityLogs({ limit: 100 });
+      // Filter out administrator activities by default
+      const recentActivity = allRecent
+        .filter((l) => l.category !== 'admin' && !String(l.action || '').startsWith('admin_') && !isAdminEmail(l.email))
+        .slice(0, 50);
 
       return res.status(200).json({
         ok: true,

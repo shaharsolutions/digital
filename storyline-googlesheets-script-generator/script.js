@@ -140,6 +140,7 @@ const adminActivitySearchInput = document.getElementById('admin-activity-search-
 const adminActivityCategoryFilter = document.getElementById('admin-activity-category-filter');
 const adminActivityUserFilter = document.getElementById('admin-activity-user-filter');
 const adminActivityTimeFilter = document.getElementById('admin-activity-time-filter');
+const adminActivityIncludeAdmin = document.getElementById('admin-activity-include-admin');
 const adminActivityRefreshBtn = document.getElementById('admin-activity-refresh-btn');
 const adminActivityExportBtn = document.getElementById('admin-activity-export-btn');
 const adminActivityFilterPill = document.getElementById('admin-activity-filter-pill');
@@ -1063,6 +1064,9 @@ async function loadAdminActivity({ force = false } = {}) {
     const timeRange = adminActivityTimeFilter?.value || 'all';
     if (timeRange !== 'all') params.set('timeRange', timeRange);
 
+    const includeAdmin = adminActivityIncludeAdmin?.checked ? 'true' : 'false';
+    params.set('includeAdmin', includeAdmin);
+
     if (adminActivityFilterUser) {
       params.set('uid', adminActivityFilterUser);
     } else {
@@ -1100,10 +1104,12 @@ function renderAdminActivityTable() {
   if (!adminActivityTbody) return;
 
   if (adminActivityCache.length === 0) {
+    const isHidingAdmin = !adminActivityIncludeAdmin?.checked;
     adminActivityTbody.innerHTML = `
       <tr>
         <td colspan="6" style="text-align:center;padding:36px;color:#64748b;">
-          אין עדיין רשומות ביומן הפעילות התואמות לחיפוש או לסינון הנוכחי.
+          <div>אין עדיין רשומות ביומן הפעילות התואמות לחיפוש או לסינון הנוכחי.</div>
+          ${isHidingAdmin ? '<div style="margin-top:6px;font-size:0.8rem;color:#94a3b8;">פעילות מנהל מערכת מוסתרת כברירת מחדל (ניתן לסמן "הצג פעולות מנהל" בסרגל הסינון).</div>' : ''}
         </td>
       </tr>
     `;
@@ -1819,7 +1825,18 @@ if (adminActivitySearchInput) {
 }
 
 if (adminActivityCategoryFilter) {
-  adminActivityCategoryFilter.addEventListener('change', () => loadAdminActivity());
+  adminActivityCategoryFilter.addEventListener('change', () => {
+    if (adminActivityCategoryFilter.value === 'admin' && adminActivityIncludeAdmin) {
+      adminActivityIncludeAdmin.checked = true;
+    }
+    loadAdminActivity();
+  });
+}
+
+if (adminActivityIncludeAdmin) {
+  adminActivityIncludeAdmin.addEventListener('change', () => {
+    loadAdminActivity();
+  });
 }
 
 if (adminActivityUserFilter) {

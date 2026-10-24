@@ -1737,6 +1737,38 @@ textarea:focus {
   gap: 10px;
 }
 
+.admin-activity-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 11px;
+  border-radius: var(--radius-control);
+  background-color: #ffffff;
+  border: 1px solid var(--border-input);
+  user-select: none;
+  transition: all 0.15s ease;
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+.admin-activity-toggle-label:hover {
+  background-color: #f8fafc;
+  color: var(--text-primary);
+  border-color: #cbd5e1;
+}
+
+.admin-activity-checkbox {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--primary);
+  margin: 0;
+}
+
 .admin-activity-filter-pill {
   display: inline-flex;
   align-items: center;
