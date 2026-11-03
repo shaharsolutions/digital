@@ -12,12 +12,12 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
 
 const firebaseConfig = {
-  projectId: 'shahar-storyline-saas',
-  appId: '1:87620536673:web:7e12f7a3baff171dd25d20',
-  storageBucket: 'shahar-storyline-saas.firebasestorage.app',
-  apiKey: 'AIzaSyAtt8KrtnXH1S7tglh739Y2-YGO2xtvbpU',
-  authDomain: 'shahar-storyline-saas.firebaseapp.com',
-  messagingSenderId: '87620536673'
+  projectId: 'storyline-assistant-app',
+  appId: '1:870558348922:web:5e8f2290f95e444eb0adc3',
+  storageBucket: 'storyline-assistant-app.firebasestorage.app',
+  apiKey: 'AIzaSyDjoly3sOpeWy3godfX6OKHvoSZKIsGmo8',
+  authDomain: 'storyline-assistant-app.firebaseapp.com',
+  messagingSenderId: '870558348922'
 };
 
 const app = initializeApp(firebaseConfig);

@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const postgresDb = require('./postgresDb');
 
-const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'shahar-storyline-saas';
-const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAtt8KrtnXH1S7tglh739Y2-YGO2xtvbpU';
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'storyline-assistant-app';
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyDjoly3sOpeWy3godfX6OKHvoSZKIsGmo8';
 const TRIAL_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days (72 hours)
 
 const DISPOSABLE_EMAIL_DOMAINS = new Set([
