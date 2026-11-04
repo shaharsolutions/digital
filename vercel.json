@@ -2,6 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/baderech",
+      "destination": "https://roam-server.shaharsolutions.com/baderech/"
+    },
+    {
+      "source": "/baderech/",
+      "destination": "https://roam-server.shaharsolutions.com/baderech/"
+    },
+    {
+      "source": "/baderech/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/baderech/:path*"
+    },
+    {
       "source": "/roam-staging",
       "destination": "https://roam-server.shaharsolutions.com/roam-staging/"
     },
