@@ -2,6 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/shutaf",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf"
+    },
+    {
+      "source": "/shutaf/",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf/"
+    },
+    {
+      "source": "/shutaf/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf/:path*"
+    },
+    {
       "source": "/baderech",
       "destination": "https://roam-server.shaharsolutions.com/baderech/"
     },
