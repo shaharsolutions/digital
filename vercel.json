@@ -10,6 +10,18 @@
       "destination": "https://roam-server.shaharsolutions.com/shutaf/"
     },
     {
+      "source": "/shutaf/system/",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf/system/"
+    },
+    {
+      "source": "/shutaf/website/",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf/website/"
+    },
+    {
+      "source": "/shutaf/website/system/",
+      "destination": "https://roam-server.shaharsolutions.com/shutaf/website/system/"
+    },
+    {
       "source": "/shutaf/:path*",
       "destination": "https://roam-server.shaharsolutions.com/shutaf/:path*"
     },
