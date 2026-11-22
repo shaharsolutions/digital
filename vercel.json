@@ -83,6 +83,11 @@
       "source": "/school",
       "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
       "permanent": false
+    },
+    {
+      "source": "/school/",
+      "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
+      "permanent": false
     }
   ]
 }
