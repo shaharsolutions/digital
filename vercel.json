@@ -76,6 +76,18 @@
     {
       "source": "/finance/:path*",
       "destination": "https://roam-server.shaharsolutions.com/finance/:path*"
+    },
+    {
+      "source": "/codeclub/management",
+      "destination": "https://roam-server.shaharsolutions.com/codeclub/management/"
+    },
+    {
+      "source": "/codeclub/management/",
+      "destination": "https://roam-server.shaharsolutions.com/codeclub/management/"
+    },
+    {
+      "source": "/codeclub/management/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/codeclub/management/:path*"
     }
   ],
   "redirects": [
@@ -87,6 +99,16 @@
     {
       "source": "/school/",
       "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
+      "permanent": false
+    },
+    {
+      "source": "/codeclub",
+      "destination": "/codeclub/management/",
+      "permanent": false
+    },
+    {
+      "source": "/codeclub/",
+      "destination": "/codeclub/management/",
       "permanent": false
     }
   ]
