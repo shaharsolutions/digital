@@ -92,10 +92,6 @@
     {
       "source": "/zamirdogs",
       "destination": "/zamirdogs/index.html"
-    },
-    {
-      "source": "/zamirdogs/",
-      "destination": "/zamirdogs/index.html"
     }
   ],
   "redirects": [
@@ -107,6 +103,11 @@
     {
       "source": "/school/",
       "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
+      "permanent": false
+    },
+    {
+      "source": "/zamirdogs/",
+      "destination": "/zamirdogs",
       "permanent": false
     }
   ],
