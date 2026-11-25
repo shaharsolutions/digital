@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base target="_top">
@@ -77,7 +79,6 @@
     .secondary:hover:not(:disabled) { background: var(--tint); }
     .status { margin: 10px 0 0; color: var(--danger); font-weight: 700; }
     .status:empty { display: none; }
-    .success p { margin-block-end: 0; }
     :focus-visible { outline: 3px solid #639777; outline-offset: 2px; }
     @media (max-width: 565px) {
       main { width: calc(100% - 24px); margin: 14px auto 30px; }
@@ -109,14 +110,12 @@
         <button type="submit" class="primary" id="send" hidden>שליחת הסכם</button>
       </div>
     </form>
-    <section id="success" class="card success" hidden>
-      <h2 tabindex="-1">ההסכם התקבל</h2>
-      <p id="receipt"></p>
-      <div class="actions"><button type="button" class="secondary" id="again">מילוי טופס נוסף</button></div>
+    <section id="success" class="card" hidden>
+      <h2 tabindex="-1">הטופס נשלח</h2>
     </section>
   </main>
   <script>
-    const configuration = {"items":[["header","פרטי האורח/ת",false,"",null,"question-0"],["text","שם האורח/ת",true,"",null,"question-1"],["text","סוג וגזע",true,"לדוגמה: כלב מעורב או חתול סיאמי.",null,"question-2"],["text","גיל",true,"ציינו גם אם הגיל בחודשים או בשנים.",null,"question-3"],["choice","עיקור או סירוס",true,"",["כן","לא","לא ידוע"],"question-4"],["paragraph","מזון והנחיות האכלה",true,"ציינו סוג מזון, כמות ושעות האכלה.",null,"question-5"],["section","וטרינר וחיסונים",false,"",null,"question-6"],["text","שם הווטרינר או המרפאה",true,"",null,"question-7"],["text","טלפון הווטרינר",false,"",null,"question-8"],["text","כתובת המרפאה",false,"",null,"question-9"],["text","טלפון וטרינר לחירום",false,"",null,"question-10"],["paragraph","פרטים מיוחדים",false,"למשל תרופות, רגישויות או הנחיות טיפול.",null,"question-11"],["paragraph","פרטי חיסונים",true,"פרטו את החיסונים הידועים, כולל שעלת מכלאות אם רלוונטי. נא להציג פנקס חיסונים עם ההגעה.",null,"question-12"],["photo","צילום פנקס חיסונים",false,"רשות. צרפו תמונה אחת ברורה, בגודל של עד 10 MB. אפשר לבחור JPG, PNG, WebP או HEIC.",null,"photo"],["section","פרטי הבעלים",false,"",null,"question-13"],["text","שם מלא של הבעלים",true,"",null,"question-14"],["phone","טלפון נייד",true,"",null,"question-15"],["text","טלפון נוסף של הבעלים",false,"",null,"question-16"],["email","דוא״ל",false,"",null,"question-17"],["text","כתובת מגורים",true,"",null,"question-18"],["text","טלפון של איש קשר נוסף",false,"",null,"question-19"],["section","פרטי השהות ושירותים נוספים",false,"יום לתשלום מתחלף בכל יום בשעה 12:00.",null,"question-20"],["date","תאריך הגעה",true,"",null,"question-21"],["time","שעת הגעה",false,"",null,"question-22"],["date","תאריך עזיבה",true,"",null,"question-23"],["time","שעת עזיבה",false,"",null,"question-24"],["paragraph","תאריכים נוספים",false,"",null,"question-25"],["amount","תעריף יומי בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-26"],["checkbox","שירותים נוספים",false,"אפשר לסמן כמה שירותים.",["איסוף מהבית","החזרה לבית","תספורת או ציפורניים","מזון","טיפול להדברה","שונות"],"question-27"],["paragraph","פירוט שירותים נוספים",false,"",null,"question-28"],["amount","סה״כ לתשלום בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-29"],["section","הצהרת פנסיון משפחתי זמיר ובעל/י הכלב/ה",false,"פנסיון משפחתי זמיר מתחייב לתת את הטיפול המסור, המקצועי והאמין ביותר לאורחיו.\n\nפנסיון משפחתי זמיר פועל כפנסיון פתוח ללא כלובים וללא הפרדה בין הכלבים ומספק שרות של שני טיולים ביום (עם רצועה) לכל כלב בטיילת דדו.\n\nפנסיון משפחתי זמיר אינו נושא באחריות במקרה של פציעה, מחלה או אובדן של אורחיו הכלבים בזמן שהותם בפנסיון. בעל הכלב/ה מוותר בזאת על זכות כל תביעה משפטית בגין כל טוענה כנגד פנסיון משפחתי זמיר. כלב שאינו מחוסן נגד \"שעלת מכלאות\" נמצא בסיכון שלא באחריות פנסיון משפחתי זמיר.",null,"question-30"],["text","שם מלא לאישור ההסכם",true,"הקלידו את שמכם המלא במקום חתימה ידנית.",null,"question-31"],["checkbox","אישור תנאי ההסכם",true,"",["קראתי את תנאי ההסכם ואני מסכים/ה להם."],"question-32"]],"key":"","trial":false,"maxPhotoBytes":10485760,"submitUrl":"https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec?route=intake"};
+    const configuration = {"items":[["header","פרטי האורח/ת",false,"",null,"question-0"],["text","שם האורח/ת",true,"",null,"question-1"],["text","סוג וגזע",true,"לדוגמה: כלב מעורב או חתול סיאמי.",null,"question-2"],["text","גיל",true,"ציינו גם אם הגיל בחודשים או בשנים.",null,"question-3"],["choice","עיקור או סירוס",true,"",["כן","לא","לא ידוע"],"question-4"],["paragraph","מזון והנחיות האכלה",true,"ציינו סוג מזון, כמות ושעות האכלה.",null,"question-5"],["section","וטרינר וחיסונים",false,"",null,"question-6"],["text","שם הווטרינר או המרפאה",true,"",null,"question-7"],["text","טלפון הווטרינר",false,"",null,"question-8"],["text","כתובת המרפאה",false,"",null,"question-9"],["text","טלפון וטרינר לחירום",false,"",null,"question-10"],["paragraph","פרטים מיוחדים",false,"למשל תרופות, רגישויות או הנחיות טיפול.",null,"question-11"],["paragraph","פרטי חיסונים",true,"פרטו את החיסונים הידועים, כולל שעלת מכלאות אם רלוונטי. נא להציג פנקס חיסונים עם ההגעה.",null,"question-12"],["photo","צילום פנקס חיסונים",false,"רשות. צרפו תמונה אחת ברורה, בגודל של עד 10 MB. אפשר לבחור JPG, PNG, WebP או HEIC.",null,"photo"],["section","פרטי הבעלים",false,"",null,"question-13"],["text","שם מלא של הבעלים",true,"",null,"question-14"],["phone","טלפון נייד",true,"",null,"question-15"],["text","טלפון נוסף של הבעלים",false,"",null,"question-16"],["email","דוא״ל",false,"",null,"question-17"],["text","כתובת מגורים",true,"",null,"question-18"],["text","טלפון של איש קשר נוסף",false,"",null,"question-19"],["section","פרטי השהות ושירותים נוספים",false,"יום לתשלום מתחלף בכל יום בשעה 12:00.",null,"question-20"],["date","תאריך הגעה",true,"",null,"question-21"],["time","שעת הגעה",false,"",null,"question-22"],["date","תאריך עזיבה",true,"",null,"question-23"],["time","שעת עזיבה",false,"",null,"question-24"],["paragraph","תאריכים נוספים",false,"",null,"question-25"],["amount","תעריף יומי בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-26"],["checkbox","שירותים נוספים",false,"אפשר לסמן כמה שירותים.",["איסוף מהבית","החזרה לבית","תספורת או ציפורניים","מזון","טיפול להדברה","שונות"],"question-27"],["paragraph","פירוט שירותים נוספים",false,"",null,"question-28"],["amount","סה״כ לתשלום בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-29"],["section","הצהרת פנסיון משפחתי זמיר ובעל/י הכלב/ה",false,"פנסיון משפחתי זמיר מתחייב לתת את הטיפול המסור, המקצועי והאמין ביותר לאורחיו.\n\nפנסיון משפחתי זמיר פועל כפנסיון פתוח ללא כלובים וללא הפרדה בין הכלבים ומספק שרות של שני טיולים ביום (עם רצועה) לכל כלב בטיילת דדו.\n\nפנסיון משפחתי זמיר אינו נושא באחריות במקרה של פציעה, מחלה או אובדן של אורחיו הכלבים בזמן שהותם בפנסיון. בעל הכלב/ה מוותר בזאת על זכות כל תביעה משפטית בגין כל טוענה כנגד פנסיון משפחתי זמיר. כלב שאינו מחוסן נגד \"שעלת מכלאות\" נמצא בסיכון שלא באחריות פנסיון משפחתי זמיר.",null,"question-30"],["text","שם מלא לאישור ההסכם",true,"הקלידו את שמכם המלא במקום חתימה ידנית.",null,"question-31"],["checkbox","אישור תנאי ההסכם",true,"",["קראתי את תנאי ההסכם ואני מסכים/ה להם."],"question-32"]],"key":"","trial":false,"maxPhotoBytes":10485760,"submitUrl":"https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec?route=submit"};
     const form = document.getElementById('agreement');
     const stepsRoot = document.getElementById('steps');
     const statusText = document.getElementById('status');
@@ -248,11 +247,6 @@
       return field;
     }
 
-    function newRequest() {
-      form.elements.trial.value = configuration.key;
-      form.elements.requestId.value = crypto.randomUUID();
-    }
-
     function showStep(index, focus = true) {
       active = index;
       steps.forEach(({step}, stepIndex) => { step.hidden = stepIndex !== index; });
@@ -302,12 +296,9 @@
         statusText.textContent = result?.error || 'השליחה לא הושלמה. אפשר לנסות שוב.';
         return;
       }
-      const receipt = document.getElementById('receipt');
-      receipt.replaceChildren(document.createTextNode(configuration.trial ? 'מספר בדיקה ' : 'מספר אסמכתה '));
-      receipt.append(element('bdi', result.reference));
-      if (result.photoSaved) receipt.append(document.createTextNode(' · הצילום נשמר'));
-      if (configuration.trial) receipt.append(document.createTextNode(result.mailSent ? ' · מייל הבדיקה נשלח' : ' · מייל הבדיקה ממתין לשליחה'));
       form.hidden = true;
+      document.querySelector('.hero').hidden = true;
+      document.getElementById('trial-message').hidden = true;
       success.hidden = false;
       success.querySelector('h2').focus();
       success.scrollIntoView({block: 'start'});
@@ -334,24 +325,25 @@
       return response.json();
     }
 
+    function completeInBackground() {
+      const url = new URL(configuration.submitUrl);
+      url.searchParams.set('route', 'complete');
+      const body = JSON.stringify({trial: form.elements.trial.value, requestId: form.elements.requestId.value});
+      // The saved response is also picked up by the scheduled retry if this request is interrupted.
+      fetch(url, {method: 'POST', credentials: 'omit', keepalive: true, body}).catch(() => {});
+    }
+
     document.getElementById('trial-message').hidden = !configuration.trial;
     for (const item of configuration.items) {
       if (item[0] === 'header' || item[0] === 'section') makeStep(item[1], item[3]);
       else steps.at(-1).fields.append(makeField(item));
     }
-    newRequest();
+    form.elements.trial.value = configuration.key;
+    form.elements.requestId.value = crypto.randomUUID();
     showStep(0, false);
 
     next.addEventListener('click', advance);
     previous.addEventListener('click', () => { statusText.textContent = ''; showStep(active - 1); });
-    document.getElementById('again').addEventListener('click', () => {
-      form.reset();
-      form.elements.photo.dispatchEvent(new Event('change'));
-      newRequest();
-      success.hidden = true;
-      form.hidden = false;
-      showStep(0);
-    });
     form.addEventListener('submit', event => {
       event.preventDefault();
       if (sending) return;
@@ -361,7 +353,10 @@
       setSending(true);
       const showSendError = () => showResult({error: 'לא התקבל אישור לשליחה. אפשר לנסות שוב מהמסך הנוכחי.'});
       if (configuration.submitUrl) {
-        sendFromWebsite().then(showResult).catch(showSendError);
+        sendFromWebsite().then(result => {
+          showResult(result);
+          if (result?.ok) completeInBackground();
+        }, showSendError);
         return;
       }
       if (typeof google === 'undefined' || !google.script?.run) {
