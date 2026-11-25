@@ -88,6 +88,14 @@
     {
       "source": "/codeclub/management/:path*",
       "destination": "https://roam-server.shaharsolutions.com/codeclub/management/:path*"
+    },
+    {
+      "source": "/zamirdogs",
+      "destination": "/zamirdogs/index.html"
+    },
+    {
+      "source": "/zamirdogs/",
+      "destination": "/zamirdogs/index.html"
     }
   ],
   "redirects": [
@@ -100,16 +108,21 @@
       "source": "/school/",
       "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
       "permanent": false
-    },
+    }
+  ],
+  "headers": [
     {
-      "source": "/zamirdogs",
-      "destination": "https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec",
-      "permanent": false
-    },
-    {
-      "source": "/zamirdogs/",
-      "destination": "https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec",
-      "permanent": false
+      "source": "/zamirdogs/:path*",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'none'; form-action 'none'; object-src 'none'; connect-src https://script.google.com https://script.googleusercontent.com"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
     }
   ]
 }
