@@ -100,6 +100,16 @@
       "source": "/school/",
       "destination": "https://shahar-code-club.shaharc94.chatgpt.site",
       "permanent": false
+    },
+    {
+      "source": "/zamirdogs",
+      "destination": "https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec",
+      "permanent": false
+    },
+    {
+      "source": "/zamirdogs/",
+      "destination": "https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec",
+      "permanent": false
     }
   ]
 }
