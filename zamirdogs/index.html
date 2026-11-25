@@ -29,7 +29,7 @@
     body { margin: 0; }
     p { line-height: 1.6; text-wrap: pretty; }
     h1, h2 { margin: 0; text-wrap: balance; }
-    main { width: min(100% - 36px, 740px); margin: 34px auto 48px; }
+    main { width: min(100% - 36px, 740px); margin: 34px auto 0; }
     .hero { padding: 28px 32px; border-radius: 20px; background: var(--brand); color: #fff; }
     .hero p { margin: 0; color: #e0ede5; }
     .hero h1 { margin: 10px 0 7px; font-size: clamp(1.75rem, 5vw, 2.45rem); }
@@ -80,9 +80,12 @@
     .secondary:hover:not(:disabled) { background: var(--tint); }
     .status { margin: 10px 0 0; color: var(--danger); font-weight: 700; }
     .status:empty { display: none; }
+    .site-credit { margin: 20px auto 48px; padding-inline: 12px; color: var(--muted); font-size: .875rem; line-height: 1.5; text-align: center; }
+    .site-credit a { color: var(--brand); text-underline-offset: .15em; }
     :focus-visible { outline: 3px solid #639777; outline-offset: 2px; }
     @media (max-width: 565px) {
-      main { width: calc(100% - 24px); margin: 14px auto 30px; }
+      main { width: calc(100% - 24px); margin-block-start: 14px; }
+      .site-credit { margin-block-end: 30px; }
       .hero, .card { padding: 19px 17px; border-radius: 15px; }
       .fields { grid-template-columns: 1fr; gap: 17px; }
       .trial { margin-block-end: 17px; }
@@ -118,6 +121,9 @@
       </div>
     </section>
   </main>
+  <footer class="site-credit">
+    הטופס נבנה על-ידי <a href="https://www.shaharsolutions.com/" target="_blank" rel="noopener noreferrer">שחר פתרונות דיגיטליים</a>
+  </footer>
   <script>
     const configuration = {"items":[["header","פרטי האורח/ת",false,"",null,"question-0"],["text","שם האורח/ת",true,"",null,"question-1"],["text","סוג וגזע",true,"לדוגמה: כלב מעורב או חתול סיאמי.",null,"question-2"],["text","גיל",true,"ציינו גם אם הגיל בחודשים או בשנים.",null,"question-3"],["choice","עיקור או סירוס",true,"",["כן","לא","לא ידוע"],"question-4"],["paragraph","מזון והנחיות האכלה",true,"ציינו סוג מזון, כמות ושעות האכלה.",null,"question-5"],["section","וטרינר וחיסונים",false,"",null,"question-6"],["text","שם הווטרינר או המרפאה",true,"",null,"question-7"],["text","טלפון הווטרינר",false,"",null,"question-8"],["text","כתובת המרפאה",false,"",null,"question-9"],["text","טלפון וטרינר לחירום",false,"",null,"question-10"],["paragraph","פרטים מיוחדים",false,"למשל תרופות, רגישויות או הנחיות טיפול.",null,"question-11"],["paragraph","פרטי חיסונים",true,"פרטו את החיסונים הידועים, כולל שעלת מכלאות אם רלוונטי. נא להציג פנקס חיסונים עם ההגעה.",null,"question-12"],["photo","צילום פנקס חיסונים",false,"רשות. צרפו תמונה אחת ברורה, בגודל של עד 10 MB. אפשר לבחור JPG, PNG, WebP או HEIC.",null,"photo"],["section","פרטי הבעלים",false,"",null,"question-13"],["text","שם מלא של הבעלים",true,"",null,"question-14"],["phone","טלפון נייד",true,"",null,"question-15"],["text","טלפון נוסף של הבעלים",false,"",null,"question-16"],["email","דוא״ל",false,"",null,"question-17"],["text","כתובת מגורים",true,"",null,"question-18"],["text","טלפון של איש קשר נוסף",false,"",null,"question-19"],["section","פרטי השהות ושירותים נוספים",false,"יום לתשלום מתחלף בכל יום בשעה 12:00.",null,"question-20"],["date","תאריך הגעה",true,"",null,"question-21"],["time","שעת הגעה",false,"",null,"question-22"],["date","תאריך עזיבה",true,"",null,"question-23"],["time","שעת עזיבה",false,"",null,"question-24"],["paragraph","תאריכים נוספים",false,"",null,"question-25"],["amount","תעריף יומי בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-26"],["checkbox","שירותים נוספים",false,"אפשר לסמן כמה שירותים.",["איסוף מהבית","החזרה לבית","תספורת או ציפורניים","מזון","טיפול להדברה","שונות"],"question-27"],["paragraph","פירוט שירותים נוספים",false,"",null,"question-28"],["amount","סה״כ לתשלום בש״ח",false,"אם כבר סוכם מול הפנסיון.",null,"question-29"],["section","הצהרת פנסיון משפחתי זמיר ובעל/י הכלב/ה",false,"פנסיון משפחתי זמיר מתחייב לתת את הטיפול המסור, המקצועי והאמין ביותר לאורחיו.\n\nפנסיון משפחתי זמיר פועל כפנסיון פתוח ללא כלובים וללא הפרדה בין הכלבים ומספק שרות של שני טיולים ביום (עם רצועה) לכל כלב בטיילת דדו.\n\nפנסיון משפחתי זמיר אינו נושא באחריות במקרה של פציעה, מחלה או אובדן של אורחיו הכלבים בזמן שהותם בפנסיון. בעל הכלב/ה מוותר בזאת על זכות כל תביעה משפטית בגין כל טוענה כנגד פנסיון משפחתי זמיר. כלב שאינו מחוסן נגד \"שעלת מכלאות\" נמצא בסיכון שלא באחריות פנסיון משפחתי זמיר.",null,"question-30"],["text","שם מלא לאישור ההסכם",true,"הקלידו את שמכם המלא במקום חתימה ידנית.",null,"question-31"],["checkbox","אישור תנאי ההסכם",true,"",["קראתי את תנאי ההסכם ואני מסכים/ה להם."],"question-32"]],"key":"","trial":false,"maxPhotoBytes":10485760,"submitUrl":"https://script.google.com/macros/s/AKfycbzBGmoRP_Ftlj7cH2lr1bn9dDF_z7nfJ0YfiIsaVZCBJkdHhuOFwt-8xh5LYk6qFsN-hw/exec?route=submit"};
     const form = document.getElementById('agreement');
