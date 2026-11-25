@@ -112,6 +112,9 @@
     </form>
     <section id="success" class="card" hidden>
       <h2 tabindex="-1">הטופס נשלח</h2>
+      <div class="actions">
+        <button type="button" class="primary" id="again">מילוי טופס נוסף</button>
+      </div>
     </section>
   </main>
   <script>
@@ -123,6 +126,8 @@
     const next = document.getElementById('next');
     const send = document.getElementById('send');
     const success = document.getElementById('success');
+    const hero = document.querySelector('.hero');
+    const trialMessage = document.getElementById('trial-message');
     const steps = [];
     let active = 0;
     let sending = false;
@@ -297,8 +302,8 @@
         return;
       }
       form.hidden = true;
-      document.querySelector('.hero').hidden = true;
-      document.getElementById('trial-message').hidden = true;
+      hero.hidden = true;
+      trialMessage.hidden = true;
       success.hidden = false;
       success.querySelector('h2').focus();
       success.scrollIntoView({block: 'start'});
@@ -333,17 +338,30 @@
       fetch(url, {method: 'POST', credentials: 'omit', keepalive: true, body}).catch(() => {});
     }
 
-    document.getElementById('trial-message').hidden = !configuration.trial;
+    function startForm(focus = false) {
+      form.elements.trial.value = configuration.key;
+      form.elements.requestId.value = crypto.randomUUID();
+      hero.hidden = false;
+      trialMessage.hidden = !configuration.trial;
+      success.hidden = true;
+      form.hidden = false;
+      showStep(0, focus);
+    }
+
     for (const item of configuration.items) {
       if (item[0] === 'header' || item[0] === 'section') makeStep(item[1], item[3]);
       else steps.at(-1).fields.append(makeField(item));
     }
-    form.elements.trial.value = configuration.key;
-    form.elements.requestId.value = crypto.randomUUID();
-    showStep(0, false);
+    startForm();
 
     next.addEventListener('click', advance);
     previous.addEventListener('click', () => { statusText.textContent = ''; showStep(active - 1); });
+    document.getElementById('again').addEventListener('click', () => {
+      form.reset();
+      form.elements.photo.dispatchEvent(new Event('change'));
+      statusText.textContent = '';
+      startForm(true);
+    });
     form.addEventListener('submit', event => {
       event.preventDefault();
       if (sending) return;
