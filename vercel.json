@@ -90,6 +90,18 @@
       "destination": "https://roam-server.shaharsolutions.com/codeclub/management/:path*"
     },
     {
+      "source": "/shithead",
+      "destination": "https://roam-server.shaharsolutions.com/shithead/"
+    },
+    {
+      "source": "/shithead/",
+      "destination": "https://roam-server.shaharsolutions.com/shithead/"
+    },
+    {
+      "source": "/shithead/:path*",
+      "destination": "https://roam-server.shaharsolutions.com/shithead/:path*"
+    },
+    {
       "source": "/zamirdogs",
       "destination": "/zamirdogs/index.html"
     }
