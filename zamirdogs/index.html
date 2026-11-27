@@ -250,7 +250,7 @@
         control.maxLength = 1800;
       } else {
         const phone = type === 'phone' || title.startsWith('טלפון');
-        const telephoneInput = phone && title !== 'טלפון הווטרינר';
+        const telephoneInput = phone && !['טלפון הווטרינר', 'טלפון וטרינר לחירום'].includes(title);
         control.type = telephoneInput ? 'tel' : ({email: 'email', date: 'date', time: 'time', amount: 'number'})[type] || 'text';
         control.maxLength = telephoneInput ? 24 : 240;
         if (type === 'phone') control.pattern = '[+()0-9 .\\-]{7,24}';
