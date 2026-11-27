@@ -250,8 +250,9 @@
         control.maxLength = 1800;
       } else {
         const phone = type === 'phone' || title.startsWith('טלפון');
-        control.type = phone ? 'tel' : ({email: 'email', date: 'date', time: 'time', amount: 'number'})[type] || 'text';
-        control.maxLength = phone ? 24 : 240;
+        const telephoneInput = phone && title !== 'טלפון הווטרינר';
+        control.type = telephoneInput ? 'tel' : ({email: 'email', date: 'date', time: 'time', amount: 'number'})[type] || 'text';
+        control.maxLength = telephoneInput ? 24 : 240;
         if (type === 'phone') control.pattern = '[+()0-9 .\\-]{7,24}';
         if (type === 'amount') {
           control.min = '0';
